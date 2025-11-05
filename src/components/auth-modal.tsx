@@ -13,6 +13,7 @@ import {
   X,
 } from "lucide-react";
 import { useState } from "react";
+import { createPortal } from "react-dom";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -100,10 +101,10 @@ export default function AuthModal({
     handleClose();
   };
 
-  return (
+  return createPortal(
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -590,6 +591,7 @@ export default function AuthModal({
           </motion.div>
         </div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    typeof window !== "undefined" ? document.body : (null as any),
   );
 }
