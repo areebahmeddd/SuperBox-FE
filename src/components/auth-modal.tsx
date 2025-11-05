@@ -101,6 +101,10 @@ export default function AuthModal({
     handleClose();
   };
 
+  if (typeof window === "undefined") {
+    return null;
+  }
+
   return createPortal(
     <AnimatePresence>
       {isOpen && (
@@ -592,6 +596,6 @@ export default function AuthModal({
         </div>
       )}
     </AnimatePresence>,
-    typeof window !== "undefined" ? document.body : (null as any),
+    document.body,
   );
 }
