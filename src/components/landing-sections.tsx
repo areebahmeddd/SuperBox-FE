@@ -7,48 +7,13 @@ import { useEffect, useState } from "react";
 import AuthModal from "./auth-modal";
 
 export default function LandingSections() {
-  const fullSubtitle = "Deploy MCP for your LLMs and agents securely on cloud";
-  const [typed, setTyped] = useState("");
-  const [mounted, setMounted] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
     const authStatus = localStorage.getItem("isAuthenticated") === "true";
     setIsAuthenticated(authStatus);
   }, []);
-
-  useEffect(() => {
-    if (!mounted) return;
-
-    let i = 0;
-    let forward = true;
-    const step = () => {
-      setTyped(fullSubtitle.slice(0, i));
-      const ch = fullSubtitle.charAt(forward ? i : i - 1);
-      const base = ch === " " ? 120 : 70;
-      if (forward) {
-        if (i < fullSubtitle.length) {
-          i += 1;
-          setTimeout(step, base);
-        } else {
-          forward = false;
-          setTimeout(step, 1200);
-        }
-      } else {
-        if (i > 0) {
-          i -= 1;
-          setTimeout(step, base);
-        } else {
-          forward = true;
-          setTimeout(step, 600);
-        }
-      }
-    };
-    const t = setTimeout(step, 400);
-    return () => clearTimeout(t);
-  }, [mounted]);
 
   const handlePublishClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -98,17 +63,80 @@ export default function LandingSections() {
           transition={{ duration: 0.6, delay: 0.5 }}
           className="text-2xl md:text-3xl text-white/90 font-semibold mb-4"
         >
-          An open marketplace for MCP servers
+          An{" "}
+          <span className="relative inline-block">
+            open marketplace
+            <motion.span
+              className="absolute left-0 bottom-[-2px] w-full h-[2.5px] bg-[var(--brand-red)] rounded-full"
+              style={{ transformOrigin: "left" }}
+              initial={{ scaleX: 0, opacity: 0.4 }}
+              animate={{ scaleX: 1, opacity: 1 }}
+              transition={{
+                scaleX: {
+                  duration: 1.5,
+                  delay: 0.8,
+                  ease: [0.16, 0.7, 0.3, 0.95],
+                },
+                opacity: {
+                  duration: 0.8,
+                  delay: 0.8,
+                  ease: "easeOut",
+                },
+              }}
+            />
+          </span>{" "}
+          for MCP servers
         </motion.p>
 
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.7 }}
-          className="text-lg md:text-xl text-white/80 mb-8 min-h-[2rem]"
+          className="text-lg md:text-xl text-white/80 mb-8"
         >
-          {typed}
-          <span className="typing-caret" />
+          <span className="relative inline-block">
+            Deploy MCP
+            <motion.span
+              className="absolute left-0 bottom-[-2px] w-full h-[2.5px] bg-[var(--brand-red)] rounded-full"
+              style={{ transformOrigin: "left" }}
+              initial={{ scaleX: 0, opacity: 0.4 }}
+              animate={{ scaleX: 1, opacity: 1 }}
+              transition={{
+                scaleX: {
+                  duration: 1.5,
+                  delay: 1.0,
+                  ease: [0.16, 0.7, 0.3, 0.95],
+                },
+                opacity: {
+                  duration: 0.8,
+                  delay: 1.0,
+                  ease: "easeOut",
+                },
+              }}
+            />
+          </span>{" "}
+          for your LLMs and agents securely{" "}
+          <span className="relative inline-block">
+            on cloud
+            <motion.span
+              className="absolute left-0 bottom-[-2px] w-full h-[2.5px] bg-[var(--brand-red)] rounded-full"
+              style={{ transformOrigin: "left" }}
+              initial={{ scaleX: 0, opacity: 0.4 }}
+              animate={{ scaleX: 1, opacity: 1 }}
+              transition={{
+                scaleX: {
+                  duration: 1.5,
+                  delay: 1.2,
+                  ease: [0.16, 0.7, 0.3, 0.95],
+                },
+                opacity: {
+                  duration: 0.8,
+                  delay: 1.2,
+                  ease: "easeOut",
+                },
+              }}
+            />
+          </span>
         </motion.p>
 
         <motion.div

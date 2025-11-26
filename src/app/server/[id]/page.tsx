@@ -39,7 +39,7 @@ export default function ServerPage() {
     };
 
     loadServer();
-  }, [serverName, router]);
+  }, [serverName, addToast]);
 
   if (loading) {
     return (
