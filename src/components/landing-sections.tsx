@@ -54,7 +54,7 @@ export default function LandingSections() {
           }}
           className="text-6xl md:text-7xl font-bold text-white mb-4 leading-tight"
         >
-          Super [<span className="text-[var(--brand-red)]">Box</span>]
+          SUPER [<span className="text-[var(--brand-red)]">BOX</span>]
         </motion.h1>
 
         <motion.p
