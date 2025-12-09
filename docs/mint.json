@@ -1,0 +1,165 @@
+{
+  "$schema": "https://mintlify.com/schema.json",
+  "name": "SuperBox",
+  "logo": {
+    "dark": "/logo/dark.svg",
+    "light": "/logo/light.svg",
+    "href": "https://superbox-fe.vercel.app"
+  },
+  "favicon": "/favicon.svg",
+  "colors": {
+    "primary": "#ef4444",
+    "light": "#f87171",
+    "dark": "#dc2626",
+    "background": {
+      "dark": "#0a0a0a",
+      "light": "#ffffff"
+    },
+    "anchors": {
+      "from": "#ef4444",
+      "to": "#dc2626"
+    }
+  },
+  "topbar": {
+    "style": "gradient"
+  },
+  "topbarLinks": [
+    {
+      "name": "GitHub",
+      "url": "https://github.com/areebahmeddd/superbox.ai"
+    }
+  ],
+  "topbarCtaButton": {
+    "name": "Launch App",
+    "url": "https://superbox-fe.vercel.app"
+  },
+  "tabs": [
+    {
+      "name": "API Reference",
+      "url": "api"
+    },
+    {
+      "name": "CLI Reference",
+      "url": "cli"
+    }
+  ],
+  "anchors": [
+    {
+      "name": "GitHub",
+      "icon": "github",
+      "url": "https://github.com/areebahmeddd/superbox.ai"
+    },
+    {
+      "name": "Community",
+      "icon": "discord",
+      "url": "#"
+    },
+    {
+      "name": "Support",
+      "icon": "envelope",
+      "url": "mailto:hi@areeb.dev"
+    }
+  ],
+  "navigation": [
+    {
+      "group": "Getting Started",
+      "pages": [
+        "introduction",
+        "quickstart",
+        "architecture"
+      ]
+    },
+    {
+      "group": "Frontend",
+      "pages": [
+        "frontend/overview",
+        "frontend/setup",
+        "frontend/components",
+        "frontend/deployment"
+      ]
+    },
+    {
+      "group": "Backend",
+      "pages": [
+        "backend/overview",
+        "backend/setup",
+        "backend/architecture",
+        "backend/deployment"
+      ]
+    },
+    {
+      "group": "Core Concepts",
+      "pages": [
+        "concepts/mcp-servers",
+        "concepts/sandboxes",
+        "concepts/security"
+      ]
+    },
+    {
+      "group": "REST API",
+      "pages": [
+        "api/introduction",
+        "api/authentication",
+        "api/errors"
+      ]
+    },
+    {
+      "group": "Servers",
+      "pages": [
+        "api/servers/list",
+        "api/servers/get",
+        "api/servers/create",
+        "api/servers/update",
+        "api/servers/delete"
+      ]
+    },
+    {
+      "group": "Authentication",
+      "pages": [
+        "api/auth/register",
+        "api/auth/login",
+        "api/auth/oauth",
+        "api/auth/device-flow",
+        "api/auth/profile"
+      ]
+    },
+    {
+      "group": "Payment",
+      "pages": [
+        "api/payment/create-order",
+        "api/payment/verify",
+        "api/payment/status"
+      ]
+    },
+    {
+      "group": "CLI Commands",
+      "pages": [
+        "cli/introduction",
+        "cli/installation"
+      ]
+    },
+    {
+      "group": "Commands",
+      "pages": [
+        "cli/init",
+        "cli/auth",
+        "cli/push",
+        "cli/pull",
+        "cli/run",
+        "cli/search",
+        "cli/inspect",
+        "cli/test"
+      ]
+    }
+  ],
+  "footerSocials": {
+    "github": "https://github.com/areebahmeddd/superbox.ai",
+    "x": "https://x.com/areebahmeddd"
+  },
+  "api": {
+    "baseUrl": "https://api.superbox.ai/api/v1",
+    "auth": {
+      "method": "bearer"
+    }
+  }
+}

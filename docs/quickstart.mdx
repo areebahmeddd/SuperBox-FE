@@ -1,0 +1,313 @@
+---
+title: 'Quickstart'
+description: 'Get started with SuperBox in under 5 minutes'
+---
+
+## Welcome to SuperBox! 🚀
+
+This guide will help you get up and running with SuperBox quickly. You'll learn how to browse servers, authenticate, and deploy your first MCP server.
+
+<Steps>
+  <Step title="Create an Account">
+    Visit [SuperBox](https://superbox-fe.vercel.app) and sign up using one of our authentication providers:
+    
+    - Google
+    - GitHub
+    - Email/Password
+    
+    <Note>
+      Authentication is powered by Firebase, ensuring secure and reliable access to your account.
+    </Note>
+  </Step>
+
+  <Step title="Get Your API Token">
+    Once authenticated, navigate to your [Profile Settings](https://superbox-fe.vercel.app/settings) to generate your API token.
+    
+    ```bash
+    # Set your API token as an environment variable
+    export SUPERBOX_API_TOKEN="your_api_token_here"
+    ```
+    
+    <Warning>
+      Keep your API token secure! Never commit it to version control or share it publicly.
+    </Warning>
+  </Step>
+
+  <Step title="Make Your First API Call">
+    Let's list all available servers:
+    
+    <CodeGroup>
+      ```bash cURL
+      curl -X GET "https://api.superbox.dev/api/v1/servers" \
+        -H "Authorization: Bearer $SUPERBOX_API_TOKEN" \
+        -H "Content-Type: application/json"
+      ```
+      
+      ```javascript JavaScript
+      const response = await fetch('https://api.superbox.dev/api/v1/servers', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${process.env.SUPERBOX_API_TOKEN}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      const servers = await response.json();
+      console.log(servers);
+      ```
+      
+      ```python Python
+      import requests
+      import os
+      
+      url = "https://api.superbox.dev/api/v1/servers"
+      headers = {
+          "Authorization": f"Bearer {os.getenv('SUPERBOX_API_TOKEN')}",
+          "Content-Type": "application/json"
+      }
+      
+      response = requests.get(url, headers=headers)
+      servers = response.json()
+      print(servers)
+      ```
+    </CodeGroup>
+  </Step>
+
+  <Step title="Get Server Details">
+    Retrieve information about a specific server:
+    
+    <CodeGroup>
+      ```bash cURL
+      curl -X GET "https://api.superbox.dev/api/v1/servers/weather-mcp" \
+        -H "Authorization: Bearer $SUPERBOX_API_TOKEN"
+      ```
+      
+      ```javascript JavaScript
+      const serverName = 'weather-mcp';
+      const response = await fetch(
+        `https://api.superbox.dev/api/v1/servers/${serverName}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${process.env.SUPERBOX_API_TOKEN}`
+          }
+        }
+      );
+      
+      const server = await response.json();
+      console.log(server);
+      ```
+      
+      ```python Python
+      server_name = "weather-mcp"
+      url = f"https://api.superbox.dev/api/v1/servers/{server_name}"
+      
+      response = requests.get(url, headers=headers)
+      server = response.json()
+      print(server)
+      ```
+    </CodeGroup>
+  </Step>
+
+  <Step title="Create Your First Server">
+    Deploy a new MCP server to SuperBox:
+    
+    <CodeGroup>
+      ```bash cURL
+      curl -X POST "https://api.superbox.dev/api/v1/servers" \
+        -H "Authorization: Bearer $SUPERBOX_API_TOKEN" \
+        -H "Content-Type: application/json" \
+        -d '{
+          "name": "my-awesome-server",
+          "version": "1.0.0",
+          "description": "My first MCP server",
+          "author": "Your Name",
+          "lang": "python",
+          "license": "MIT",
+          "entrypoint": "main.py",
+          "repository": {
+            "type": "git",
+            "url": "https://github.com/yourusername/my-awesome-server"
+          },
+          "pricing": {
+            "currency": "USD",
+            "amount": 0
+          }
+        }'
+      ```
+      
+      ```javascript JavaScript
+      const serverData = {
+        name: "my-awesome-server",
+        version: "1.0.0",
+        description: "My first MCP server",
+        author: "Your Name",
+        lang: "python",
+        license: "MIT",
+        entrypoint: "main.py",
+        repository: {
+          type: "git",
+          url: "https://github.com/yourusername/my-awesome-server"
+        },
+        pricing: {
+          currency: "USD",
+          amount: 0
+        }
+      };
+      
+      const response = await fetch('https://api.superbox.dev/api/v1/servers', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${process.env.SUPERBOX_API_TOKEN}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(serverData)
+      });
+      
+      const result = await response.json();
+      console.log(result);
+      ```
+      
+      ```python Python
+      server_data = {
+          "name": "my-awesome-server",
+          "version": "1.0.0",
+          "description": "My first MCP server",
+          "author": "Your Name",
+          "lang": "python",
+          "license": "MIT",
+          "entrypoint": "main.py",
+          "repository": {
+              "type": "git",
+              "url": "https://github.com/yourusername/my-awesome-server"
+          },
+          "pricing": {
+              "currency": "USD",
+              "amount": 0
+          }
+      }
+      
+      response = requests.post(
+          "https://api.superbox.dev/api/v1/servers",
+          headers=headers,
+          json=server_data
+      )
+      
+      result = response.json()
+      print(result)
+      ```
+    </CodeGroup>
+    
+    <Tip>
+      Make sure your repository is public and contains a valid MCP server implementation!
+    </Tip>
+  </Step>
+</Steps>
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card
+    title="Explore the API"
+    icon="code"
+    href="/api/introduction"
+  >
+    Dive deeper into the SuperBox API with our comprehensive documentation
+  </Card>
+  <Card
+    title="Architecture Overview"
+    icon="diagram-project"
+    href="/architecture"
+  >
+    Learn how SuperBox works under the hood
+  </Card>
+  <Card
+    title="Authentication Guide"
+    icon="key"
+    href="/api/authentication"
+  >
+    Understand the authentication flow and best practices
+  </Card>
+  <Card
+    title="Error Handling"
+    icon="circle-exclamation"
+    href="/api/errors"
+  >
+    Learn how to handle errors gracefully in your applications
+  </Card>
+</CardGroup>
+
+## Need Help?
+
+<CardGroup cols={3}>
+  <Card
+    title="Discord Community"
+    icon="discord"
+    href="https://discord.gg/superbox"
+  >
+    Join our Discord for real-time support
+  </Card>
+  <Card
+    title="GitHub Issues"
+    icon="github"
+    href="https://github.com/areebahmeddd/SuperBox-FE/issues"
+  >
+    Report bugs or request features
+  </Card>
+  <Card
+    title="Email Support"
+    icon="envelope"
+    href="mailto:hi@areeb.dev"
+  >
+    Contact our team directly
+  </Card>
+</CardGroup>
+
+## Example Projects
+
+Check out these example projects to see SuperBox in action:
+
+<Accordion title="Python MCP Server">
+  ```python
+  # example_server.py
+  from mcp import MCPServer, Tool
+  
+  server = MCPServer(name="example-server")
+  
+  @server.tool()
+  def greet(name: str) -> str:
+      """Greet a user by name"""
+      return f"Hello, {name}! Welcome to SuperBox!"
+  
+  if __name__ == "__main__":
+      server.run()
+  ```
+</Accordion>
+
+<Accordion title="TypeScript MCP Server">
+  ```typescript
+  // server.ts
+  import { MCPServer, Tool } from '@modelcontextprotocol/sdk';
+  
+  const server = new MCPServer({
+    name: 'example-server',
+    version: '1.0.0'
+  });
+  
+  server.addTool({
+    name: 'greet',
+    description: 'Greet a user by name',
+    parameters: {
+      name: { type: 'string', required: true }
+    },
+    handler: async ({ name }) => {
+      return `Hello, ${name}! Welcome to SuperBox!`;
+    }
+  });
+  
+  server.start();
+  ```
+</Accordion>
+
+<Info>
+  Ready to build something amazing? Let's get started! 🎉
+</Info>

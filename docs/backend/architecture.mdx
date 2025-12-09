@@ -1,0 +1,712 @@
+---
+title: 'Backend Architecture'
+description: 'Deep dive into SuperBox backend architecture, design patterns, and data flow'
+icon: 'sitemap'
+---
+
+## System Overview
+
+SuperBox backend implements a microservices-inspired architecture with clear separation of concerns, enabling scalability, maintainability, and fault tolerance.
+
+<Frame>
+  <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-6 rounded-lg text-white">
+    <h3 className="text-2xl font-bold mb-2">Architecture Highlights</h3>
+    <ul className="list-disc list-inside space-y-1">
+      <li>RESTful API with Go Gin framework</li>
+      <li>PostgreSQL for persistent data storage</li>
+      <li>Redis for caching and session management</li>
+      <li>AWS Lambda for sandboxed MCP execution</li>
+      <li>S3 for server code storage</li>
+      <li>Multi-layer security scanning pipeline</li>
+    </ul>
+  </div>
+</Frame>
+
+## Architecture Layers
+
+### 1. Presentation Layer
+
+<Tabs>
+  <Tab title="HTTP Handlers">
+    Request handling with Gin framework:
+    
+    ```go
+    type ServerHandler struct {
+        service services.ServerService
+        logger  *logger.Logger
+    }
+    
+    func (h *ServerHandler) GetServer(c *gin.Context) {
+        serverID := c.Param("id")
+        
+        server, err := h.service.GetServerByID(serverID)
+        if err != nil {
+            c.JSON(http.StatusNotFound, gin.H{"error": "Server not found"})
+            return
+        }
+        
+        c.JSON(http.StatusOK, server)
+    }
+    
+    func (h *ServerHandler) ListServers(c *gin.Context) {
+        query := c.Query("q")
+        page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+        limit, _ := strconv.Atoi(c.DefaultQuery("limit", "20"))
+        
+        servers, total, err := h.service.SearchServers(query, page, limit)
+        if err != nil {
+            c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+            return
+        }
+        
+        c.JSON(http.StatusOK, gin.H{
+            "data":  servers,
+            "total": total,
+            "page":  page,
+            "limit": limit,
+        })
+    }
+    ```
+  </Tab>
+
+  <Tab title="Middleware">
+    Request processing pipeline:
+    
+    ```go
+    // Authentication middleware
+    func AuthMiddleware(jwtSecret string) gin.HandlerFunc {
+        return func(c *gin.Context) {
+            token := c.GetHeader("Authorization")
+            if token == "" {
+                c.AbortWithStatusJSON(401, gin.H{"error": "Unauthorized"})
+                return
+            }
+            
+            claims, err := auth.ValidateToken(token, jwtSecret)
+            if err != nil {
+                c.AbortWithStatusJSON(401, gin.H{"error": "Invalid token"})
+                return
+            }
+            
+            c.Set("user_id", claims.UserID)
+            c.Next()
+        }
+    }
+    
+    // Rate limiting middleware
+    func RateLimitMiddleware(redis *redis.Client) gin.HandlerFunc {
+        return func(c *gin.Context) {
+            key := fmt.Sprintf("rate_limit:%s", c.ClientIP())
+            
+            count, err := redis.Incr(c, key).Result()
+            if err == nil && count == 1 {
+                redis.Expire(c, key, time.Minute)
+            }
+            
+            if count > 100 {
+                c.AbortWithStatusJSON(429, gin.H{
+                    "error": "Rate limit exceeded",
+                })
+                return
+            }
+            
+            c.Next()
+        }
+    }
+    
+    // CORS middleware
+    func CORSMiddleware() gin.HandlerFunc {
+        return func(c *gin.Context) {
+            c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+            c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+            c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+            
+            if c.Request.Method == "OPTIONS" {
+                c.AbortWithStatus(204)
+                return
+            }
+            
+            c.Next()
+        }
+    }
+    ```
+  </Tab>
+
+  <Tab title="Request Validation">
+    Input validation and sanitization:
+    
+    ```go
+    type CreateServerRequest struct {
+        Name        string   `json:"name" binding:"required,min=3,max=50"`
+        Description string   `json:"description" binding:"required,max=500"`
+        Category    string   `json:"category" binding:"required,oneof=data api automation ml other"`
+        Tags        []string `json:"tags" binding:"required,min=1,max=5"`
+        Repository  string   `json:"repository" binding:"required,url"`
+        Version     string   `json:"version" binding:"required,semver"`
+    }
+    
+    func (h *ServerHandler) CreateServer(c *gin.Context) {
+        var req CreateServerRequest
+        if err := c.ShouldBindJSON(&req); err != nil {
+            c.JSON(400, gin.H{"error": err.Error()})
+            return
+        }
+        
+        // Sanitize inputs
+        req.Name = strings.TrimSpace(req.Name)
+        req.Description = strings.TrimSpace(req.Description)
+        
+        server, err := h.service.CreateServer(c, req)
+        if err != nil {
+            c.JSON(500, gin.H{"error": err.Error()})
+            return
+        }
+        
+        c.JSON(201, server)
+    }
+    ```
+  </Tab>
+</Tabs>
+
+### 2. Business Logic Layer
+
+<AccordionGroup>
+  <Accordion title="Service Pattern" icon="briefcase">
+    Business logic encapsulation:
+    
+    ```go
+    type ServerService interface {
+        CreateServer(ctx context.Context, req CreateServerRequest) (*models.MCPServer, error)
+        GetServerByID(ctx context.Context, id string) (*models.MCPServer, error)
+        SearchServers(ctx context.Context, query string, page, limit int) ([]models.MCPServer, int64, error)
+        UpdateServer(ctx context.Context, id string, updates map[string]interface{}) error
+        DeleteServer(ctx context.Context, id string) error
+        PublishServer(ctx context.Context, serverID string) error
+    }
+    
+    type serverService struct {
+        repo          repository.ServerRepository
+        s3Client      *s3.Client
+        lambdaClient  *lambda.Client
+        cache         *redis.Client
+        securitySvc   SecurityService
+    }
+    
+    func (s *serverService) CreateServer(ctx context.Context, req CreateServerRequest) (*models.MCPServer, error) {
+        // Validate repository access
+        if err := s.validateRepository(req.Repository); err != nil {
+            return nil, fmt.Errorf("invalid repository: %w", err)
+        }
+        
+        // Create server record
+        server := &models.MCPServer{
+            ID:          uuid.New().String(),
+            Name:        req.Name,
+            Description: req.Description,
+            Category:    req.Category,
+            Tags:        req.Tags,
+            Repository:  req.Repository,
+            Version:     req.Version,
+            Status:      "draft",
+            CreatedAt:   time.Now(),
+        }
+        
+        if err := s.repo.Create(ctx, server); err != nil {
+            return nil, err
+        }
+        
+        return server, nil
+    }
+    
+    func (s *serverService) PublishServer(ctx context.Context, serverID string) error {
+        // Get server
+        server, err := s.repo.GetByID(ctx, serverID)
+        if err != nil {
+            return err
+        }
+        
+        // Run security scan
+        scanResult, err := s.securitySvc.ScanServer(ctx, server.Repository)
+        if err != nil {
+            return fmt.Errorf("security scan failed: %w", err)
+        }
+        
+        if scanResult.HasCriticalIssues() {
+            return errors.New("server has critical security issues")
+        }
+        
+        // Upload to S3
+        key := fmt.Sprintf("servers/%s/%s.zip", serverID, server.Version)
+        if err := s.uploadToS3(ctx, server.Repository, key); err != nil {
+            return fmt.Errorf("upload failed: %w", err)
+        }
+        
+        // Update Lambda function
+        if err := s.deployToLambda(ctx, serverID, key); err != nil {
+            return fmt.Errorf("lambda deployment failed: %w", err)
+        }
+        
+        // Update status
+        server.Status = "published"
+        server.PublishedAt = time.Now()
+        
+        if err := s.repo.Update(ctx, server); err != nil {
+            return err
+        }
+        
+        // Invalidate cache
+        s.cache.Del(ctx, fmt.Sprintf("server:%s", serverID))
+        
+        return nil
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="Domain Models" icon="cube">
+    Core data structures:
+    
+    ```go
+    type MCPServer struct {
+        ID          string    `json:"id" gorm:"primaryKey"`
+        Name        string    `json:"name" gorm:"not null;index"`
+        Description string    `json:"description"`
+        Category    string    `json:"category" gorm:"index"`
+        Tags        []string  `json:"tags" gorm:"type:text[]"`
+        Repository  string    `json:"repository"`
+        Version     string    `json:"version"`
+        Status      string    `json:"status" gorm:"default:'draft'"`
+        Downloads   int64     `json:"downloads" gorm:"default:0"`
+        Rating      float64   `json:"rating" gorm:"default:0"`
+        AuthorID    string    `json:"author_id" gorm:"not null;index"`
+        Author      User      `json:"author" gorm:"foreignKey:AuthorID"`
+        Tools       []Tool    `json:"tools" gorm:"foreignKey:ServerID"`
+        CreatedAt   time.Time `json:"created_at"`
+        UpdatedAt   time.Time `json:"updated_at"`
+        PublishedAt time.Time `json:"published_at"`
+    }
+    
+    type Tool struct {
+        ID          string                 `json:"id" gorm:"primaryKey"`
+        ServerID    string                 `json:"server_id" gorm:"not null;index"`
+        Name        string                 `json:"name" gorm:"not null"`
+        Description string                 `json:"description"`
+        Parameters  map[string]interface{} `json:"parameters" gorm:"type:jsonb"`
+        Returns     map[string]interface{} `json:"returns" gorm:"type:jsonb"`
+        CreatedAt   time.Time              `json:"created_at"`
+    }
+    
+    type Execution struct {
+        ID         string                 `json:"id" gorm:"primaryKey"`
+        ServerID   string                 `json:"server_id" gorm:"not null;index"`
+        ToolName   string                 `json:"tool_name" gorm:"not null"`
+        Input      map[string]interface{} `json:"input" gorm:"type:jsonb"`
+        Output     map[string]interface{} `json:"output" gorm:"type:jsonb"`
+        Status     string                 `json:"status" gorm:"default:'pending'"`
+        Error      string                 `json:"error"`
+        Duration   int64                  `json:"duration_ms"`
+        ExecutedAt time.Time              `json:"executed_at"`
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="Repository Pattern" icon="database">
+    Data access abstraction:
+    
+    ```go
+    type ServerRepository interface {
+        Create(ctx context.Context, server *models.MCPServer) error
+        GetByID(ctx context.Context, id string) (*models.MCPServer, error)
+        Update(ctx context.Context, server *models.MCPServer) error
+        Delete(ctx context.Context, id string) error
+        Search(ctx context.Context, query string, page, limit int) ([]models.MCPServer, int64, error)
+        GetByAuthor(ctx context.Context, authorID string) ([]models.MCPServer, error)
+    }
+    
+    type serverRepository struct {
+        db *gorm.DB
+    }
+    
+    func (r *serverRepository) Create(ctx context.Context, server *models.MCPServer) error {
+        return r.db.WithContext(ctx).Create(server).Error
+    }
+    
+    func (r *serverRepository) GetByID(ctx context.Context, id string) (*models.MCPServer, error) {
+        var server models.MCPServer
+        err := r.db.WithContext(ctx).
+            Preload("Author").
+            Preload("Tools").
+            First(&server, "id = ?", id).Error
+        
+        if err != nil {
+            if errors.Is(err, gorm.ErrRecordNotFound) {
+                return nil, ErrServerNotFound
+            }
+            return nil, err
+        }
+        
+        return &server, nil
+    }
+    
+    func (r *serverRepository) Search(ctx context.Context, query string, page, limit int) ([]models.MCPServer, int64, error) {
+        var servers []models.MCPServer
+        var total int64
+        
+        offset := (page - 1) * limit
+        
+        db := r.db.WithContext(ctx).Model(&models.MCPServer{})
+        
+        if query != "" {
+            db = db.Where("name ILIKE ? OR description ILIKE ?", 
+                fmt.Sprintf("%%%s%%", query), 
+                fmt.Sprintf("%%%s%%", query))
+        }
+        
+        // Get total count
+        if err := db.Count(&total).Error; err != nil {
+            return nil, 0, err
+        }
+        
+        // Get paginated results
+        err := db.
+            Preload("Author").
+            Order("downloads DESC, rating DESC").
+            Offset(offset).
+            Limit(limit).
+            Find(&servers).Error
+        
+        return servers, total, err
+    }
+    ```
+  </Accordion>
+</AccordionGroup>
+
+### 3. Data Layer
+
+<Tabs>
+  <Tab title="PostgreSQL Schema">
+    Database schema design:
+    
+    ```sql
+    -- Users table
+    CREATE TABLE users (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        email VARCHAR(255) UNIQUE NOT NULL,
+        username VARCHAR(50) UNIQUE NOT NULL,
+        password_hash VARCHAR(255),
+        oauth_provider VARCHAR(50),
+        oauth_id VARCHAR(255),
+        avatar_url TEXT,
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW()
+    );
+    
+    CREATE INDEX idx_users_email ON users(email);
+    CREATE INDEX idx_users_username ON users(username);
+    
+    -- MCP Servers table
+    CREATE TABLE mcp_servers (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        name VARCHAR(100) NOT NULL,
+        description TEXT,
+        category VARCHAR(50) NOT NULL,
+        tags TEXT[],
+        repository TEXT NOT NULL,
+        version VARCHAR(20) NOT NULL,
+        status VARCHAR(20) DEFAULT 'draft',
+        downloads BIGINT DEFAULT 0,
+        rating DECIMAL(3,2) DEFAULT 0,
+        author_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW(),
+        published_at TIMESTAMP
+    );
+    
+    CREATE INDEX idx_servers_name ON mcp_servers(name);
+    CREATE INDEX idx_servers_category ON mcp_servers(category);
+    CREATE INDEX idx_servers_author ON mcp_servers(author_id);
+    CREATE INDEX idx_servers_status ON mcp_servers(status);
+    
+    -- Tools table
+    CREATE TABLE tools (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        server_id UUID NOT NULL REFERENCES mcp_servers(id) ON DELETE CASCADE,
+        name VARCHAR(100) NOT NULL,
+        description TEXT,
+        parameters JSONB,
+        returns JSONB,
+        created_at TIMESTAMP DEFAULT NOW()
+    );
+    
+    CREATE INDEX idx_tools_server ON tools(server_id);
+    
+    -- Executions table
+    CREATE TABLE executions (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        server_id UUID NOT NULL REFERENCES mcp_servers(id),
+        tool_name VARCHAR(100) NOT NULL,
+        input JSONB,
+        output JSONB,
+        status VARCHAR(20) DEFAULT 'pending',
+        error TEXT,
+        duration_ms BIGINT,
+        executed_at TIMESTAMP DEFAULT NOW()
+    );
+    
+    CREATE INDEX idx_executions_server ON executions(server_id);
+    CREATE INDEX idx_executions_status ON executions(status);
+    
+    -- Payments table
+    CREATE TABLE payments (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        user_id UUID NOT NULL REFERENCES users(id),
+        order_id VARCHAR(255) UNIQUE NOT NULL,
+        payment_id VARCHAR(255),
+        amount INTEGER NOT NULL,
+        currency VARCHAR(3) DEFAULT 'INR',
+        status VARCHAR(20) DEFAULT 'created',
+        created_at TIMESTAMP DEFAULT NOW(),
+        completed_at TIMESTAMP
+    );
+    
+    CREATE INDEX idx_payments_user ON payments(user_id);
+    CREATE INDEX idx_payments_order ON payments(order_id);
+    ```
+  </Tab>
+
+  <Tab title="Redis Caching">
+    Caching strategy:
+    
+    ```go
+    type CacheService struct {
+        redis  *redis.Client
+        prefix string
+        ttl    time.Duration
+    }
+    
+    func (c *CacheService) GetServer(ctx context.Context, serverID string) (*models.MCPServer, error) {
+        key := fmt.Sprintf("%s:server:%s", c.prefix, serverID)
+        
+        data, err := c.redis.Get(ctx, key).Bytes()
+        if err == redis.Nil {
+            return nil, ErrCacheMiss
+        }
+        if err != nil {
+            return nil, err
+        }
+        
+        var server models.MCPServer
+        if err := json.Unmarshal(data, &server); err != nil {
+            return nil, err
+        }
+        
+        return &server, nil
+    }
+    
+    func (c *CacheService) SetServer(ctx context.Context, server *models.MCPServer) error {
+        key := fmt.Sprintf("%s:server:%s", c.prefix, server.ID)
+        
+        data, err := json.Marshal(server)
+        if err != nil {
+            return err
+        }
+        
+        return c.redis.Set(ctx, key, data, c.ttl).Err()
+    }
+    
+    func (c *CacheService) InvalidateServer(ctx context.Context, serverID string) error {
+        key := fmt.Sprintf("%s:server:%s", c.prefix, serverID)
+        return c.redis.Del(ctx, key).Err()
+    }
+    
+    // Cache-aside pattern
+    func (s *serverService) GetServerByID(ctx context.Context, id string) (*models.MCPServer, error) {
+        // Try cache first
+        server, err := s.cache.GetServer(ctx, id)
+        if err == nil {
+            return server, nil
+        }
+        
+        // Cache miss - get from database
+        server, err = s.repo.GetByID(ctx, id)
+        if err != nil {
+            return nil, err
+        }
+        
+        // Populate cache
+        go s.cache.SetServer(context.Background(), server)
+        
+        return server, nil
+    }
+    ```
+  </Tab>
+
+  <Tab title="S3 Storage">
+    Server code storage:
+    
+    ```go
+    type StorageService struct {
+        s3Client *s3.Client
+        bucket   string
+    }
+    
+    func (s *StorageService) UploadServer(ctx context.Context, serverID, version string, data io.Reader) error {
+        key := fmt.Sprintf("servers/%s/%s.zip", serverID, version)
+        
+        _, err := s.s3Client.PutObject(ctx, &s3.PutObjectInput{
+            Bucket:      aws.String(s.bucket),
+            Key:         aws.String(key),
+            Body:        data,
+            ContentType: aws.String("application/zip"),
+            Metadata: map[string]string{
+                "server-id": serverID,
+                "version":   version,
+            },
+        })
+        
+        return err
+    }
+    
+    func (s *StorageService) DownloadServer(ctx context.Context, serverID, version string) (io.ReadCloser, error) {
+        key := fmt.Sprintf("servers/%s/%s.zip", serverID, version)
+        
+        result, err := s.s3Client.GetObject(ctx, &s3.GetObjectInput{
+            Bucket: aws.String(s.bucket),
+            Key:    aws.String(key),
+        })
+        
+        if err != nil {
+            return nil, err
+        }
+        
+        return result.Body, nil
+    }
+    
+    func (s *StorageService) GeneratePresignedURL(ctx context.Context, serverID, version string, duration time.Duration) (string, error) {
+        key := fmt.Sprintf("servers/%s/%s.zip", serverID, version)
+        
+        presignClient := s3.NewPresignClient(s.s3Client)
+        
+        request, err := presignClient.PresignGetObject(ctx, &s3.GetObjectInput{
+            Bucket: aws.String(s.bucket),
+            Key:    aws.String(key),
+        }, func(opts *s3.PresignOptions) {
+            opts.Expires = duration
+        })
+        
+        if err != nil {
+            return "", err
+        }
+        
+        return request.URL, nil
+    }
+    ```
+  </Tab>
+</Tabs>
+
+### 4. Execution Layer
+
+<Accordion title="AWS Lambda Integration">
+Lambda-based MCP server execution:
+
+```go
+type ExecutionService struct {
+    lambdaClient *lambda.Client
+    s3Client     *s3.Client
+    functionName string
+}
+
+type ExecutionRequest struct {
+    ServerID   string                 `json:"server_id"`
+    ToolName   string                 `json:"tool_name"`
+    Parameters map[string]interface{} `json:"parameters"`
+    Timeout    int                    `json:"timeout"`
+}
+
+type ExecutionResponse struct {
+    Result   interface{} `json:"result"`
+    Duration int64       `json:"duration_ms"`
+    Logs     []string    `json:"logs"`
+    Error    string      `json:"error,omitempty"`
+}
+
+func (s *ExecutionService) ExecuteTool(ctx context.Context, req ExecutionRequest) (*ExecutionResponse, error) {
+    // Prepare payload
+    payload, err := json.Marshal(req)
+    if err != nil {
+        return nil, err
+    }
+    
+    // Invoke Lambda
+    result, err := s.lambdaClient.Invoke(ctx, &lambda.InvokeInput{
+        FunctionName: aws.String(s.functionName),
+        Payload:      payload,
+        LogType:      types.LogTypeTail,
+    })
+    
+    if err != nil {
+        return nil, fmt.Errorf("lambda invocation failed: %w", err)
+    }
+    
+    // Check for function errors
+    if result.FunctionError != nil {
+        return nil, fmt.Errorf("function error: %s", *result.FunctionError)
+    }
+    
+    // Parse response
+    var response ExecutionResponse
+    if err := json.Unmarshal(result.Payload, &response); err != nil {
+        return nil, err
+    }
+    
+    // Decode logs
+    if result.LogResult != nil {
+        logs, _ := base64.StdEncoding.DecodeString(*result.LogResult)
+        response.Logs = strings.Split(string(logs), "\n")
+    }
+    
+    return &response, nil
+}
+```
+</Accordion>
+
+## Security Architecture
+
+<CardGroup cols={2}>
+  <Card title="Authentication" icon="key">
+    JWT + OAuth 2.0 with device flow
+  </Card>
+  <Card title="Authorization" icon="shield">
+    Role-based access control (RBAC)
+  </Card>
+  <Card title="Rate Limiting" icon="gauge">
+    Redis-based per-user/IP limits
+  </Card>
+  <Card title="Input Validation" icon="check">
+    Strict validation and sanitization
+  </Card>
+</CardGroup>
+
+## Performance Optimizations
+
+<Check>**Connection Pooling** - Database connection pool (min: 10, max: 100)</Check>
+<Check>**Query Optimization** - Indexed columns, selective loading</Check>
+<Check>**Caching Strategy** - Redis cache with TTL-based invalidation</Check>
+<Check>**Async Processing** - Background jobs for heavy operations</Check>
+<Check>**CDN Integration** - CloudFront for static assets</Check>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Setup Guide" icon="wrench" href="/backend/setup">
+    Set up local environment
+  </Card>
+  <Card title="Deployment" icon="rocket" href="/backend/deployment">
+    Deploy to AWS
+  </Card>
+  <Card title="API Reference" icon="book" href="/api/introduction">
+    Explore endpoints
+  </Card>
+  <Card title="Security" icon="shield" href="/concepts/security">
+    Security pipeline details
+  </Card>
+</CardGroup>

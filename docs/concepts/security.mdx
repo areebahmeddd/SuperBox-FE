@@ -1,0 +1,733 @@
+---
+title: 'Security Pipeline'
+description: '5-step automated security scanning for MCP servers'
+icon: 'shield-halved'
+---
+
+## Overview
+
+SuperBox implements a comprehensive **5-step security pipeline** that automatically scans every MCP server before publication to ensure security, quality, and reliability.
+
+<Frame>
+  <div className="bg-gradient-to-r from-red-500 via-orange-500 to-green-500 p-6 rounded-lg text-white">
+    <h3 className="text-2xl font-bold mb-4">Zero-Trust Security Model</h3>
+    <p>Every MCP server undergoes rigorous automated security scanning before deployment.</p>
+  </div>
+</Frame>
+
+<CardGroup cols={3}>
+  <Card title="SonarQube" icon="magnifying-glass-chart" color="#4E9BCD">
+    Code quality & security analysis
+  </Card>
+  <Card title="Bandit" icon="python" color="#FFD43B">
+    Python security vulnerability detection
+  </Card>
+  <Card title="GitGuardian" icon="key" color="#FF6B6B">
+    Secrets and credentials scanning
+  </Card>
+  <Card title="Semgrep" icon="shield-virus" color="#7856FF">
+    Static analysis for vulnerabilities
+  </Card>
+  <Card title="OWASP" icon="triangle-exclamation" color="#FF0000">
+    Dependency vulnerability checking
+  </Card>
+  <Card title="Manual Review" icon="user-check" color="#10B981">
+    Human verification for edge cases
+  </Card>
+</CardGroup>
+
+## Security Pipeline Architecture
+
+```mermaid
+graph TD
+    A[Developer pushes code] --> B[superbox push]
+    B --> C{Step 1: SonarQube}
+    C -->|Pass| D{Step 2: Bandit}
+    C -->|Fail| Z[Reject with report]
+    
+    D -->|Pass| E{Step 3: GitGuardian}
+    D -->|Fail| Z
+    
+    E -->|Pass| F{Step 4: Semgrep}
+    E -->|Critical| Z
+    E -->|Warning| F
+    
+    F -->|Pass| G{Step 5: OWASP}
+    F -->|Fail| Z
+    
+    G -->|Pass| H[Upload to S3]
+    G -->|Fail| Z
+    
+    H --> I[Deploy to Lambda]
+    I --> J[Publish to Marketplace]
+    
+    Z --> K[Developer fixes issues]
+    K --> B
+```
+
+## Pipeline Steps
+
+### Step 1: SonarQube Analysis
+
+<Tabs>
+  <Tab title="Overview">
+    **SonarQube** performs comprehensive code quality and security analysis:
+    
+    <AccordionGroup>
+      <Accordion title="Code Smells" icon="nose">
+        Identifies maintainability issues:
+        - Complex functions
+        - Duplicated code
+        - Long parameter lists
+        - Cognitive complexity
+      </Accordion>
+
+      <Accordion title="Bugs" icon="bug">
+        Detects potential runtime errors:
+        - Null pointer dereferences
+        - Resource leaks
+        - Logic errors
+        - Exception handling issues
+      </Accordion>
+
+      <Accordion title="Security Hotspots" icon="fire">
+        Highlights security-sensitive code:
+        - SQL injection risks
+        - XSS vulnerabilities
+        - Insecure crypto usage
+        - Authentication bypasses
+      </Accordion>
+
+      <Accordion title="Code Coverage" icon="chart-line">
+        Measures test coverage:
+        - Line coverage
+        - Branch coverage
+        - Function coverage
+        - Target: >80% coverage
+      </Accordion>
+    </AccordionGroup>
+  </Tab>
+
+  <Tab title="Configuration">
+    ```yaml sonar-project.properties
+    sonar.projectKey=superbox-mcp-server
+    sonar.projectName=Weather MCP Server
+    sonar.projectVersion=1.0.0
+    
+    # Source code location
+    sonar.sources=src
+    sonar.tests=tests
+    
+    # Language
+    sonar.language=py
+    sonar.python.version=3.11
+    
+    # Coverage
+    sonar.python.coverage.reportPaths=coverage.xml
+    
+    # Quality gates
+    sonar.qualitygate.wait=true
+    sonar.qualitygate.timeout=300
+    
+    # Rules
+    sonar.python.pylint.reportPath=pylint-report.txt
+    sonar.python.xunit.reportPath=xunit-report.xml
+    ```
+  </Tab>
+
+  <Tab title="Execution">
+    ```bash
+    # Run SonarQube scanner
+    sonar-scanner \
+      -Dsonar.host.url=https://sonarqube.superbox.com \
+      -Dsonar.login=$SONAR_TOKEN \
+      -Dsonar.projectKey=$PROJECT_KEY
+    
+    # Wait for quality gate
+    quality_gate=$(curl -s -u $SONAR_TOKEN: \
+      "https://sonarqube.superbox.com/api/qualitygates/project_status?projectKey=$PROJECT_KEY" \
+      | jq -r '.projectStatus.status')
+    
+    if [ "$quality_gate" != "OK" ]; then
+      echo "Quality gate failed"
+      exit 1
+    fi
+    ```
+  </Tab>
+
+  <Tab title="Results">
+    Example SonarQube report:
+    
+    ```json
+    {
+      "projectStatus": {
+        "status": "OK",
+        "conditions": [
+          {
+            "status": "OK",
+            "metricKey": "coverage",
+            "comparator": "LT",
+            "errorThreshold": "80",
+            "actualValue": "85.3"
+          },
+          {
+            "status": "OK",
+            "metricKey": "security_rating",
+            "actualValue": "1.0"
+          },
+          {
+            "status": "OK",
+            "metricKey": "reliability_rating",
+            "actualValue": "1.0"
+          }
+        ],
+        "periods": [],
+        "ignoredConditions": false
+      }
+    }
+    ```
+    
+    <Check>**Security Rating: A** - No security vulnerabilities</Check>
+    <Check>**Reliability Rating: A** - No bugs detected</Check>
+    <Check>**Coverage: 85.3%** - Exceeds 80% threshold</Check>
+  </Tab>
+</Tabs>
+
+### Step 2: Bandit Security Scanner
+
+<Tabs>
+  <Tab title="Overview">
+    **Bandit** scans Python code for common security issues:
+    
+    <CardGroup cols={2}>
+      <Card title="B201-B506" icon="shield">
+        50+ security checks for Python
+      </Card>
+      <Card title="Severity Levels" icon="exclamation">
+        Low, Medium, High severity
+      </Card>
+      <Card title="Confidence Levels" icon="chart-bar">
+        Low, Medium, High confidence
+      </Card>
+      <Card title="Custom Rules" icon="code">
+        SuperBox-specific checks
+      </Card>
+    </CardGroup>
+  </Tab>
+
+  <Tab title="Common Issues">
+    <AccordionGroup>
+      <Accordion title="B108: Hardcoded Temporary File" icon="file">
+        ```python
+        # ❌ Vulnerable
+        with open('/tmp/secrets.txt', 'w') as f:
+            f.write(api_key)
+        
+        # ✅ Secure
+        import tempfile
+        with tempfile.NamedTemporaryFile(delete=False) as f:
+            f.write(api_key.encode())
+        ```
+      </Accordion>
+
+      <Accordion title="B201: Flask Debug Mode" icon="bug">
+        ```python
+        # ❌ Vulnerable
+        app.run(debug=True)
+        
+        # ✅ Secure
+        app.run(debug=False)
+        ```
+      </Accordion>
+
+      <Accordion title="B506: YAML Unsafe Load" icon="file-code">
+        ```python
+        # ❌ Vulnerable
+        import yaml
+        data = yaml.load(file)
+        
+        # ✅ Secure
+        data = yaml.safe_load(file)
+        ```
+      </Accordion>
+
+      <Accordion title="B608: SQL Injection" icon="database">
+        ```python
+        # ❌ Vulnerable
+        query = f"SELECT * FROM users WHERE id = {user_id}"
+        
+        # ✅ Secure
+        query = "SELECT * FROM users WHERE id = %s"
+        cursor.execute(query, (user_id,))
+        ```
+      </Accordion>
+    </AccordionGroup>
+  </Tab>
+
+  <Tab title="Configuration">
+    ```yaml .bandit
+    # Bandit configuration
+    exclude_dirs:
+      - /tests/
+      - /venv/
+      - /.venv/
+    
+    # Skip specific tests
+    skips:
+      - B101  # assert_used (common in tests)
+    
+    # Severity thresholds
+    severity:
+      - HIGH
+      - MEDIUM
+    
+    confidence:
+      - HIGH
+      - MEDIUM
+    
+    # Custom plugins
+    plugins:
+      - superbox_checks
+    ```
+  </Tab>
+
+  <Tab title="Execution">
+    ```bash
+    # Run Bandit scanner
+    bandit -r src/ -f json -o bandit-report.json
+    
+    # Parse results
+    python3 << EOF
+    import json
+    
+    with open('bandit-report.json') as f:
+        report = json.load(f)
+    
+    # Check for high severity issues
+    high_severity = [
+        issue for issue in report['results']
+        if issue['issue_severity'] == 'HIGH'
+    ]
+    
+    if high_severity:
+        print(f"Found {len(high_severity)} high severity issues")
+        for issue in high_severity:
+            print(f"  {issue['test_id']}: {issue['issue_text']}")
+        exit(1)
+    
+    print("✓ No high severity issues found")
+    EOF
+    ```
+  </Tab>
+</Tabs>
+
+### Step 3: GitGuardian Secrets Detection
+
+<Tabs>
+  <Tab title="Overview">
+    **GitGuardian** scans for exposed secrets and credentials:
+    
+    <CardGroup cols={2}>
+      <Card title="350+ Detectors" icon="key">
+        API keys, tokens, passwords
+      </Card>
+      <Card title="High Accuracy" icon="bullseye">
+        Low false positive rate
+      </Card>
+      <Card title="Real-time Scanning" icon="bolt">
+        Scans commits in real-time
+      </Card>
+      <Card title="Remediation" icon="wrench">
+        Automatic secret rotation
+      </Card>
+    </CardGroup>
+  </Tab>
+
+  <Tab title="Detected Secrets">
+    Common secrets detected:
+    
+    - AWS Access Keys (AKIA...)
+    - GitHub Tokens (ghp_...)
+    - OpenAI API Keys (sk-...)
+    - Database URLs (postgres://user:pass@...)
+    - Private Keys (-----BEGIN RSA PRIVATE KEY-----)
+    - JWT Tokens
+    - Stripe API Keys (sk_live_...)
+    - Google API Keys
+    - Slack Webhooks
+    - And 340+ more...
+  </Tab>
+
+  <Tab title="Configuration">
+    ```yaml .gitguardian.yaml
+    version: 2
+    
+    # Paths to scan
+    paths-ignore:
+      - tests/fixtures/*.key
+      - docs/examples/*.txt
+    
+    # Custom detectors
+    detectors:
+      - name: SuperBox API Key
+        regex: 'sb_[a-zA-Z0-9]{32}'
+        description: SuperBox API key
+    
+    # Severity thresholds
+    exit-zero: false
+    minimum-occurrences: 1
+    
+    # Outputs
+    output:
+      - json
+      - sarif
+    ```
+  </Tab>
+
+  <Tab title="Results">
+    Example GitGuardian output:
+    
+    ```json
+    {
+      "secrets_found": [
+        {
+          "type": "AWS Access Key",
+          "file": "config.py",
+          "line": 23,
+          "match": "AKIAIOSFODNN7EXAMPLE",
+          "validity": "valid",
+          "severity": "critical"
+        }
+      ],
+      "total_secrets": 1,
+      "total_occurrences": 1,
+      "scan_id": "abc123"
+    }
+    ```
+    
+    <Warning>**Critical:** AWS Access Key found in source code</Warning>
+  </Tab>
+</Tabs>
+
+### Step 4: Semgrep Static Analysis
+
+<Tabs>
+  <Tab title="Overview">
+    **Semgrep** performs lightweight static analysis to find bugs and vulnerabilities:
+    
+    - Pattern matching for security issues
+    - Language-agnostic rules
+    - Custom rule creation
+    - Integration with CI/CD
+  </Tab>
+
+  <Tab title="Security Rules">
+    ```yaml semgrep-rules.yaml
+    rules:
+      - id: dangerous-eval
+        pattern: eval($X)
+        message: Using eval() is dangerous
+        severity: ERROR
+        languages: [python]
+      
+      - id: insecure-randomness
+        pattern: random.random()
+        message: Use secrets module for security
+        severity: WARNING
+        languages: [python]
+      
+      - id: command-injection
+        patterns:
+          - pattern: subprocess.call($CMD, shell=True)
+          - pattern-not: subprocess.call("...", shell=True)
+        message: Command injection risk
+        severity: ERROR
+        languages: [python]
+      
+      - id: path-traversal
+        pattern: open(os.path.join(..., $USER_INPUT))
+        message: Path traversal vulnerability
+        severity: ERROR
+        languages: [python]
+    ```
+  </Tab>
+
+  <Tab title="Execution">
+    ```bash
+    # Run Semgrep
+    semgrep --config=auto \
+            --config=semgrep-rules.yaml \
+            --json \
+            --output=semgrep-report.json \
+            src/
+    
+    # Check results
+    if [ $(jq '.errors | length' semgrep-report.json) -gt 0 ]; then
+      echo "Semgrep found security issues"
+      jq '.errors' semgrep-report.json
+      exit 1
+    fi
+    ```
+  </Tab>
+</Tabs>
+
+### Step 5: OWASP Dependency Check
+
+<Tabs>
+  <Tab title="Overview">
+    **OWASP Dependency-Check** identifies known vulnerabilities in dependencies:
+    
+    - Scans `requirements.txt` / `package.json`
+    - Checks against NVD (National Vulnerability Database)
+    - CVE identification
+    - CVSS severity scoring
+  </Tab>
+
+  <Tab title="Execution">
+    ```bash
+    # Download dependency-check
+    wget https://github.com/jeremylong/DependencyCheck/releases/download/v8.0.0/dependency-check-8.0.0-release.zip
+    unzip dependency-check-8.0.0-release.zip
+    
+    # Run scan
+    ./dependency-check/bin/dependency-check.sh \
+      --project "Weather MCP" \
+      --scan requirements.txt \
+      --format JSON \
+      --out dependency-check-report.json
+    
+    # Check for high/critical vulnerabilities
+    python3 << EOF
+    import json
+    
+    with open('dependency-check-report.json') as f:
+        report = json.load(f)
+    
+    critical = sum(1 for dep in report.get('dependencies', [])
+                   for vuln in dep.get('vulnerabilities', [])
+                   if vuln.get('severity') in ['CRITICAL', 'HIGH'])
+    
+    if critical > 0:
+        print(f"Found {critical} critical/high vulnerabilities")
+        exit(1)
+    
+    print("✓ No critical vulnerabilities")
+    EOF
+    ```
+  </Tab>
+
+  <Tab title="Example Output">
+    ```json
+    {
+      "dependencies": [
+        {
+          "fileName": "requests-2.25.1-py2.py3-none-any.whl",
+          "vulnerabilities": [
+            {
+              "name": "CVE-2023-32681",
+              "cvssv3": {
+                "baseScore": 6.1,
+                "severity": "MEDIUM"
+              },
+              "description": "Requests Proxy-Authorization header leak",
+              "references": [
+                "https://nvd.nist.gov/vuln/detail/CVE-2023-32681"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+    ```
+    
+    <Warning>Update `requests` to version 2.31.0 or later</Warning>
+  </Tab>
+</Tabs>
+
+## Security Scoring
+
+Each scan contributes to an overall security score:
+
+<Tabs>
+  <Tab title="Score Calculation">
+    ```python
+    def calculate_security_score(scan_results):
+        score = 100
+        
+        # SonarQube penalties
+        score -= scan_results['sonarqube']['bugs'] * 5
+        score -= scan_results['sonarqube']['vulnerabilities'] * 10
+        score -= scan_results['sonarqube']['code_smells'] * 0.5
+        
+        # Bandit penalties
+        score -= scan_results['bandit']['high'] * 15
+        score -= scan_results['bandit']['medium'] * 5
+        
+        # GitGuardian penalties
+        score -= scan_results['gitguardian']['secrets'] * 50
+        
+        # Semgrep penalties
+        score -= scan_results['semgrep']['errors'] * 10
+        score -= scan_results['semgrep']['warnings'] * 2
+        
+        # OWASP penalties
+        score -= scan_results['owasp']['critical'] * 20
+        score -= scan_results['owasp']['high'] * 10
+        score -= scan_results['owasp']['medium'] * 3
+        
+        return max(0, min(100, score))
+    ```
+  </Tab>
+
+  <Tab title="Score Grades">
+    | Score | Grade | Status |
+    |-------|-------|--------|
+    | 95-100 | A+ | ✅ Excellent - Auto-approved |
+    | 85-94 | A | ✅ Good - Auto-approved |
+    | 75-84 | B | ⚠️ Fair - Manual review |
+    | 65-74 | C | ⚠️ Needs improvement |
+    | 0-64 | F | ❌ Rejected - Fix issues |
+  </Tab>
+
+  <Tab title="Example Report">
+    ```json
+    {
+      "server_id": "weather-mcp-123",
+      "scan_timestamp": "2024-01-15T10:30:00Z",
+      "overall_score": 92,
+      "grade": "A",
+      "status": "approved",
+      "scans": {
+        "sonarqube": {
+          "status": "passed",
+          "bugs": 0,
+          "vulnerabilities": 0,
+          "code_smells": 3,
+          "coverage": 87.5
+        },
+        "bandit": {
+          "status": "passed",
+          "high": 0,
+          "medium": 1,
+          "low": 2
+        },
+        "gitguardian": {
+          "status": "passed",
+          "secrets": 0
+        },
+        "semgrep": {
+          "status": "passed",
+          "errors": 0,
+          "warnings": 2
+        },
+        "owasp": {
+          "status": "passed",
+          "critical": 0,
+          "high": 0,
+          "medium": 1
+        }
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## CI/CD Integration
+
+### GitHub Actions Workflow
+
+```yaml .github/workflows/security-scan.yml
+name: Security Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  security-scan:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install bandit pytest pytest-cov
+      
+      - name: Run tests with coverage
+        run: |
+          pytest --cov=src --cov-report=xml
+      
+      - name: SonarQube Scan
+        uses: sonarsource/sonarqube-scan-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      
+      - name: Bandit Security Scan
+        run: |
+          bandit -r src/ -f json -o bandit-report.json
+          python scripts/check_bandit.py
+      
+      - name: GitGuardian Scan
+        uses: GitGuardian/ggshield-action@master
+        env:
+          GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
+      
+      - name: Semgrep Scan
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: auto
+      
+      - name: OWASP Dependency Check
+        uses: dependency-check/Dependency-Check_Action@main
+        with:
+          project: 'MCP Server'
+          path: '.'
+          format: 'JSON'
+      
+      - name: Upload Security Reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-reports
+          path: |
+            bandit-report.json
+            semgrep-report.json
+            dependency-check-report.json
+```
+
+## Best Practices
+
+<Check>**Never hardcode secrets** - Use environment variables</Check>
+<Check>**Keep dependencies updated** - Regular security patches</Check>
+<Check>**Use parameterized queries** - Prevent SQL injection</Check>
+<Check>**Validate all inputs** - Sanitize user data</Check>
+<Check>**Enable security headers** - XSS, CSRF protection</Check>
+<Check>**Implement rate limiting** - Prevent abuse</Check>
+<Check>**Log security events** - Audit trail</Check>
+<Check>**Regular security audits** - Continuous improvement</Check>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="MCP Servers" icon="server" href="/concepts/mcp-servers">
+    Learn about MCP protocol
+  </Card>
+  <Card title="Sandboxes" icon="box" href="/concepts/sandboxes">
+    Lambda execution environment
+  </Card>
+  <Card title="CLI Push Command" icon="terminal" href="/cli/push">
+    Publish with security scanning
+  </Card>
+  <Card title="API Documentation" icon="book" href="/api/introduction">
+    Explore API endpoints
+  </Card>
+</CardGroup>

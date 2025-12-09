@@ -1,0 +1,398 @@
+---
+title: 'CLI Introduction'
+description: 'SuperBox CLI - Powerful command-line interface for MCP server management'
+icon: 'terminal'
+---
+
+## Overview
+
+The **SuperBox CLI** is a Python-based command-line tool that enables developers to create, test, and publish MCP servers directly from their terminal.
+
+<CardGroup cols={2}>
+  <Card title="Interactive UI" icon="wand-magic-sparkles">
+    Rich terminal interface with colors and progress bars
+  </Card>
+  <Card title="Device Auth Flow" icon="mobile">
+    Secure OAuth device authorization
+  </Card>
+  <Card title="Auto Security Scan" icon="shield">
+    Built-in 5-step security pipeline
+  </Card>
+  <Card title="Local Testing" icon="flask">
+    Test servers before publishing
+  </Card>
+</CardGroup>
+
+## Quick Start
+
+<Steps>
+  <Step title="Install CLI">
+    ```bash
+    pip install superbox-cli
+    ```
+  </Step>
+
+  <Step title="Authenticate">
+    ```bash
+    superbox auth
+    ```
+  </Step>
+
+  <Step title="Initialize Project">
+    ```bash
+    superbox init my-mcp-server
+    ```
+  </Step>
+
+  <Step title="Push to SuperBox">
+    ```bash
+    cd my-mcp-server
+    superbox push
+    ```
+  </Step>
+</Steps>
+
+## Available Commands
+
+<AccordionGroup>
+  <Accordion title="superbox init" icon="plus">
+    Initialize a new MCP server project
+    
+    ```bash
+    superbox init [NAME] [OPTIONS]
+    ```
+    
+    Creates project structure with templates
+  </Accordion>
+
+  <Accordion title="superbox auth" icon="key">
+    Authenticate with SuperBox
+    
+    ```bash
+    superbox auth [OPTIONS]
+    ```
+    
+    Device flow or token authentication
+  </Accordion>
+
+  <Accordion title="superbox push" icon="upload">
+    Publish server to SuperBox
+    
+    ```bash
+    superbox push [OPTIONS]
+    ```
+    
+    Runs security scan and uploads
+  </Accordion>
+
+  <Accordion title="superbox pull" icon="download">
+    Download server configuration
+    
+    ```bash
+    superbox pull [SERVER_ID] [OPTIONS]
+    ```
+    
+    Get client configuration for MCP server
+  </Accordion>
+
+  <Accordion title="superbox run" icon="play">
+    Test MCP server locally
+    
+    ```bash
+    superbox run [OPTIONS]
+    ```
+    
+    Interactive testing environment
+  </Accordion>
+
+  <Accordion title="superbox search" icon="magnifying-glass">
+    Search for MCP servers
+    
+    ```bash
+    superbox search [QUERY] [OPTIONS]
+    ```
+    
+    Find servers in marketplace
+  </Accordion>
+
+  <Accordion title="superbox inspect" icon="eye">
+    Inspect server details
+    
+    ```bash
+    superbox inspect [SERVER_ID] [OPTIONS]
+    ```
+    
+    View server information and tools
+  </Accordion>
+
+  <Accordion title="superbox test" icon="vial">
+    Run server tests
+    
+    ```bash
+    superbox test [OPTIONS]
+    ```
+    
+    Execute test suite
+  </Accordion>
+</AccordionGroup>
+
+## Features
+
+### Rich Terminal UI
+
+SuperBox CLI uses [Rich](https://rich.readthedocs.io/) for beautiful terminal output:
+
+<CodeGroup>
+```python Progress Bars
+from rich.progress import Progress
+
+with Progress() as progress:
+    task = progress.add_task("Uploading...", total=100)
+    for i in range(100):
+        progress.update(task, advance=1)
+```
+
+```python Tables
+from rich.table import Table
+
+table = Table(title="MCP Servers")
+table.add_column("Name", style="cyan")
+table.add_column("Downloads", justify="right", style="magenta")
+table.add_row("Weather MCP", "1,234")
+console.print(table)
+```
+
+```python Syntax Highlighting
+from rich.syntax import Syntax
+
+code = Syntax(python_code, "python", theme="monokai")
+console.print(code)
+```
+</CodeGroup>
+
+### Configuration Management
+
+CLI configuration stored in `~/.superbox/config.yaml`:
+
+```yaml
+api:
+  base_url: https://api.superbox.com
+  version: v1
+  timeout: 30
+
+auth:
+  method: device_flow
+  token_file: ~/.superbox/token.json
+
+security:
+  enabled: true
+  tools:
+    - sonarqube
+    - bandit
+    - gitguardian
+    - semgrep
+    - owasp
+
+output:
+  format: rich
+  color: true
+  verbose: false
+
+defaults:
+  category: other
+  visibility: public
+```
+
+## Global Options
+
+All commands support these global options:
+
+<ParamField path="--verbose" type="boolean" default={false}>
+  Enable verbose output with debug information
+  
+  ```bash
+  superbox push --verbose
+  ```
+</ParamField>
+
+<ParamField path="--quiet" type="boolean" default={false}>
+  Suppress all output except errors
+  
+  ```bash
+  superbox push --quiet
+  ```
+</ParamField>
+
+<ParamField path="--config" type="string" default="~/.superbox/config.yaml">
+  Path to configuration file
+  
+  ```bash
+  superbox push --config ./custom-config.yaml
+  ```
+</ParamField>
+
+<ParamField path="--api-url" type="string" default="https://api.superbox.com">
+  Override API base URL
+  
+  ```bash
+  superbox push --api-url http://localhost:8080
+  ```
+</ParamField>
+
+<ParamField path="--no-color" type="boolean" default={false}>
+  Disable colored output
+  
+  ```bash
+  superbox search "weather" --no-color
+  ```
+</ParamField>
+
+<ParamField path="--help" type="boolean">
+  Show help message
+  
+  ```bash
+  superbox --help
+  superbox push --help
+  ```
+</ParamField>
+
+## Environment Variables
+
+Configure CLI behavior with environment variables:
+
+```bash
+# API Configuration
+export SUPERBOX_API_URL=https://api.superbox.com
+export SUPERBOX_API_TOKEN=your_api_token
+
+# Security Tools
+export SONAR_TOKEN=your_sonarqube_token
+export GITGUARDIAN_API_KEY=your_gitguardian_key
+
+# Output Configuration
+export SUPERBOX_VERBOSE=1
+export SUPERBOX_NO_COLOR=1
+
+# Development
+export SUPERBOX_DEBUG=1
+```
+
+## Examples
+
+<CodeGroup>
+```bash Basic Workflow
+# Initialize new server
+superbox init weather-mcp --template python
+
+# Navigate to project
+cd weather-mcp
+
+# Test locally
+superbox run
+
+# Authenticate
+superbox auth
+
+# Push to SuperBox
+superbox push
+```
+
+```bash Search and Inspect
+# Search for servers
+superbox search "weather" --category data
+
+# Inspect server
+superbox inspect weather-mcp-123
+
+# Pull configuration
+superbox pull weather-mcp-123 --output client_config.json
+```
+
+```bash Advanced Options
+# Push with custom settings
+superbox push \
+  --category data \
+  --tags weather,api \
+  --visibility public \
+  --skip-tests
+
+# Run with specific port
+superbox run --port 8080 --debug
+
+# Test with coverage
+superbox test --coverage --verbose
+```
+</CodeGroup>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Command not found" icon="circle-xmark">
+    Ensure SuperBox CLI is installed and in PATH:
+    
+    ```bash
+    # Install
+    pip install --upgrade superbox-cli
+    
+    # Verify installation
+    which superbox
+    superbox --version
+    
+    # Add to PATH if needed
+    export PATH="$HOME/.local/bin:$PATH"
+    ```
+  </Accordion>
+
+  <Accordion title="Authentication errors" icon="key">
+    Re-authenticate with SuperBox:
+    
+    ```bash
+    # Clear existing auth
+    rm ~/.superbox/token.json
+    
+    # Authenticate again
+    superbox auth
+    ```
+  </Accordion>
+
+  <Accordion title="Security scan failures" icon="shield">
+    Review scan results:
+    
+    ```bash
+    # Run with verbose output
+    superbox push --verbose
+    
+    # Check security reports
+    ls -la security-reports/
+    ```
+  </Accordion>
+
+  <Accordion title="Connection errors" icon="wifi">
+    Check network and API status:
+    
+    ```bash
+    # Test API connection
+    curl https://api.superbox.com/health
+    
+    # Use custom API URL
+    superbox search "test" --api-url http://localhost:8080
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Installation" icon="download" href="/cli/installation">
+    Install SuperBox CLI
+  </Card>
+  <Card title="Init Command" icon="plus" href="/cli/init">
+    Create new MCP server
+  </Card>
+  <Card title="Auth Command" icon="key" href="/cli/auth">
+    Authenticate with SuperBox
+  </Card>
+  <Card title="Push Command" icon="upload" href="/cli/push">
+    Publish your server
+  </Card>
+</CardGroup>

@@ -1,0 +1,192 @@
+---
+title: 'Frontend Overview'
+description: 'Modern Next.js 16 frontend architecture with React 19, Tailwind CSS 4.1, and Framer Motion'
+icon: 'react'
+---
+
+## Technology Stack
+
+SuperBox's frontend is built with cutting-edge web technologies to deliver a fast, responsive, and delightful user experience.
+
+<CardGroup cols={2}>
+  <Card title="Next.js 16" icon="rocket" color="#000000">
+    Latest Next.js with App Router, Server Components, and optimized performance
+  </Card>
+  <Card title="React 19" icon="atom" color="#61DAFB">
+    Modern React with Concurrent Features and improved rendering
+  </Card>
+  <Card title="Tailwind CSS 4.1" icon="paintbrush" color="#06B6D4">
+    Utility-first CSS framework for rapid UI development
+  </Card>
+  <Card title="Framer Motion" icon="wand-magic-sparkles" color="#FF0055">
+    Production-ready animation library for smooth interactions
+  </Card>
+</CardGroup>
+
+## Key Features
+
+<AccordionGroup>
+  <Accordion title="Server-Side Rendering (SSR)" icon="server">
+    Next.js 16 App Router enables automatic SSR for optimal performance and SEO. Pages are rendered on the server and hydrated on the client for instant interactivity.
+  </Accordion>
+
+  <Accordion title="Type Safety with TypeScript" icon="shield-check">
+    Full TypeScript implementation ensures type safety across the entire frontend codebase, catching errors during development.
+  </Accordion>
+
+  <Accordion title="Responsive Design" icon="mobile-screen">
+    Mobile-first design with Tailwind CSS breakpoints ensures perfect rendering across all device sizes.
+  </Accordion>
+
+  <Accordion title="Smooth Animations" icon="sparkles">
+    Framer Motion powers all page transitions and component animations for a polished user experience.
+  </Accordion>
+</AccordionGroup>
+
+## Architecture Principles
+
+### Component-Based Design
+
+SuperBox follows a modular component architecture:
+
+```tsx
+src/
+├── components/          # Reusable UI components
+│   ├── auth-modal.tsx
+│   ├── server-card.tsx
+│   ├── header.tsx
+│   └── ...
+├── app/                 # Next.js App Router pages
+│   ├── layout.tsx
+│   ├── page.tsx
+│   └── [routes]/
+└── lib/                 # Shared utilities and types
+    └── types.ts
+```
+
+### State Management
+
+<Info>
+  SuperBox uses React 19's built-in state management with Server Components for optimal data fetching and minimal client-side JavaScript.
+</Info>
+
+### Performance Optimization
+
+<Steps>
+  <Step title="Code Splitting">
+    Automatic route-based code splitting with Next.js dynamic imports
+  </Step>
+  <Step title="Image Optimization">
+    Next.js Image component with automatic WebP conversion and lazy loading
+  </Step>
+  <Step title="Bundle Analysis">
+    Regular bundle size monitoring to keep the application lightweight
+  </Step>
+  <Step title="Caching Strategy">
+    Intelligent caching with Next.js built-in cache mechanisms
+  </Step>
+</Steps>
+
+## Design System
+
+### Color Palette
+
+SuperBox uses a carefully crafted color system optimized for readability and accessibility:
+
+<CodeGroup>
+```css Tailwind Config
+// Primary colors
+primary: '#3B82F6',
+secondary: '#8B5CF6',
+accent: '#10B981',
+
+// Neutral colors
+background: '#0F172A',
+surface: '#1E293B',
+text: '#F8FAFC',
+```
+
+```css CSS Variables
+:root {
+  --color-primary: 59 130 246;
+  --color-secondary: 139 92 246;
+  --color-accent: 16 185 129;
+  --color-background: 15 23 42;
+  --color-surface: 30 41 59;
+}
+```
+</CodeGroup>
+
+### Typography
+
+<Tabs>
+  <Tab title="Font Stack">
+    ```css
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    ```
+  </Tab>
+  <Tab title="Font Sizes">
+    - Display: 3.75rem (60px)
+    - Heading 1: 2.25rem (36px)
+    - Heading 2: 1.875rem (30px)
+    - Body: 1rem (16px)
+    - Small: 0.875rem (14px)
+  </Tab>
+</Tabs>
+
+## Routing Structure
+
+<Frame>
+  <div className="p-4">
+    ```
+    / (Home)
+    ├── /explore (Browse MCP servers)
+    ├── /server/[id] (Server details)
+    ├── /my-servers (User's servers)
+    ├── /playground (Test MCP servers)
+    ├── /docs (Documentation)
+    ├── /profile (User profile)
+    ├── /settings (User settings)
+    ├── /faq (Frequently Asked Questions)
+    ├── /privacy-policy
+    └── /terms-of-service
+    ```
+  </div>
+</Frame>
+
+## Authentication Flow
+
+SuperBox supports multiple authentication methods:
+
+<CardGroup cols={3}>
+  <Card title="Email/Password" icon="envelope">
+    Traditional registration and login
+  </Card>
+  <Card title="OAuth Providers" icon="brands github">
+    GitHub and Google OAuth
+  </Card>
+  <Card title="Device Flow" icon="mobile">
+    CLI device authorization
+  </Card>
+</CardGroup>
+
+<Tip>
+  The authentication modal is implemented as a reusable component with full accessibility support and keyboard navigation.
+</Tip>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Setup Development" icon="code" href="/frontend/setup">
+    Get your local development environment running
+  </Card>
+  <Card title="Component Library" icon="layer-group" href="/frontend/components">
+    Explore reusable components
+  </Card>
+  <Card title="Deploy to Vercel" icon="rocket" href="/frontend/deployment">
+    Deploy your frontend to production
+  </Card>
+  <Card title="Backend Integration" icon="plug" href="/backend/overview">
+    Connect to the Go API backend
+  </Card>
+</CardGroup>

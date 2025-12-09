@@ -1,0 +1,83 @@
+---
+title: 'superbox run'
+description: 'Test MCP server locally with interactive playground'
+icon: 'play'
+---
+
+## Usage
+
+```bash
+superbox run [OPTIONS]
+```
+
+## Description
+
+Starts local MCP server for testing tools interactively before publishing.
+
+## Options
+
+<ParamField path="--port" type="number" default={8080}>
+  Server port
+  
+  ```bash
+  superbox run --port 3000
+  ```
+</ParamField>
+
+<ParamField path="--debug" type="boolean">
+  Enable debug logging
+</ParamField>
+
+<ParamField path="--watch" type="boolean">
+  Auto-reload on file changes
+</ParamField>
+
+## Examples
+
+<CodeGroup>
+```bash Basic Run
+superbox run
+# Server running on http://localhost:8080
+```
+
+```bash With Debug
+superbox run --debug --watch
+```
+
+```bash Custom Port
+superbox run --port 5000
+```
+</CodeGroup>
+
+## Interactive Testing
+
+<Steps>
+  <Step title="Start Server">
+    ```bash
+    superbox run
+    ```
+  </Step>
+
+  <Step title="List Tools">
+    CLI displays available tools
+  </Step>
+
+  <Step title="Execute Tool">
+    Select tool and provide parameters interactively
+  </Step>
+
+  <Step title="View Results">
+    See tool output and logs
+  </Step>
+</Steps>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Push Server" icon="upload" href="/cli/push">
+    Publish to SuperBox
+  </Card>
+  <Card title="Run Tests" icon="vial" href="/cli/test">
+    Execute test suite
+  </Card>
+</CardGroup>

@@ -36,6 +36,7 @@ export default function AuthModal({
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [username, setUsername] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleClose = () => {
     setAuthStep("select");
@@ -45,23 +46,70 @@ export default function AuthModal({
     setUsername("");
     setShowPassword(false);
     setShowConfirmPassword(false);
+    setIsLoading(false);
     onClose();
   };
 
-  const handleSignInSubmit = (e: React.FormEvent) => {
+  const handleSignInSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const userData = {
-      username: email.split("@")[0],
-      email: email,
-    };
-    localStorage.setItem("isAuthenticated", "true");
-    localStorage.setItem("userData", JSON.stringify(userData));
-    if (onSuccess) onSuccess();
-    handleClose();
+    setIsLoading(true);
+
+    try {
+      // Firebase Authentication directly
+      const firebaseApiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "AIzaSyDemoKey";
+      const response = await fetch(
+        `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${firebaseApiKey}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: email,
+            password: password,
+            returnSecureToken: true,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error?.message || "Login failed");
+      }
+
+      const data = await response.json();
+      
+      localStorage.setItem("idToken", data.idToken);
+      localStorage.setItem("refreshToken", data.refreshToken);
+      localStorage.setItem("isAuthenticated", "true");
+      localStorage.setItem("userData", JSON.stringify({
+        email: data.email,
+        localId: data.localId,
+        displayName: data.displayName || email.split("@")[0],
+      }));
+
+      addToast({
+        title: "Welcome back!",
+        description: "Successfully signed in",
+        variant: "success",
+      });
+
+      if (onSuccess) onSuccess();
+      handleClose();
+    } catch (error: any) {
+      addToast({
+        title: "Login failed",
+        description: error.message || "Invalid credentials",
+        variant: "error",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleSignUpSubmit = (e: React.FormEvent) => {
+  const handleSignUpSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
     if (password !== confirmPassword) {
       addToast({
         title: "Passwords don't match",
@@ -70,14 +118,61 @@ export default function AuthModal({
       });
       return;
     }
-    const userData = {
-      username: username,
-      email: email,
-    };
-    localStorage.setItem("isAuthenticated", "true");
-    localStorage.setItem("userData", JSON.stringify(userData));
-    if (onSuccess) onSuccess();
-    handleClose();
+
+    setIsLoading(true);
+
+    try {
+      // Firebase Authentication directly
+      const firebaseApiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "AIzaSyDemoKey";
+      const response = await fetch(
+        `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${firebaseApiKey}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: email,
+            password: password,
+            displayName: username,
+            returnSecureToken: true,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error?.message || "Registration failed");
+      }
+
+      const data = await response.json();
+      
+      localStorage.setItem("idToken", data.idToken);
+      localStorage.setItem("refreshToken", data.refreshToken);
+      localStorage.setItem("isAuthenticated", "true");
+      localStorage.setItem("userData", JSON.stringify({
+        email: data.email,
+        localId: data.localId,
+        displayName: username,
+      }));
+
+      addToast({
+        title: "Account created!",
+        description: "Welcome to SuperBox",
+        variant: "success",
+      });
+
+      if (onSuccess) onSuccess();
+      handleClose();
+    } catch (error: any) {
+      addToast({
+        title: "Registration failed",
+        description: error.message || "Could not create account",
+        variant: "error",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleForgotSubmit = (e: React.FormEvent) => {
@@ -90,22 +185,19 @@ export default function AuthModal({
     setAuthStep("signin");
   };
 
-  const handleSocialLogin = (provider: string) => {
-    const userData = {
-      username: `${provider}-user`,
-      email: `user@${provider}.com`,
-    };
-    localStorage.setItem("isAuthenticated", "true");
-    localStorage.setItem("userData", JSON.stringify(userData));
-    if (onSuccess) onSuccess();
-    handleClose();
+  const handleSocialLogin = async (provider: string) => {
+    addToast({
+      title: "Coming soon",
+      description: `${provider} OAuth integration is in progress`,
+      variant: "info",
+    });
   };
 
   if (typeof window === "undefined") {
     return null;
   }
 
-  return createPortal(
+  const modalContent = (
     <AnimatePresence>
       {isOpen && (
         <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4">
@@ -319,9 +411,18 @@ export default function AuthModal({
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       type="submit"
-                      className="w-full py-2.5 rounded-full bg-[var(--brand-red)] hover:bg-[var(--brand-red)]/90 text-black text-sm font-semibold transition-all duration-200"
+                      disabled={isLoading}
+                      className="w-full py-2.5 rounded-full bg-[var(--brand-red)] hover:bg-[var(--brand-red)]/90 text-black text-sm font-semibold transition-all duration-200 disabled:opacity-50 flex items-center justify-center gap-2"
                     >
-                      Sign In
+                      {isLoading ? (
+                        <>
+                          <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                          </svg>
+                          Signing in...
+                        </>
+                      ) : "Sign In"}
                     </motion.button>
 
                     <motion.p
@@ -473,9 +574,18 @@ export default function AuthModal({
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       type="submit"
-                      className="w-full py-2.5 rounded-full bg-[var(--brand-red)] hover:bg-[var(--brand-red)]/90 text-black text-sm font-semibold transition-all duration-200"
+                      disabled={isLoading}
+                      className="w-full py-2.5 rounded-full bg-[var(--brand-red)] hover:bg-[var(--brand-red)]/90 text-black text-sm font-semibold transition-all duration-200 disabled:opacity-50 flex items-center justify-center gap-2"
                     >
-                      Create Account
+                      {isLoading ? (
+                        <>
+                          <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                          </svg>
+                          Creating account...
+                        </>
+                      ) : "Create Account"}
                     </motion.button>
 
                     <motion.p
@@ -595,7 +705,8 @@ export default function AuthModal({
           </motion.div>
         </div>
       )}
-    </AnimatePresence>,
-    document.body,
+    </AnimatePresence>
   );
+
+  return createPortal(modalContent, document.body);
 }

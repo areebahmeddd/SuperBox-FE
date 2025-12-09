@@ -1,0 +1,814 @@
+---
+title: 'Create Server'
+api: 'POST /servers'
+description: 'Deploy a new MCP server to the SuperBox registry'
+---
+
+## Endpoint
+
+<Card>
+  <code>POST https://api.superbox.dev/api/v1/servers</code>
+</Card>
+
+## Authentication
+
+<Tabs>
+  <Tab title="Required">
+    This endpoint requires authentication. Include your Firebase JWT token in the Authorization header.
+    
+    <Warning>
+      You must be authenticated to create servers
+    </Warning>
+  </Tab>
+</Tabs>
+
+## Request Body
+
+<ParamField body="name" type="string" required>
+  Unique server identifier
+  
+  **Rules:**
+  - Lowercase letters, numbers, and hyphens only
+  - Must start with a letter
+  - 3-50 characters
+  
+  **Examples:** `weather-mcp`, `database-query-tool`, `my-awesome-server`
+</ParamField>
+
+<ParamField body="version" type="string" required>
+  Semantic version number
+  
+  **Format:** `MAJOR.MINOR.PATCH` (e.g., `1.0.0`, `2.3.1`)
+  
+  **Examples:** `1.0.0`, `2.1.5`, `0.9.0-beta`
+</ParamField>
+
+<ParamField body="description" type="string" required>
+  Clear description of your server's functionality
+  
+  **Length:** 20-500 characters
+  
+  **Example:** "Get real-time weather information and forecasts for any location using OpenWeatherMap API"
+</ParamField>
+
+<ParamField body="author" type="string" required>
+  Your name or organization name
+  
+  **Example:** "John Doe", "Acme Corporation"
+</ParamField>
+
+<ParamField body="lang" type="string" required>
+  Programming language of your server
+  
+  **Allowed values:** `python`, `javascript`, `typescript`, `go`, `rust`
+</ParamField>
+
+<ParamField body="license" type="string" required>
+  Software license
+  
+  **Common values:** `MIT`, `Apache-2.0`, `GPL-3.0`, `BSD-3-Clause`, `ISC`
+</ParamField>
+
+<ParamField body="entrypoint" type="string" required>
+  Main file that starts your server
+  
+  **Examples:** `main.py`, `index.js`, `server.ts`, `main.go`
+</ParamField>
+
+<ParamField body="repository" type="object" required>
+  Git repository information
+  
+  <Expandable title="properties">
+    <ParamField body="type" type="string" default="git">
+      Repository type (usually "git")
+    </ParamField>
+    
+    <ParamField body="url" type="string" required>
+      Public repository URL
+      
+      **Must be:**
+      - Publicly accessible
+      - Valid Git repository
+      - Contains MCP server code
+      
+      **Example:** `https://github.com/username/repo-name`
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<ParamField body="pricing" type="object" required>
+  Pricing configuration
+  
+  <Expandable title="properties">
+    <ParamField body="currency" type="string" required>
+      Three-letter currency code
+      
+      **Examples:** `USD`, `EUR`, `GBP`, `INR`
+    </ParamField>
+    
+    <ParamField body="amount" type="number" required>
+      Price amount (use 0 for free servers)
+      
+      **Range:** 0 to 999.99
+      
+      **Examples:** `0` (free), `9.99`, `49.00`
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<ParamField body="metadata" type="object">
+  Optional additional metadata
+  
+  <Expandable title="properties">
+    <ParamField body="tags" type="array">
+      Array of topic tags
+      
+      **Example:** `["weather", "api", "forecast"]`
+    </ParamField>
+    
+    <ParamField body="homepage" type="string">
+      Project homepage URL
+      
+      **Example:** `https://weather-mcp.dev`
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Indicates if the server was created successfully
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  Created server information
+  
+  <Expandable title="properties">
+    <ResponseField name="name" type="string">
+      Server identifier
+    </ResponseField>
+    
+    <ResponseField name="version" type="string">
+      Server version
+    </ResponseField>
+    
+    <ResponseField name="status" type="string">
+      Deployment status: `pending`, `scanning`, `deploying`, `ready`, `failed`
+    </ResponseField>
+    
+    <ResponseField name="securityScanId" type="string">
+      ID for tracking security scan progress
+    </ResponseField>
+    
+    <ResponseField name="estimatedTime" type="integer">
+      Estimated deployment time in seconds (typically 60-120)
+    </ResponseField>
+    
+    <ResponseField name="url" type="string">
+      Server detail page URL
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+## Examples
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://api.superbox.dev/api/v1/servers" \
+  -H "Authorization: Bearer $SUPERBOX_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "weather-mcp",
+    "version": "1.0.0",
+    "description": "Get real-time weather information and forecasts for any location",
+    "author": "John Doe",
+    "lang": "python",
+    "license": "MIT",
+    "entrypoint": "main.py",
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/johndoe/weather-mcp"
+    },
+    "pricing": {
+      "currency": "USD",
+      "amount": 0
+    },
+    "metadata": {
+      "tags": ["weather", "api", "forecast"],
+      "homepage": "https://weather-mcp.dev"
+    }
+  }'
+```
+
+```javascript JavaScript
+const serverData = {
+  name: "weather-mcp",
+  version: "1.0.0",
+  description: "Get real-time weather information and forecasts for any location",
+  author: "John Doe",
+  lang: "python",
+  license: "MIT",
+  entrypoint: "main.py",
+  repository: {
+    type: "git",
+    url: "https://github.com/johndoe/weather-mcp"
+  },
+  pricing: {
+    currency: "USD",
+    amount: 0
+  },
+  metadata: {
+    tags: ["weather", "api", "forecast"],
+    homepage: "https://weather-mcp.dev"
+  }
+};
+
+const response = await fetch('https://api.superbox.dev/api/v1/servers', {
+  method: 'POST',
+  headers: {
+    'Authorization': `Bearer ${process.env.SUPERBOX_API_TOKEN}`,
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify(serverData)
+});
+
+const result = await response.json();
+
+if (result.success) {
+  console.log(`✓ Server ${result.data.name} created!`);
+  console.log(`Status: ${result.data.status}`);
+  console.log(`ETA: ${result.data.estimatedTime}s`);
+  console.log(`URL: ${result.data.url}`);
+} else {
+  console.error('Failed to create server:', result.error.message);
+}
+```
+
+```python Python
+import requests
+import os
+
+server_data = {
+    "name": "weather-mcp",
+    "version": "1.0.0",
+    "description": "Get real-time weather information and forecasts for any location",
+    "author": "John Doe",
+    "lang": "python",
+    "license": "MIT",
+    "entrypoint": "main.py",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/johndoe/weather-mcp"
+    },
+    "pricing": {
+        "currency": "USD",
+        "amount": 0
+    },
+    "metadata": {
+        "tags": ["weather", "api", "forecast"],
+        "homepage": "https://weather-mcp.dev"
+    }
+}
+
+headers = {
+    "Authorization": f"Bearer {os.getenv('SUPERBOX_API_TOKEN')}",
+    "Content-Type": "application/json"
+}
+
+response = requests.post(
+    "https://api.superbox.dev/api/v1/servers",
+    headers=headers,
+    json=server_data
+)
+
+result = response.json()
+
+if result['success']:
+    print(f"✓ Server {result['data']['name']} created!")
+    print(f"Status: {result['data']['status']}")
+    print(f"ETA: {result['data']['estimatedTime']}s")
+    print(f"URL: {result['data']['url']}")
+else:
+    print(f"Failed to create server: {result['error']['message']}")
+```
+
+```go Go
+package main
+
+import (
+    "bytes"
+    "encoding/json"
+    "fmt"
+    "net/http"
+    "os"
+)
+
+type ServerRequest struct {
+    Name        string              `json:"name"`
+    Version     string              `json:"version"`
+    Description string              `json:"description"`
+    Author      string              `json:"author"`
+    Lang        string              `json:"lang"`
+    License     string              `json:"license"`
+    Entrypoint  string              `json:"entrypoint"`
+    Repository  Repository          `json:"repository"`
+    Pricing     Pricing             `json:"pricing"`
+    Metadata    *Metadata           `json:"metadata,omitempty"`
+}
+
+type Repository struct {
+    Type string `json:"type"`
+    URL  string `json:"url"`
+}
+
+type Pricing struct {
+    Currency string  `json:"currency"`
+    Amount   float64 `json:"amount"`
+}
+
+type Metadata struct {
+    Tags     []string `json:"tags"`
+    Homepage string   `json:"homepage"`
+}
+
+func main() {
+    serverData := ServerRequest{
+        Name:        "weather-mcp",
+        Version:     "1.0.0",
+        Description: "Get real-time weather information and forecasts",
+        Author:      "John Doe",
+        Lang:        "python",
+        License:     "MIT",
+        Entrypoint:  "main.py",
+        Repository: Repository{
+            Type: "git",
+            URL:  "https://github.com/johndoe/weather-mcp",
+        },
+        Pricing: Pricing{
+            Currency: "USD",
+            Amount:   0,
+        },
+    }
+    
+    jsonData, _ := json.Marshal(serverData)
+    
+    req, _ := http.NewRequest(
+        "POST",
+        "https://api.superbox.dev/api/v1/servers",
+        bytes.NewBuffer(jsonData),
+    )
+    
+    req.Header.Set("Authorization", "Bearer "+os.Getenv("SUPERBOX_API_TOKEN"))
+    req.Header.Set("Content-Type", "application/json")
+    
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    if err != nil {
+        panic(err)
+    }
+    defer resp.Body.Close()
+    
+    var result map[string]interface{}
+    json.NewDecoder(resp.Body).Decode(&result)
+    
+    if result["success"].(bool) {
+        data := result["data"].(map[string]interface{})
+        fmt.Printf("✓ Server %s created!\n", data["name"])
+    }
+}
+```
+</CodeGroup>
+
+## Response Examples
+
+<ResponseExample>
+```json 201 Created
+{
+  "success": true,
+  "data": {
+    "name": "weather-mcp",
+    "version": "1.0.0",
+    "status": "scanning",
+    "securityScanId": "scan_abc123def456",
+    "estimatedTime": 90,
+    "url": "https://superbox-fe.vercel.app/server/weather-mcp",
+    "message": "Server created successfully. Security scanning in progress."
+  },
+  "meta": {
+    "timestamp": "2025-12-09T10:30:00Z",
+    "version": "v1",
+    "requestId": "req_xyz789"
+  }
+}
+```
+
+```json 400 Validation Error
+{
+  "success": false,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Request validation failed",
+    "details": {
+      "errors": [
+        {
+          "field": "name",
+          "message": "Server name must be lowercase with hyphens only",
+          "value": "MyServer123"
+        },
+        {
+          "field": "version",
+          "message": "Version must follow semver format (x.y.z)",
+          "value": "1.0"
+        }
+      ]
+    }
+  },
+  "meta": {
+    "timestamp": "2025-12-09T10:30:00Z",
+    "requestId": "req_abc123"
+  }
+}
+```
+
+```json 401 Unauthorized
+{
+  "success": false,
+  "error": {
+    "code": "MISSING_TOKEN",
+    "message": "Authentication token is required",
+    "details": {
+      "hint": "Include 'Authorization: Bearer <token>' header"
+    }
+  }
+}
+```
+
+```json 409 Conflict
+{
+  "success": false,
+  "error": {
+    "code": "RESOURCE_ALREADY_EXISTS",
+    "message": "Server with this name already exists",
+    "details": {
+      "name": "weather-mcp",
+      "existingVersion": "0.9.0",
+      "owner": "otherguser",
+      "hint": "Choose a different name or contact the owner to transfer ownership"
+    }
+  }
+}
+```
+
+```json 422 Repository Error
+{
+  "success": false,
+  "error": {
+    "code": "REPOSITORY_UNREACHABLE",
+    "message": "Unable to access Git repository",
+    "details": {
+      "url": "https://github.com/user/private-repo",
+      "reason": "Repository is private or doesn't exist",
+      "hint": "Ensure the repository is public and the URL is correct"
+    }
+  }
+}
+```
+
+```json 422 Security Scan Failed
+{
+  "success": false,
+  "error": {
+    "code": "SECURITY_SCAN_FAILED",
+    "message": "Security scan detected critical vulnerabilities",
+    "details": {
+      "criticalIssues": 3,
+      "highIssues": 7,
+      "scanners": ["sonarcloud", "gitguardian", "bandit"],
+      "issues": [
+        {
+          "scanner": "gitguardian",
+          "type": "API Key",
+          "file": "config.py",
+          "line": 12
+        },
+        {
+          "scanner": "bandit",
+          "type": "SQL Injection",
+          "severity": "high",
+          "file": "database.py",
+          "line": 45
+        }
+      ],
+      "hint": "Fix security issues and resubmit. See documentation for best practices."
+    }
+  }
+}
+```
+</ResponseExample>
+
+## Deployment Process
+
+After creating a server, SuperBox follows this workflow:
+
+<Steps>
+  <Step title="Repository Validation">
+    - Clone the repository
+    - Verify structure and entrypoint
+    - Check for required files
+  </Step>
+  
+  <Step title="Security Scanning">
+    - **SonarCloud**: Code quality and vulnerabilities
+    - **GitGuardian**: Secrets detection
+    - **Bandit**: Python security audit (if applicable)
+    
+    <Warning>
+      Servers with critical security issues will be rejected
+    </Warning>
+  </Step>
+  
+  <Step title="Container Building">
+    - Build Docker container image
+    - Install dependencies
+    - Configure runtime environment
+  </Step>
+  
+  <Step title="Lambda Deployment">
+    - Push image to Amazon ECR
+    - Create Lambda function
+    - Configure execution settings
+  </Step>
+  
+  <Step title="Registry Update">
+    - Add server to S3 registry
+    - Generate metadata
+    - Make server discoverable
+  </Step>
+</Steps>
+
+## Repository Requirements
+
+Your repository must meet these requirements:
+
+<AccordionGroup>
+  <Accordion title="Python Servers" icon="python">
+    **Required files:**
+    - `main.py` or specified entrypoint
+    - `requirements.txt` or `pyproject.toml`
+    - `README.md` (recommended)
+    
+    **Structure:**
+    ```
+    my-mcp-server/
+    ├── main.py
+    ├── requirements.txt
+    ├── README.md
+    └── src/
+        └── tools/
+    ```
+    
+    **Dependencies:**
+    - Must include `mcp` package
+    - All dependencies must be installable via pip
+  </Accordion>
+  
+  <Accordion title="JavaScript/TypeScript Servers" icon="node-js">
+    **Required files:**
+    - `index.js`/`index.ts` or specified entrypoint
+    - `package.json`
+    - `README.md` (recommended)
+    
+    **Structure:**
+    ```
+    my-mcp-server/
+    ├── index.ts
+    ├── package.json
+    ├── tsconfig.json (for TypeScript)
+    ├── README.md
+    └── src/
+        └── tools/
+    ```
+    
+    **Dependencies:**
+    - Must include `@modelcontextprotocol/sdk`
+    - All dependencies must be on npm registry
+  </Accordion>
+  
+  <Accordion title="Go Servers" icon="golang">
+    **Required files:**
+    - `main.go` or specified entrypoint
+    - `go.mod`
+    - `README.md` (recommended)
+    
+    **Structure:**
+    ```
+    my-mcp-server/
+    ├── main.go
+    ├── go.mod
+    ├── go.sum
+    ├── README.md
+    └── pkg/
+        └── tools/
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Validate Locally" icon="check">
+    Test your server thoroughly before deploying to SuperBox
+  </Card>
+  
+  <Card title="Follow Semver" icon="tag">
+    Use semantic versioning: MAJOR.MINOR.PATCH
+  </Card>
+  
+  <Card title="Write Good Descriptions" icon="file-text">
+    Clear descriptions help users understand your server's purpose
+  </Card>
+  
+  <Card title="Security First" icon="shield">
+    Never commit secrets or API keys to your repository
+  </Card>
+  
+  <Card title="Document Well" icon="book">
+    Include a comprehensive README with usage examples
+  </Card>
+  
+  <Card title="Choose Appropriate License" icon="scale-balanced">
+    Select a license that matches your intentions
+  </Card>
+</CardGroup>
+
+## Common Errors & Solutions
+
+<AccordionGroup>
+  <Accordion title="Invalid Server Name" icon="circle-xmark">
+    **Error:** `Server name must be lowercase with hyphens only`
+    
+    **Solution:** Use only lowercase letters, numbers, and hyphens
+    - ✅ `my-awesome-server`
+    - ❌ `MyAwesomeServer`
+    - ❌ `my_awesome_server`
+  </Accordion>
+  
+  <Accordion title="Repository Not Found" icon="github">
+    **Error:** `Unable to access Git repository`
+    
+    **Solutions:**
+    - Ensure repository is **public**
+    - Check URL is correct
+    - Verify repository exists
+    - Wait a few minutes if just created
+  </Accordion>
+  
+  <Accordion title="Missing Entrypoint" icon="file-slash">
+    **Error:** `Entry point file not found in repository`
+    
+    **Solution:** Ensure the file specified in `entrypoint` exists in your repository root
+  </Accordion>
+  
+  <Accordion title="Security Scan Failed" icon="triangle-exclamation">
+    **Error:** `Security scan detected critical vulnerabilities`
+    
+    **Solutions:**
+    - Remove any hardcoded secrets/API keys
+    - Fix code vulnerabilities reported by scanners
+    - Update dependencies with known vulnerabilities
+    - Review security report details
+  </Accordion>
+  
+  <Accordion title="Name Already Taken" icon="ban">
+    **Error:** `Server with this name already exists`
+    
+    **Solutions:**
+    - Choose a different, unique name
+    - Contact existing server owner for transfer
+    - Add your username as prefix: `username-server-name`
+  </Accordion>
+</AccordionGroup>
+
+## Monitoring Deployment
+
+After creating a server, monitor its status:
+
+<CodeGroup>
+```javascript JavaScript
+async function waitForDeployment(serverName) {
+  const checkStatus = async () => {
+    const response = await fetch(
+      `https://api.superbox.dev/api/v1/servers/${serverName}`,
+      {
+        headers: {
+          'Authorization': `Bearer ${process.env.SUPERBOX_API_TOKEN}`
+        }
+      }
+    );
+    const { data } = await response.json();
+    return data.status;
+  };
+  
+  let status = 'scanning';
+  while (status !== 'ready' && status !== 'failed') {
+    await new Promise(resolve => setTimeout(resolve, 5000)); // Wait 5s
+    status = await checkStatus();
+    console.log(`Status: ${status}`);
+  }
+  
+  return status === 'ready';
+}
+
+// Usage
+const success = await waitForDeployment('weather-mcp');
+if (success) {
+  console.log('✓ Server deployed successfully!');
+} else {
+  console.error('✗ Deployment failed');
+}
+```
+
+```python Python
+import time
+import requests
+
+def wait_for_deployment(server_name, token):
+    url = f"https://api.superbox.dev/api/v1/servers/{server_name}"
+    headers = {'Authorization': f'Bearer {token}'}
+    
+    status = 'scanning'
+    while status not in ['ready', 'failed']:
+        time.sleep(5)  # Wait 5 seconds
+        response = requests.get(url, headers=headers)
+        data = response.json()['data']
+        status = data.get('status', 'unknown')
+        print(f"Status: {status}")
+    
+    return status == 'ready'
+
+# Usage
+token = os.getenv('SUPERBOX_API_TOKEN')
+if wait_for_deployment('weather-mcp', token):
+    print('✓ Server deployed successfully!')
+else:
+    print('✗ Deployment failed')
+```
+</CodeGroup>
+
+## Pricing Your Server
+
+<Tabs>
+  <Tab title="Free Servers">
+    Set `pricing.amount` to `0` for free servers
+    
+    **Benefits:**
+    - Maximum reach and adoption
+    - Community contributions
+    - Portfolio building
+    
+    **Ideal for:**
+    - Open source projects
+    - Learning/educational tools
+    - Community tools
+  </Tab>
+  
+  <Tab title="Paid Servers">
+    Set `pricing.amount` > `0` for paid servers
+    
+    **Payment Processing:**
+    - Handled by Razorpay
+    - 70% revenue to creator
+    - 30% platform fee
+    - Monthly payouts
+    
+    **Pricing Guidelines:**
+    - $0.99 - $4.99: Simple utilities
+    - $5.00 - $19.99: Feature-rich tools
+    - $20.00+: Enterprise solutions
+    
+    **Ideal for:**
+    - Professional tools
+    - Maintained services
+    - Premium features
+  </Tab>
+</Tabs>
+
+## Related Endpoints
+
+<CardGroup cols={3}>
+  <Card title="List Servers" icon="list" href="/api/servers/list">
+    View all available servers
+  </Card>
+  
+  <Card title="Get Server" icon="eye" href="/api/servers/get">
+    View your server details
+  </Card>
+  
+  <Card title="Update Server" icon="pen" href="/api/servers/update">
+    Modify server metadata
+  </Card>
+</CardGroup>
+
+<Check>
+  Ready to deploy your first MCP server? Follow the examples above and you'll have your server live in minutes!
+</Check>

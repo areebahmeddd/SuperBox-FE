@@ -1,0 +1,727 @@
+---
+title: 'Delete Server'
+api: 'DELETE /servers/:name'
+description: 'Permanently remove an MCP server from the SuperBox registry'
+---
+
+## Endpoint
+
+<Card>
+  <code>DELETE https://api.superbox.dev/api/v1/servers/:name</code>
+</Card>
+
+## Authentication
+
+<Tabs>
+  <Tab title="Required">
+    This endpoint requires authentication. You must be the server owner.
+    
+    <Warning>
+      Only the server owner can delete a server. This action is **irreversible**.
+    </Warning>
+  </Tab>
+</Tabs>
+
+## Path Parameters
+
+<ParamField path="name" type="string" required>
+  Unique server identifier to delete
+  
+  **Example:** `weather-mcp`, `my-test-server`
+</ParamField>
+
+## Query Parameters
+
+<ParamField query="confirm" type="boolean" default="false">
+  Confirmation flag to prevent accidental deletions
+  
+  **Must be:** `true` to proceed with deletion
+</ParamField>
+
+<ParamField query="force" type="boolean" default="false">
+  Force deletion even if server has active users
+  
+  <Warning>
+    Use with caution. This may disrupt users actively using your server.
+  </Warning>
+</ParamField>
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Indicates if deletion was successful
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  Deletion confirmation details
+  
+  <Expandable title="properties">
+    <ResponseField name="name" type="string">
+      Name of deleted server
+    </ResponseField>
+    
+    <ResponseField name="deleted_at" type="string">
+      ISO 8601 timestamp of deletion
+    </ResponseField>
+    
+    <ResponseField name="activeUsers" type="integer">
+      Number of active users at time of deletion
+    </ResponseField>
+    
+    <ResponseField name="backupId" type="string">
+      Backup identifier for recovery (valid for 30 days)
+    </ResponseField>
+    
+    <ResponseField name="message" type="string">
+      Deletion confirmation message
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+## Examples
+
+<CodeGroup>
+```bash cURL
+# Basic deletion (requires confirm=true)
+curl -X DELETE "https://api.superbox.dev/api/v1/servers/my-test-server?confirm=true" \
+  -H "Authorization: Bearer $SUPERBOX_API_TOKEN"
+
+# Force deletion with active users
+curl -X DELETE "https://api.superbox.dev/api/v1/servers/my-server?confirm=true&force=true" \
+  -H "Authorization: Bearer $SUPERBOX_API_TOKEN"
+```
+
+```javascript JavaScript
+// Delete a server
+async function deleteServer(serverName) {
+  const confirmed = confirm(
+    `Are you sure you want to delete ${serverName}? This action cannot be undone.`
+  );
+  
+  if (!confirmed) {
+    return { cancelled: true };
+  }
+  
+  const response = await fetch(
+    `https://api.superbox.dev/api/v1/servers/${serverName}?confirm=true`,
+    {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${process.env.SUPERBOX_API_TOKEN}`,
+        'Content-Type': 'application/json'
+      }
+    }
+  );
+  
+  const result = await response.json();
+  
+  if (result.success) {
+    console.log(`✓ Server ${serverName} deleted successfully`);
+    console.log(`Backup ID: ${result.data.backupId}`);
+    console.log(`Valid until: ${new Date(Date.now() + 30*24*60*60*1000)}`);
+  } else {
+    console.error(`Failed to delete: ${result.error.message}`);
+  }
+  
+  return result;
+}
+
+// Usage
+await deleteServer('my-test-server');
+
+// Force deletion
+async function forceDeleteServer(serverName) {
+  const response = await fetch(
+    `https://api.superbox.dev/api/v1/servers/${serverName}?confirm=true&force=true`,
+    {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${process.env.SUPERBOX_API_TOKEN}`
+      }
+    }
+  );
+  
+  return response.json();
+}
+```
+
+```python Python
+import requests
+import os
+
+def delete_server(server_name, force=False):
+    """Delete a server from SuperBox registry"""
+    
+    # Confirmation prompt
+    confirm = input(f"Delete {server_name}? This cannot be undone! (yes/no): ")
+    if confirm.lower() != 'yes':
+        print("Deletion cancelled")
+        return None
+    
+    url = f"https://api.superbox.dev/api/v1/servers/{server_name}"
+    params = {'confirm': 'true'}
+    
+    if force:
+        params['force'] = 'true'
+    
+    headers = {
+        'Authorization': f'Bearer {os.getenv("SUPERBOX_API_TOKEN")}'
+    }
+    
+    response = requests.delete(url, headers=headers, params=params)
+    result = response.json()
+    
+    if result['success']:
+        print(f"✓ Server {server_name} deleted successfully")
+        print(f"Backup ID: {result['data']['backupId']}")
+        print(f"Active users affected: {result['data']['activeUsers']}")
+    else:
+        print(f"Failed: {result['error']['message']}")
+    
+    return result
+
+# Usage
+delete_server('my-test-server')
+
+# Force deletion
+delete_server('my-server', force=True)
+
+# Check before deletion
+def safe_delete(server_name):
+    """Check server status before deletion"""
+    
+    # Get server details first
+    check_url = f"https://api.superbox.dev/api/v1/servers/{server_name}"
+    headers = {'Authorization': f'Bearer {os.getenv("SUPERBOX_API_TOKEN")}'}
+    
+    response = requests.get(check_url, headers=headers)
+    server = response.json()['data']
+    
+    # Warn if paid server
+    if server['pricing']['amount'] > 0:
+        print(f"⚠ This is a PAID server ({server['pricing']['currency']} {server['pricing']['amount']})")
+        print("You will lose all revenue history")
+    
+    # Proceed with deletion
+    return delete_server(server_name)
+```
+
+```go Go
+package main
+
+import (
+    "bufio"
+    "fmt"
+    "net/http"
+    "net/url"
+    "os"
+    "strings"
+)
+
+func deleteServer(name string, force bool) error {
+    // Confirmation prompt
+    reader := bufio.NewReader(os.Stdin)
+    fmt.Printf("Delete %s? This cannot be undone! (yes/no): ", name)
+    confirm, _ := reader.ReadString('\n')
+    confirm = strings.TrimSpace(strings.ToLower(confirm))
+    
+    if confirm != "yes" {
+        fmt.Println("Deletion cancelled")
+        return nil
+    }
+    
+    // Build URL
+    baseURL := fmt.Sprintf("https://api.superbox.dev/api/v1/servers/%s", name)
+    params := url.Values{}
+    params.Add("confirm", "true")
+    if force {
+        params.Add("force", "true")
+    }
+    
+    fullURL := fmt.Sprintf("%s?%s", baseURL, params.Encode())
+    
+    // Create request
+    req, _ := http.NewRequest("DELETE", fullURL, nil)
+    req.Header.Set("Authorization", "Bearer "+os.Getenv("SUPERBOX_API_TOKEN"))
+    
+    // Execute request
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    if err != nil {
+        return err
+    }
+    defer resp.Body.Close()
+    
+    if resp.StatusCode == 200 {
+        fmt.Printf("✓ Server %s deleted successfully\n", name)
+    } else {
+        fmt.Printf("✗ Failed to delete server (status: %d)\n", resp.StatusCode)
+    }
+    
+    return nil
+}
+
+func main() {
+    deleteServer("my-test-server", false)
+}
+```
+</CodeGroup>
+
+## Response Examples
+
+<ResponseExample>
+```json 200 Success
+{
+  "success": true,
+  "data": {
+    "name": "my-test-server",
+    "deleted_at": "2025-12-09T10:30:00Z",
+    "activeUsers": 5,
+    "backupId": "backup_abc123def456",
+    "message": "Server deleted successfully. Backup available for 30 days for recovery."
+  },
+  "meta": {
+    "timestamp": "2025-12-09T10:30:00Z",
+    "version": "v1",
+    "requestId": "req_xyz789"
+  }
+}
+```
+
+```json 400 Missing Confirmation
+{
+  "success": false,
+  "error": {
+    "code": "CONFIRMATION_REQUIRED",
+    "message": "Deletion confirmation required",
+    "details": {
+      "hint": "Add '?confirm=true' to the URL to confirm deletion",
+      "warning": "This action is irreversible"
+    }
+  }
+}
+```
+
+```json 403 Forbidden
+{
+  "success": false,
+  "error": {
+    "code": "FORBIDDEN",
+    "message": "You don't have permission to delete this server",
+    "details": {
+      "server": "weather-mcp",
+      "owner": "johndoe",
+      "requester": "janedoe",
+      "hint": "Only the server owner can delete it"
+    }
+  }
+}
+```
+
+```json 404 Not Found
+{
+  "success": false,
+  "error": {
+    "code": "RESOURCE_NOT_FOUND",
+    "message": "Server not found",
+    "details": {
+      "name": "non-existent-server",
+      "hint": "Server may have already been deleted"
+    }
+  }
+}
+```
+
+```json 409 Active Users
+{
+  "success": false,
+  "error": {
+    "code": "RESOURCE_IN_USE",
+    "message": "Cannot delete server with active users",
+    "details": {
+      "server": "weather-mcp",
+      "activeUsers": 42,
+      "hint": "Use '?force=true' to delete anyway, or wait for users to finish"
+    }
+  }
+}
+```
+</ResponseExample>
+
+## Deletion Process
+
+When you delete a server, SuperBox performs these steps:
+
+<Steps>
+  <Step title="Validation">
+    - Verify authentication and ownership
+    - Check for confirmation flag
+    - Check for active users (unless force=true)
+  </Step>
+  
+  <Step title="Backup Creation">
+    - Create backup of server metadata
+    - Store backup for 30-day recovery period
+    - Generate unique backup ID
+  </Step>
+  
+  <Step title="Lambda Cleanup">
+    - Stop Lambda function
+    - Delete function configuration
+    - Remove ECR container images
+  </Step>
+  
+  <Step title="Registry Update">
+    - Remove from S3 registry
+    - Update search indexes
+    - Clear cached data
+  </Step>
+  
+  <Step title="User Notification">
+    - Notify active users (if any)
+    - Send confirmation email to owner
+    - Update analytics
+  </Step>
+</Steps>
+
+## What Gets Deleted
+
+<Tabs>
+  <Tab title="Immediately Deleted">
+    - Server listing in registry
+    - Lambda function and containers
+    - Public API access
+    - Search index entries
+    - CDN cached data
+  </Tab>
+  
+  <Tab title="Retained (30 days)">
+    - Server metadata backup
+    - Security scan reports
+    - Analytics data
+    - Usage statistics
+    
+    <Note>
+      Recovery is possible within 30 days by contacting support with backup ID
+    </Note>
+  </Tab>
+  
+  <Tab title="Permanently Retained">
+    - Transaction history (for compliance)
+    - Audit logs
+    - User reviews (anonymized)
+    
+    <Info>
+      Required for financial and legal compliance
+    </Info>
+  </Tab>
+</Tabs>
+
+## Before You Delete
+
+<AccordionGroup>
+  <Accordion title="Check Active Users" icon="users">
+    ```javascript
+    async function checkActiveUsers(serverName) {
+      const response = await fetch(
+        `https://api.superbox.dev/api/v1/servers/${serverName}/stats`,
+        {
+          headers: {
+            'Authorization': `Bearer ${process.env.SUPERBOX_API_TOKEN}`
+          }
+        }
+      );
+      
+      const stats = await response.json();
+      console.log(`Active users: ${stats.data.activeUsers}`);
+      console.log(`Daily executions: ${stats.data.dailyExecutions}`);
+      
+      if (stats.data.activeUsers > 0) {
+        console.warn('⚠ Server has active users!');
+      }
+    }
+    ```
+  </Accordion>
+  
+  <Accordion title="Export Data" icon="download">
+    ```python
+    def export_server_data(server_name):
+        """Export all server data before deletion"""
+        
+        # Get server details
+        url = f"https://api.superbox.dev/api/v1/servers/{server_name}"
+        headers = {'Authorization': f'Bearer {os.getenv("SUPERBOX_API_TOKEN")}'}
+        
+        response = requests.get(url, headers=headers)
+        server_data = response.json()['data']
+        
+        # Save to file
+        import json
+        with open(f'{server_name}_backup.json', 'w') as f:
+            json.dump(server_data, f, indent=2)
+        
+        print(f"✓ Data exported to {server_name}_backup.json")
+        
+        # Get analytics
+        analytics_url = f"{url}/analytics"
+        analytics = requests.get(analytics_url, headers=headers).json()
+        
+        with open(f'{server_name}_analytics.json', 'w') as f:
+            json.dump(analytics['data'], f, indent=2)
+        
+        print(f"✓ Analytics exported to {server_name}_analytics.json")
+    ```
+  </Accordion>
+  
+  <Accordion title="Notify Users" icon="bell">
+    Consider notifying your users before deletion:
+    
+    - Post announcement on your homepage
+    - Email active users (if you have their contacts)
+    - Update README with deprecation notice
+    - Suggest alternative servers
+    
+    ```javascript
+    // Update description before deletion
+    await fetch(url, {
+      method: 'PUT',
+      headers,
+      body: JSON.stringify({
+        description: '⚠️ DEPRECATED - This server will be deleted on 2025-12-20. Please migrate to alternative-server.'
+      })
+    });
+    ```
+  </Accordion>
+  
+  <Accordion title="Consider Deprecation Instead" icon="archive">
+    Instead of deleting, you can deprecate:
+    
+    ```javascript
+    // Mark as deprecated
+    await fetch(url, {
+      method: 'PUT',
+      headers,
+      body: JSON.stringify({
+        metadata: {
+          deprecated: true,
+          deprecation_date: '2025-12-09',
+          alternative: 'new-improved-server'
+        }
+      })
+    });
+    ```
+    
+    <Tip>
+      Deprecation allows users to migrate gradually
+    </Tip>
+  </Accordion>
+</AccordionGroup>
+
+## Common Deletion Scenarios
+
+<Tabs>
+  <Tab title="Test Server">
+    **Scenario:** Deleting a test/development server
+    
+    ```bash
+    # Quick deletion (no active users expected)
+    curl -X DELETE \
+      "https://api.superbox.dev/api/v1/servers/test-server?confirm=true" \
+      -H "Authorization: Bearer $TOKEN"
+    ```
+    
+    <Check>
+      Safe to delete immediately
+    </Check>
+  </Tab>
+  
+  <Tab title="Migrating">
+    **Scenario:** Moving to a new server name
+    
+    ```javascript
+    // 1. Create new server
+    await createServer(newServerData);
+    
+    // 2. Update old server description
+    await updateServer(oldName, {
+      description: `MOVED to ${newName} - Please update your configuration`
+    });
+    
+    // 3. Wait 30 days for migration
+    // 4. Delete old server
+    await deleteServer(oldName);
+    ```
+  </Tab>
+  
+  <Tab title="Security Issue">
+    **Scenario:** Critical security vulnerability
+    
+    ```javascript
+    // Force immediate deletion
+    await fetch(
+      `${url}?confirm=true&force=true`,
+      { method: 'DELETE', headers }
+    );
+    ```
+    
+    <Warning>
+      Use force deletion for security emergencies
+    </Warning>
+  </Tab>
+  
+  <Tab title="Paid Server">
+    **Scenario:** Deleting a paid server
+    
+    **Considerations:**
+    - Refund active subscribers
+    - Export transaction history
+    - Update payment provider
+    - Notify customers
+    
+    ```python
+    # Check revenue before deletion
+    stats = get_server_stats('paid-server')
+    print(f"Total revenue: ${stats['totalRevenue']}")
+    print(f"Active subscriptions: {stats['activeSubscriptions']}")
+    ```
+  </Tab>
+</Tabs>
+
+## Recovery Process
+
+If you deleted by mistake, you can recover within 30 days:
+
+<Steps>
+  <Step title="Contact Support">
+    Email support@superbox.dev with:
+    - Server name
+    - Backup ID (from deletion response)
+    - Reason for recovery
+  </Step>
+  
+  <Step title="Verification">
+    Support will verify:
+    - Your ownership
+    - Backup existence
+    - Recovery eligibility
+  </Step>
+  
+  <Step title="Restoration">
+    If approved:
+    - Server metadata restored
+    - Lambda function redeployed
+    - Registry updated
+    - Takes 15-30 minutes
+  </Step>
+  
+  <Step title="Confirmation">
+    You'll receive:
+    - Restoration confirmation email
+    - Updated server URL
+    - Post-recovery checklist
+  </Step>
+</Steps>
+
+<Info>
+  Recovery is only available for 30 days after deletion
+</Info>
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Export First" icon="download">
+    Always export server data and analytics before deletion
+  </Card>
+  
+  <Card title="Notify Users" icon="megaphone">
+    Give users advance notice (7-30 days recommended)
+  </Card>
+  
+  <Card title="Save Backup ID" icon="floppy-disk">
+    Store the backup ID in case you need to recover
+  </Card>
+  
+  <Card title="Check Dependencies" icon="link">
+    Ensure no other systems depend on your server
+  </Card>
+  
+  <Card title="Consider Alternatives" icon="lightbulb">
+    Deprecation or making private instead of deletion
+  </Card>
+  
+  <Card title="Double Confirmation" icon="shield-check">
+    Use UI confirmation dialogs to prevent accidents
+  </Card>
+</CardGroup>
+
+## Alternative Actions
+
+Instead of deletion, consider:
+
+<AccordionGroup>
+  <Accordion title="Make Private" icon="lock">
+    ```javascript
+    // Make server private (coming soon)
+    await updateServer(name, {
+      visibility: 'private'
+    });
+    ```
+  </Accordion>
+  
+  <Accordion title="Transfer Ownership" icon="user-group">
+    ```javascript
+    // Transfer to another user (coming soon)
+    await transferServer(name, {
+      newOwner: 'user@example.com'
+    });
+    ```
+  </Accordion>
+  
+  <Accordion title="Archive" icon="box-archive">
+    ```javascript
+    // Mark as archived
+    await updateServer(name, {
+      metadata: {
+        archived: true,
+        archived_date: new Date().toISOString()
+      }
+    });
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Security Considerations
+
+<Warning>
+  **Important Security Notes:**
+  
+  - Deletion does not remove git history
+  - Public forks of your repository remain accessible
+  - User-generated content (reviews) is anonymized but retained
+  - Transaction data is retained for compliance
+  
+  If your server contained sensitive information:
+  1. Delete from source repository
+  2. Rotate any exposed credentials
+  3. Contact support for additional cleanup
+</Warning>
+
+## Related Endpoints
+
+<CardGroup cols={3}>
+  <Card title="Get Server" icon="eye" href="/api/servers/get">
+    View server details before deletion
+  </Card>
+  
+  <Card title="Update Server" icon="pen" href="/api/servers/update">
+    Update instead of deleting
+  </Card>
+  
+  <Card title="Create Server" icon="plus" href="/api/servers/create">
+    Create a replacement server
+  </Card>
+</CardGroup>
+
+<Check>
+  Think carefully before deleting. Deprecation is often a better choice!
+</Check>

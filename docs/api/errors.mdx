@@ -1,0 +1,889 @@
+---
+title: 'Error Handling'
+description: 'Comprehensive guide to SuperBox API error codes and handling'
+---
+
+## Error Response Format
+
+All error responses from the SuperBox API follow a consistent structure:
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "ERROR_CODE",
+    "message": "Human-readable error message",
+    "details": {
+      "field": "specific_field",
+      "reason": "Additional context",
+      "hint": "Suggestion to fix the error"
+    }
+  },
+  "meta": {
+    "timestamp": "2025-12-09T10:30:00Z",
+    "version": "v1",
+    "requestId": "req_abc123def456"
+  }
+}
+```
+
+<ParamField body="success" type="boolean">
+  Always `false` for errors
+</ParamField>
+
+<ParamField body="error.code" type="string">
+  Machine-readable error code (uppercase with underscores)
+</ParamField>
+
+<ParamField body="error.message" type="string">
+  Human-readable error description
+</ParamField>
+
+<ParamField body="error.details" type="object">
+  Additional context and debugging information
+</ParamField>
+
+<ParamField body="meta.requestId" type="string">
+  Unique request identifier for support inquiries
+</ParamField>
+
+## HTTP Status Codes
+
+<AccordionGroup>
+  <Accordion title="4xx Client Errors" icon="user-xmark">
+    Errors caused by invalid client requests
+    
+    <ResponseField name="400 Bad Request" type="error">
+      Invalid request parameters, body, or format
+    </ResponseField>
+    
+    <ResponseField name="401 Unauthorized" type="error">
+      Missing, invalid, or expired authentication token
+    </ResponseField>
+    
+    <ResponseField name="403 Forbidden" type="error">
+      Valid authentication but insufficient permissions
+    </ResponseField>
+    
+    <ResponseField name="404 Not Found" type="error">
+      Requested resource does not exist
+    </ResponseField>
+    
+    <ResponseField name="409 Conflict" type="error">
+      Resource already exists or conflicting state
+    </ResponseField>
+    
+    <ResponseField name="422 Unprocessable Entity" type="error">
+      Valid request format but semantic errors
+    </ResponseField>
+    
+    <ResponseField name="429 Too Many Requests" type="error">
+      Rate limit exceeded
+    </ResponseField>
+  </Accordion>
+  
+  <Accordion title="5xx Server Errors" icon="server">
+    Errors caused by server-side issues
+    
+    <ResponseField name="500 Internal Server Error" type="error">
+      Unexpected server error
+    </ResponseField>
+    
+    <ResponseField name="502 Bad Gateway" type="error">
+      Upstream service error
+    </ResponseField>
+    
+    <ResponseField name="503 Service Unavailable" type="error">
+      Service temporarily unavailable (maintenance)
+    </ResponseField>
+    
+    <ResponseField name="504 Gateway Timeout" type="error">
+      Upstream service timeout
+    </ResponseField>
+  </Accordion>
+</AccordionGroup>
+
+## Error Codes Reference
+
+### Authentication Errors
+
+<ResponseField name="MISSING_TOKEN" type="401">
+  No authentication token provided
+  
+  ```json
+  {
+    "code": "MISSING_TOKEN",
+    "message": "Authentication token is required",
+    "details": {
+      "hint": "Include 'Authorization: Bearer <token>' header"
+    }
+  }
+  ```
+</ResponseField>
+
+<ResponseField name="INVALID_TOKEN" type="401">
+  Token is malformed or invalid
+  
+  ```json
+  {
+    "code": "INVALID_TOKEN",
+    "message": "Authentication token is invalid",
+    "details": {
+      "reason": "Invalid signature"
+    }
+  }
+  ```
+</ResponseField>
+
+<ResponseField name="EXPIRED_TOKEN" type="401">
+  Token has expired
+  
+  ```json
+  {
+    "code": "EXPIRED_TOKEN",
+    "message": "Authentication token has expired",
+    "details": {
+      "expiredAt": "2025-12-09T10:30:00Z",
+      "hint": "Refresh your token and try again"
+    }
+  }
+  ```
+</ResponseField>
+
+<ResponseField name="FORBIDDEN" type="403">
+  Insufficient permissions for the requested action
+  
+  ```json
+  {
+    "code": "FORBIDDEN",
+    "message": "You don't have permission to perform this action",
+    "details": {
+      "required": "owner",
+      "current": "user",
+      "resource": "server:weather-mcp"
+    }
+  }
+  ```
+</ResponseField>
+
+### Validation Errors
+
+<ResponseField name="VALIDATION_ERROR" type="400">
+  Request validation failed
+  
+  ```json
+  {
+    "code": "VALIDATION_ERROR",
+    "message": "Request validation failed",
+    "details": {
+      "errors": [
+        {
+          "field": "name",
+          "message": "Server name must be lowercase with hyphens",
+          "value": "MyServer123"
+        },
+        {
+          "field": "version",
+          "message": "Version must follow semver format",
+          "value": "1.0"
+        }
+      ]
+    }
+  }
+  ```
+</ResponseField>
+
+<ResponseField name="MISSING_REQUIRED_FIELD" type="400">
+  Required field is missing
+  
+  ```json
+  {
+    "code": "MISSING_REQUIRED_FIELD",
+    "message": "Required field is missing",
+    "details": {
+      "field": "entrypoint",
+      "hint": "Specify the entry point file for your server"
+    }
+  }
+  ```
+</ResponseField>
+
+<ResponseField name="INVALID_FIELD_FORMAT" type="400">
+  Field format is invalid
+  
+  ```json
+  {
+    "code": "INVALID_FIELD_FORMAT",
+    "message": "Field format is invalid",
+    "details": {
+      "field": "repository.url",
+      "expected": "Valid Git repository URL",
+      "received": "not-a-url"
+    }
+  }
+  ```
+</ResponseField>
+
+### Resource Errors
+
+<ResponseField name="RESOURCE_NOT_FOUND" type="404">
+  Requested resource doesn't exist
+  
+  ```json
+  {
+    "code": "RESOURCE_NOT_FOUND",
+    "message": "Server not found",
+    "details": {
+      "resource": "server",
+      "identifier": "non-existent-server",
+      "hint": "Check the server name and try again"
+    }
+  }
+  ```
+</ResponseField>
+
+<ResponseField name="RESOURCE_ALREADY_EXISTS" type="409">
+  Resource with the same identifier already exists
+  
+  ```json
+  {
+    "code": "RESOURCE_ALREADY_EXISTS",
+    "message": "Server with this name already exists",
+    "details": {
+      "resource": "server",
+      "name": "weather-mcp",
+      "existingVersion": "1.2.0",
+      "hint": "Choose a different name or update the existing server"
+    }
+  }
+  ```
+</ResponseField>
+
+<ResponseField name="RESOURCE_CONFLICT" type="409">
+  Resource is in a conflicting state
+  
+  ```json
+  {
+    "code": "RESOURCE_CONFLICT",
+    "message": "Cannot delete server while it's being executed",
+    "details": {
+      "resource": "server",
+      "name": "weather-mcp",
+      "state": "executing",
+      "hint": "Wait for execution to complete or cancel it first"
+    }
+  }
+  ```
+</ResponseField>
+
+### Rate Limiting Errors
+
+<ResponseField name="RATE_LIMIT_EXCEEDED" type="429">
+  API rate limit exceeded
+  
+  ```json
+  {
+    "code": "RATE_LIMIT_EXCEEDED",
+    "message": "Rate limit exceeded",
+    "details": {
+      "limit": 1000,
+      "remaining": 0,
+      "resetAt": "2025-12-09T11:00:00Z",
+      "retryAfter": 300,
+      "hint": "Wait 5 minutes before making more requests"
+    }
+  }
+  ```
+  
+  <Info>
+    Check `X-RateLimit-*` headers for rate limit information
+  </Info>
+</ResponseField>
+
+### Repository Errors
+
+<ResponseField name="REPOSITORY_UNREACHABLE" type="422">
+  Cannot access the Git repository
+  
+  ```json
+  {
+    "code": "REPOSITORY_UNREACHABLE",
+    "message": "Unable to access Git repository",
+    "details": {
+      "url": "https://github.com/user/repo",
+      "reason": "Repository is private or doesn't exist",
+      "hint": "Ensure the repository is public and URL is correct"
+    }
+  }
+  ```
+</ResponseField>
+
+<ResponseField name="REPOSITORY_INVALID_STRUCTURE" type="422">
+  Repository doesn't have valid MCP server structure
+  
+  ```json
+  {
+    "code": "REPOSITORY_INVALID_STRUCTURE",
+    "message": "Repository doesn't contain a valid MCP server",
+    "details": {
+      "missingFiles": ["main.py", "requirements.txt"],
+      "hint": "Ensure your repository has all required files"
+    }
+  }
+  ```
+</ResponseField>
+
+### Security Errors
+
+<ResponseField name="SECURITY_SCAN_FAILED" type="422">
+  Security scan found critical issues
+  
+  ```json
+  {
+    "code": "SECURITY_SCAN_FAILED",
+    "message": "Security scan detected critical vulnerabilities",
+    "details": {
+      "criticalIssues": 3,
+      "scanners": ["sonarcloud", "gitguardian", "bandit"],
+      "report": "/api/v1/servers/server-name/security-report",
+      "hint": "Fix security issues and resubmit"
+    }
+  }
+  ```
+</ResponseField>
+
+<ResponseField name="SECRETS_DETECTED" type="422">
+  Secret keys or credentials found in code
+  
+  ```json
+  {
+    "code": "SECRETS_DETECTED",
+    "message": "Secret keys detected in repository",
+    "details": {
+      "secretsFound": 2,
+      "types": ["API Key", "AWS Access Key"],
+      "hint": "Remove all secrets from your code and use environment variables"
+    }
+  }
+  ```
+</ResponseField>
+
+### Payment Errors
+
+<ResponseField name="PAYMENT_REQUIRED" type="402">
+  Payment required to access this server
+  
+  ```json
+  {
+    "code": "PAYMENT_REQUIRED",
+    "message": "This server requires payment",
+    "details": {
+      "server": "premium-server",
+      "price": {
+        "amount": 9.99,
+        "currency": "USD"
+      },
+      "paymentUrl": "https://superbox-fe.vercel.app/checkout/premium-server"
+    }
+  }
+  ```
+</ResponseField>
+
+<ResponseField name="PAYMENT_FAILED" type="422">
+  Payment processing failed
+  
+  ```json
+  {
+    "code": "PAYMENT_FAILED",
+    "message": "Payment processing failed",
+    "details": {
+      "reason": "Insufficient funds",
+      "provider": "razorpay",
+      "hint": "Check your payment method and try again"
+    }
+  }
+  ```
+</ResponseField>
+
+### Server Errors
+
+<ResponseField name="INTERNAL_ERROR" type="500">
+  Unexpected server error
+  
+  ```json
+  {
+    "code": "INTERNAL_ERROR",
+    "message": "An unexpected error occurred",
+    "details": {
+      "requestId": "req_abc123def456",
+      "hint": "Contact support with this request ID"
+    }
+  }
+  ```
+</ResponseField>
+
+<ResponseField name="SERVICE_UNAVAILABLE" type="503">
+  Service temporarily unavailable
+  
+  ```json
+  {
+    "code": "SERVICE_UNAVAILABLE",
+    "message": "Service is temporarily unavailable",
+    "details": {
+      "reason": "Scheduled maintenance",
+      "estimatedResolution": "2025-12-09T12:00:00Z",
+      "hint": "Check https://status.superbox.dev for updates"
+    }
+  }
+  ```
+</ResponseField>
+
+## Error Handling Best Practices
+
+### 1. Always Check Response Status
+
+<CodeGroup>
+```javascript JavaScript
+const response = await fetch('https://api.superbox.dev/api/v1/servers');
+
+if (!response.ok) {
+  const error = await response.json();
+  console.error(`Error ${response.status}:`, error.error.message);
+  // Handle error based on status code
+}
+
+const data = await response.json();
+```
+
+```python Python
+response = requests.get('https://api.superbox.dev/api/v1/servers')
+
+if not response.ok:
+    error = response.json()
+    print(f"Error {response.status_code}: {error['error']['message']}")
+    # Handle error based on status code
+else:
+    data = response.json()
+```
+
+```go Go
+resp, err := http.Get("https://api.superbox.dev/api/v1/servers")
+if err != nil {
+    log.Fatal(err)
+}
+defer resp.Body.Close()
+
+if resp.StatusCode != http.StatusOK {
+    var errorResp ErrorResponse
+    json.NewDecoder(resp.Body).Decode(&errorResp)
+    log.Printf("Error %d: %s", resp.StatusCode, errorResp.Error.Message)
+    // Handle error based on status code
+}
+```
+</CodeGroup>
+
+### 2. Implement Retry Logic
+
+<CodeGroup>
+```javascript JavaScript
+async function fetchWithRetry(url, options = {}, maxRetries = 3) {
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      const response = await fetch(url, options);
+      
+      // Don't retry on client errors (4xx)
+      if (response.status >= 400 && response.status < 500) {
+        return response;
+      }
+      
+      // Retry on server errors (5xx) or network issues
+      if (response.ok) {
+        return response;
+      }
+      
+      // Exponential backoff
+      await new Promise(resolve => 
+        setTimeout(resolve, Math.pow(2, i) * 1000)
+      );
+    } catch (error) {
+      if (i === maxRetries - 1) throw error;
+    }
+  }
+}
+```
+
+```python Python
+import time
+from requests.adapters import HTTPAdapter
+from requests.packages.urllib3.util.retry import Retry
+
+def create_session_with_retry():
+    session = requests.Session()
+    retry = Retry(
+        total=3,
+        backoff_factor=1,
+        status_forcelist=[500, 502, 503, 504],
+        allowed_methods=["GET", "POST", "PUT", "DELETE"]
+    )
+    adapter = HTTPAdapter(max_retries=retry)
+    session.mount('http://', adapter)
+    session.mount('https://', adapter)
+    return session
+
+session = create_session_with_retry()
+response = session.get('https://api.superbox.dev/api/v1/servers')
+```
+</CodeGroup>
+
+### 3. Handle Rate Limiting
+
+<CodeGroup>
+```javascript JavaScript
+async function fetchWithRateLimit(url, options = {}) {
+  const response = await fetch(url, options);
+  
+  if (response.status === 429) {
+    const resetTime = response.headers.get('X-RateLimit-Reset');
+    const waitTime = (parseInt(resetTime) * 1000) - Date.now();
+    
+    console.log(`Rate limited. Waiting ${waitTime}ms...`);
+    await new Promise(resolve => setTimeout(resolve, waitTime));
+    
+    // Retry the request
+    return fetchWithRateLimit(url, options);
+  }
+  
+  return response;
+}
+```
+
+```python Python
+import time
+
+def request_with_rate_limit(url, headers):
+    response = requests.get(url, headers=headers)
+    
+    if response.status_code == 429:
+        reset_time = int(response.headers.get('X-RateLimit-Reset', 0))
+        wait_time = reset_time - int(time.time())
+        
+        if wait_time > 0:
+            print(f"Rate limited. Waiting {wait_time}s...")
+            time.sleep(wait_time)
+            return request_with_rate_limit(url, headers)
+    
+    return response
+```
+</CodeGroup>
+
+### 4. Validate Input Before Sending
+
+<CodeGroup>
+```javascript JavaScript
+function validateServerData(data) {
+  const errors = [];
+  
+  // Name validation
+  if (!/^[a-z0-9-]+$/.test(data.name)) {
+    errors.push({
+      field: 'name',
+      message: 'Name must be lowercase with hyphens only'
+    });
+  }
+  
+  // Version validation
+  if (!/^\d+\.\d+\.\d+$/.test(data.version)) {
+    errors.push({
+      field: 'version',
+      message: 'Version must follow semver format (x.y.z)'
+    });
+  }
+  
+  // Repository URL validation
+  const urlPattern = /^https:\/\/github\.com\/[\w-]+\/[\w-]+$/;
+  if (!urlPattern.test(data.repository?.url)) {
+    errors.push({
+      field: 'repository.url',
+      message: 'Must be a valid GitHub repository URL'
+    });
+  }
+  
+  if (errors.length > 0) {
+    throw new ValidationError('Validation failed', errors);
+  }
+}
+```
+
+```python Python
+import re
+
+def validate_server_data(data):
+    errors = []
+    
+    # Name validation
+    if not re.match(r'^[a-z0-9-]+$', data['name']):
+        errors.append({
+            'field': 'name',
+            'message': 'Name must be lowercase with hyphens only'
+        })
+    
+    # Version validation
+    if not re.match(r'^\d+\.\d+\.\d+$', data['version']):
+        errors.append({
+            'field': 'version',
+            'message': 'Version must follow semver format (x.y.z)'
+        })
+    
+    # Repository URL validation
+    url_pattern = r'^https://github\.com/[\w-]+/[\w-]+$'
+    if not re.match(url_pattern, data.get('repository', {}).get('url', '')):
+        errors.append({
+            'field': 'repository.url',
+            'message': 'Must be a valid GitHub repository URL'
+        })
+    
+    if errors:
+        raise ValidationError('Validation failed', errors)
+```
+</CodeGroup>
+
+### 5. Log Errors for Debugging
+
+<CodeGroup>
+```javascript JavaScript
+async function makeRequest(url, options = {}) {
+  try {
+    const response = await fetch(url, options);
+    
+    if (!response.ok) {
+      const error = await response.json();
+      
+      // Log detailed error information
+      console.error({
+        timestamp: new Date().toISOString(),
+        url,
+        method: options.method || 'GET',
+        status: response.status,
+        requestId: error.meta?.requestId,
+        errorCode: error.error?.code,
+        message: error.error?.message,
+        details: error.error?.details
+      });
+      
+      throw new APIError(error);
+    }
+    
+    return response.json();
+  } catch (error) {
+    console.error('Request failed:', error);
+    throw error;
+  }
+}
+```
+
+```python Python
+import logging
+from datetime import datetime
+
+logger = logging.getLogger(__name__)
+
+def make_request(url, **kwargs):
+    try:
+        response = requests.request(url=url, **kwargs)
+        
+        if not response.ok:
+            error = response.json()
+            
+            # Log detailed error information
+            logger.error({
+                'timestamp': datetime.utcnow().isoformat(),
+                'url': url,
+                'method': kwargs.get('method', 'GET'),
+                'status': response.status_code,
+                'request_id': error.get('meta', {}).get('requestId'),
+                'error_code': error.get('error', {}).get('code'),
+                'message': error.get('error', {}).get('message'),
+                'details': error.get('error', {}).get('details')
+            })
+            
+            raise APIError(error)
+        
+        return response.json()
+    except Exception as e:
+        logger.exception('Request failed')
+        raise
+```
+</CodeGroup>
+
+## Common Error Scenarios
+
+<AccordionGroup>
+  <Accordion title="Scenario 1: Creating a Server with Invalid Name" icon="circle-xmark">
+    **Request:**
+    ```bash
+    curl -X POST "https://api.superbox.dev/api/v1/servers" \
+      -H "Authorization: Bearer $TOKEN" \
+      -d '{"name": "My Server!", "version": "1.0.0", ...}'
+    ```
+    
+    **Response:** `400 Bad Request`
+    ```json
+    {
+      "success": false,
+      "error": {
+        "code": "VALIDATION_ERROR",
+        "message": "Server name contains invalid characters",
+        "details": {
+          "field": "name",
+          "value": "My Server!",
+          "hint": "Use lowercase letters, numbers, and hyphens only"
+        }
+      }
+    }
+    ```
+    
+    **Solution:** Use a valid name: `my-server`
+  </Accordion>
+  
+  <Accordion title="Scenario 2: Token Expired During Request" icon="clock">
+    **Request:**
+    ```bash
+    curl -X GET "https://api.superbox.dev/api/v1/servers"
+      -H "Authorization: Bearer expired_token"
+    ```
+    
+    **Response:** `401 Unauthorized`
+    ```json
+    {
+      "success": false,
+      "error": {
+        "code": "EXPIRED_TOKEN",
+        "message": "Authentication token has expired"
+      }
+    }
+    ```
+    
+    **Solution:** Refresh your Firebase token and retry
+  </Accordion>
+  
+  <Accordion title="Scenario 3: Deleting Someone Else's Server" icon="ban">
+    **Request:**
+    ```bash
+    curl -X DELETE "https://api.superbox.dev/api/v1/servers/other-user-server" \
+      -H "Authorization: Bearer $TOKEN"
+    ```
+    
+    **Response:** `403 Forbidden`
+    ```json
+    {
+      "success": false,
+      "error": {
+        "code": "FORBIDDEN",
+        "message": "You don't have permission to delete this server",
+        "details": {
+          "owner": "other-user",
+          "requester": "you"
+        }
+      }
+    }
+    ```
+    
+    **Solution:** You can only delete servers you own
+  </Accordion>
+  
+  <Accordion title="Scenario 4: Rate Limit Exceeded" icon="gauge-high">
+    **Request:**
+    ```bash
+    # After 1000 requests in an hour
+    curl -X GET "https://api.superbox.dev/api/v1/servers"
+    ```
+    
+    **Response:** `429 Too Many Requests`
+    ```json
+    {
+      "success": false,
+      "error": {
+        "code": "RATE_LIMIT_EXCEEDED",
+        "message": "Rate limit exceeded",
+        "details": {
+          "resetAt": "2025-12-09T11:00:00Z",
+          "retryAfter": 300
+        }
+      }
+    }
+    ```
+    
+    **Solution:** Wait for rate limit reset or implement exponential backoff
+  </Accordion>
+</AccordionGroup>
+
+## Error Handling with SDKs
+
+Our official SDKs handle errors automatically:
+
+<CodeGroup>
+```python Python SDK
+from superbox import SuperBoxClient, APIError, RateLimitError
+
+client = SuperBoxClient(token=os.getenv('SUPERBOX_API_TOKEN'))
+
+try:
+    server = client.servers.create({
+        'name': 'my-server',
+        'version': '1.0.0',
+        # ...
+    })
+except RateLimitError as e:
+    print(f"Rate limited. Retry after {e.retry_after}s")
+except APIError as e:
+    print(f"API Error [{e.code}]: {e.message}")
+    print(f"Details: {e.details}")
+```
+
+```javascript Node.js SDK
+import { SuperBoxClient, APIError, RateLimitError } from '@superbox/sdk';
+
+const client = new SuperBoxClient({ token: process.env.SUPERBOX_API_TOKEN });
+
+try {
+  const server = await client.servers.create({
+    name: 'my-server',
+    version: '1.0.0',
+    // ...
+  });
+} catch (error) {
+  if (error instanceof RateLimitError) {
+    console.log(`Rate limited. Retry after ${error.retryAfter}s`);
+  } else if (error instanceof APIError) {
+    console.log(`API Error [${error.code}]: ${error.message}`);
+    console.log(`Details:`, error.details);
+  }
+}
+```
+</CodeGroup>
+
+## Support
+
+If you encounter an error you can't resolve:
+
+<CardGroup cols={2}>
+  <Card title="Check API Status" icon="signal" href="https://status.superbox.dev">
+    Verify API availability and known issues
+  </Card>
+  
+  <Card title="Contact Support" icon="envelope" href="mailto:hi@areeb.dev">
+    Include your `requestId` for faster resolution
+  </Card>
+  
+  <Card title="Community Discord" icon="discord" href="https://discord.gg/superbox">
+    Get help from the community
+  </Card>
+  
+  <Card title="GitHub Issues" icon="github" href="https://github.com/areebahmeddd/SuperBox-FE/issues">
+    Report bugs or request features
+  </Card>
+</CardGroup>
+
+<Check>
+  With proper error handling, your integration will be robust and user-friendly!
+</Check>

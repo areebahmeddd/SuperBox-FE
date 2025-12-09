@@ -1,0 +1,81 @@
+---
+title: 'superbox test'
+description: 'Run MCP server test suite'
+icon: 'vial'
+---
+
+## Usage
+
+```bash
+superbox test [OPTIONS]
+```
+
+## Description
+
+Executes the test suite for your MCP server with coverage reporting.
+
+## Options
+
+<ParamField path="--coverage" type="boolean">
+  Generate coverage report
+  
+  ```bash
+  superbox test --coverage
+  ```
+</ParamField>
+
+<ParamField path="--verbose" type="boolean">
+  Detailed test output
+</ParamField>
+
+<ParamField path="--pattern" type="string" default="test_*.py">
+  Test file pattern
+</ParamField>
+
+<ParamField path="--failfast" type="boolean">
+  Stop on first failure
+</ParamField>
+
+## Examples
+
+<CodeGroup>
+```bash Basic Test
+superbox test
+```
+
+```bash With Coverage
+superbox test --coverage --verbose
+```
+
+```bash Specific Pattern
+superbox test --pattern "integration_*.py"
+```
+</CodeGroup>
+
+## Test Output
+
+```
+╭────────────── Test Results ──────────────╮
+│                                           │
+│  ✓ test_get_weather_success              │
+│  ✓ test_get_weather_invalid_city         │
+│  ✓ test_get_forecast_success             │
+│  ✗ test_get_historical_data              │
+│                                           │
+│  Tests: 3 passed, 1 failed, 4 total     │
+│  Coverage: 85.3%                         │
+│  Duration: 2.4s                          │
+│                                           │
+╰───────────────────────────────────────────╯
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Push Server" icon="upload" href="/cli/push">
+    Publish after tests pass
+  </Card>
+  <Card title="Run Locally" icon="play" href="/cli/run">
+    Test interactively
+  </Card>
+</CardGroup>

@@ -1,0 +1,131 @@
+---
+title: 'User Login'
+description: 'POST /auth/login - Authenticate user credentials'
+api: 'POST https://api.superbox.com/v1/auth/login'
+---
+
+## Endpoint
+
+```
+POST /auth/login
+```
+
+## Request Body
+
+<ParamField body="email" type="string" required>
+  User email or username
+</ParamField>
+
+<ParamField body="password" type="string" required>
+  User password
+</ParamField>
+
+<ParamField body="remember_me" type="boolean" default={false}>
+  Extended session duration
+</ParamField>
+
+## Example Request
+
+<CodeGroup>
+```bash cURL
+curl -X POST https://api.superbox.com/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "john@example.com",
+    "password": "SecurePass123!",
+    "remember_me": true
+  }'
+```
+
+```javascript JavaScript
+const response = await fetch('https://api.superbox.com/v1/auth/login', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    email: 'john@example.com',
+    password: 'SecurePass123!',
+    remember_me: true,
+  }),
+});
+
+const data = await response.json();
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    'https://api.superbox.com/v1/auth/login',
+    json={
+        'email': 'john@example.com',
+        'password': 'SecurePass123!',
+        'remember_me': True,
+    }
+)
+
+data = response.json()
+```
+</CodeGroup>
+
+## Response
+
+<ResponseField name="user" type="object">
+  Authenticated user object
+</ResponseField>
+
+<ResponseField name="token" type="string">
+  JWT access token (expires in 24h)
+</ResponseField>
+
+<ResponseField name="refresh_token" type="string">
+  Refresh token (expires in 7 days or 30 days if remember_me)
+</ResponseField>
+
+<ResponseField name="expires_in" type="number">
+  Token expiration time in seconds
+</ResponseField>
+
+### Success Response (200)
+
+```json
+{
+  "user": {
+    "id": "usr_1234567890",
+    "email": "john@example.com",
+    "username": "johndoe",
+    "avatar_url": "https://avatars.superbox.com/johndoe.jpg"
+  },
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "refresh_token": "rt_abcdef123456...",
+  "expires_in": 86400
+}
+```
+
+### Error Responses
+
+<CodeGroup>
+```json 401 - Invalid Credentials
+{
+  "error": "Authentication failed",
+  "message": "Invalid email or password"
+}
+```
+
+```json 429 - Rate Limit
+{
+  "error": "Rate limit exceeded",
+  "message": "Too many login attempts. Try again in 15 minutes."
+}
+```
+</CodeGroup>
+
+## Using the Token
+
+Include the token in the Authorization header:
+
+```bash
+curl https://api.superbox.com/v1/servers \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+```

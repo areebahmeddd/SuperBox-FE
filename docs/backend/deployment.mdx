@@ -1,0 +1,686 @@
+---
+title: 'Backend Deployment'
+description: 'Deploy SuperBox backend to AWS with automated CI/CD pipelines'
+icon: 'aws'
+---
+
+## AWS Infrastructure
+
+SuperBox backend runs on AWS with a highly available, scalable architecture.
+
+<CardGroup cols={3}>
+  <Card title="Compute" icon="server">
+    ECS Fargate for containerized Go API
+  </Card>
+  <Card title="Database" icon="database">
+    RDS PostgreSQL with Multi-AZ
+  </Card>
+  <Card title="Cache" icon="bolt">
+    ElastiCache Redis cluster
+  </Card>
+  <Card title="Storage" icon="hard-drive">
+    S3 for MCP server packages
+  </Card>
+  <Card title="Functions" icon="code">
+    Lambda for MCP execution
+  </Card>
+  <Card title="CDN" icon="cloud">
+    CloudFront for distribution
+  </Card>
+</CardGroup>
+
+## Prerequisites
+
+<Steps>
+  <Step title="AWS Account">
+    Create an AWS account at [aws.amazon.com](https://aws.amazon.com)
+  </Step>
+
+  <Step title="AWS CLI">
+    Install and configure AWS CLI:
+    
+    ```bash
+    # Install AWS CLI
+    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+    unzip awscliv2.zip
+    sudo ./aws/install
+    
+    # Configure credentials
+    aws configure
+    ```
+    
+    Enter your AWS credentials:
+    ```
+    AWS Access Key ID: your_access_key
+    AWS Secret Access Key: your_secret_key
+    Default region name: us-east-1
+    Default output format: json
+    ```
+  </Step>
+
+  <Step title="Terraform">
+    Install Terraform for infrastructure as code:
+    
+    ```bash
+    # Download Terraform
+    wget https://releases.hashicorp.com/terraform/1.6.0/terraform_1.6.0_linux_amd64.zip
+    unzip terraform_1.6.0_linux_amd64.zip
+    sudo mv terraform /usr/local/bin/
+    
+    # Verify installation
+    terraform version
+    ```
+  </Step>
+
+  <Step title="Docker">
+    Install Docker for containerization:
+    
+    ```bash
+    curl -fsSL https://get.docker.com -o get-docker.sh
+    sudo sh get-docker.sh
+    sudo usermod -aG docker $USER
+    ```
+  </Step>
+</Steps>
+
+## Infrastructure Setup with Terraform
+
+### Project Structure
+
+```
+terraform/
+├── main.tf               # Main configuration
+├── variables.tf          # Input variables
+├── outputs.tf            # Output values
+├── vpc.tf               # VPC configuration
+├── rds.tf               # Database configuration
+├── elasticache.tf       # Redis configuration
+├── ecs.tf               # ECS cluster and services
+├── alb.tf               # Application Load Balancer
+├── s3.tf                # S3 buckets
+├── lambda.tf            # Lambda functions
+├── cloudfront.tf        # CDN configuration
+└── iam.tf               # IAM roles and policies
+```
+
+### Initialize Infrastructure
+
+<Tabs>
+  <Tab title="variables.tf">
+    ```hcl
+    variable "aws_region" {
+      description = "AWS region"
+      default     = "us-east-1"
+    }
+    
+    variable "environment" {
+      description = "Environment name"
+      default     = "production"
+    }
+    
+    variable "app_name" {
+      description = "Application name"
+      default     = "superbox"
+    }
+    
+    variable "db_username" {
+      description = "Database master username"
+      type        = string
+      sensitive   = true
+    }
+    
+    variable "db_password" {
+      description = "Database master password"
+      type        = string
+      sensitive   = true
+    }
+    
+    variable "jwt_secret" {
+      description = "JWT secret key"
+      type        = string
+      sensitive   = true
+    }
+    ```
+  </Tab>
+
+  <Tab title="vpc.tf">
+    ```hcl
+    resource "aws_vpc" "main" {
+      cidr_block           = "10.0.0.0/16"
+      enable_dns_hostnames = true
+      enable_dns_support   = true
+      
+      tags = {
+        Name        = "${var.app_name}-vpc"
+        Environment = var.environment
+      }
+    }
+    
+    resource "aws_subnet" "public" {
+      count                   = 2
+      vpc_id                  = aws_vpc.main.id
+      cidr_block              = "10.0.${count.index + 1}.0/24"
+      availability_zone       = data.aws_availability_zones.available.names[count.index]
+      map_public_ip_on_launch = true
+      
+      tags = {
+        Name = "${var.app_name}-public-${count.index + 1}"
+      }
+    }
+    
+    resource "aws_subnet" "private" {
+      count             = 2
+      vpc_id            = aws_vpc.main.id
+      cidr_block        = "10.0.${count.index + 10}.0/24"
+      availability_zone = data.aws_availability_zones.available.names[count.index]
+      
+      tags = {
+        Name = "${var.app_name}-private-${count.index + 1}"
+      }
+    }
+    
+    resource "aws_internet_gateway" "main" {
+      vpc_id = aws_vpc.main.id
+      
+      tags = {
+        Name = "${var.app_name}-igw"
+      }
+    }
+    
+    resource "aws_nat_gateway" "main" {
+      count         = 2
+      allocation_id = aws_eip.nat[count.index].id
+      subnet_id     = aws_subnet.public[count.index].id
+      
+      tags = {
+        Name = "${var.app_name}-nat-${count.index + 1}"
+      }
+    }
+    ```
+  </Tab>
+
+  <Tab title="rds.tf">
+    ```hcl
+    resource "aws_db_instance" "main" {
+      identifier             = "${var.app_name}-db"
+      engine                 = "postgres"
+      engine_version         = "16.1"
+      instance_class         = "db.t3.medium"
+      allocated_storage      = 100
+      storage_type           = "gp3"
+      storage_encrypted      = true
+      
+      db_name  = "superbox"
+      username = var.db_username
+      password = var.db_password
+      
+      multi_az               = true
+      db_subnet_group_name   = aws_db_subnet_group.main.name
+      vpc_security_group_ids = [aws_security_group.rds.id]
+      
+      backup_retention_period = 7
+      backup_window          = "03:00-04:00"
+      maintenance_window     = "mon:04:00-mon:05:00"
+      
+      skip_final_snapshot = false
+      final_snapshot_identifier = "${var.app_name}-db-final-snapshot"
+      
+      performance_insights_enabled = true
+      enabled_cloudwatch_logs_exports = ["postgresql", "upgrade"]
+      
+      tags = {
+        Name        = "${var.app_name}-db"
+        Environment = var.environment
+      }
+    }
+    
+    resource "aws_db_subnet_group" "main" {
+      name       = "${var.app_name}-db-subnet-group"
+      subnet_ids = aws_subnet.private[*].id
+      
+      tags = {
+        Name = "${var.app_name}-db-subnet-group"
+      }
+    }
+    ```
+  </Tab>
+
+  <Tab title="ecs.tf">
+    ```hcl
+    resource "aws_ecs_cluster" "main" {
+      name = "${var.app_name}-cluster"
+      
+      setting {
+        name  = "containerInsights"
+        value = "enabled"
+      }
+      
+      tags = {
+        Name        = "${var.app_name}-cluster"
+        Environment = var.environment
+      }
+    }
+    
+    resource "aws_ecs_task_definition" "api" {
+      family                   = "${var.app_name}-api"
+      requires_compatibilities = ["FARGATE"]
+      network_mode             = "awsvpc"
+      cpu                      = "1024"
+      memory                   = "2048"
+      execution_role_arn       = aws_iam_role.ecs_execution.arn
+      task_role_arn            = aws_iam_role.ecs_task.arn
+      
+      container_definitions = jsonencode([
+        {
+          name      = "api"
+          image     = "${aws_ecr_repository.api.repository_url}:latest"
+          essential = true
+          
+          portMappings = [
+            {
+              containerPort = 8080
+              protocol      = "tcp"
+            }
+          ]
+          
+          environment = [
+            {
+              name  = "ENV"
+              value = var.environment
+            },
+            {
+              name  = "PORT"
+              value = "8080"
+            },
+            {
+              name  = "DB_HOST"
+              value = aws_db_instance.main.address
+            },
+            {
+              name  = "REDIS_HOST"
+              value = aws_elasticache_cluster.main.cache_nodes[0].address
+            }
+          ]
+          
+          secrets = [
+            {
+              name      = "DB_PASSWORD"
+              valueFrom = aws_secretsmanager_secret.db_password.arn
+            },
+            {
+              name      = "JWT_SECRET"
+              valueFrom = aws_secretsmanager_secret.jwt_secret.arn
+            }
+          ]
+          
+          logConfiguration = {
+            logDriver = "awslogs"
+            options = {
+              "awslogs-group"         = aws_cloudwatch_log_group.api.name
+              "awslogs-region"        = var.aws_region
+              "awslogs-stream-prefix" = "api"
+            }
+          }
+          
+          healthCheck = {
+            command     = ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"]
+            interval    = 30
+            timeout     = 5
+            retries     = 3
+            startPeriod = 60
+          }
+        }
+      ])
+    }
+    
+    resource "aws_ecs_service" "api" {
+      name            = "${var.app_name}-api"
+      cluster         = aws_ecs_cluster.main.id
+      task_definition = aws_ecs_task_definition.api.arn
+      desired_count   = 2
+      launch_type     = "FARGATE"
+      
+      network_configuration {
+        subnets          = aws_subnet.private[*].id
+        security_groups  = [aws_security_group.ecs.id]
+        assign_public_ip = false
+      }
+      
+      load_balancer {
+        target_group_arn = aws_lb_target_group.api.arn
+        container_name   = "api"
+        container_port   = 8080
+      }
+      
+      deployment_configuration {
+        maximum_percent         = 200
+        minimum_healthy_percent = 100
+      }
+      
+      depends_on = [aws_lb_listener.api]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+### Deploy Infrastructure
+
+<Steps>
+  <Step title="Initialize Terraform">
+    ```bash
+    cd terraform
+    terraform init
+    ```
+  </Step>
+
+  <Step title="Create terraform.tfvars">
+    ```hcl
+    aws_region  = "us-east-1"
+    environment = "production"
+    app_name    = "superbox"
+    db_username = "superbox_admin"
+    db_password = "change-this-password"
+    jwt_secret  = "your-jwt-secret-key"
+    ```
+    
+    <Warning>
+      Store sensitive values in AWS Secrets Manager or use Terraform Cloud for secure variable management.
+    </Warning>
+  </Step>
+
+  <Step title="Plan Infrastructure">
+    ```bash
+    terraform plan -out=tfplan
+    ```
+    
+    Review the planned changes carefully.
+  </Step>
+
+  <Step title="Apply Infrastructure">
+    ```bash
+    terraform apply tfplan
+    ```
+    
+    This will create:
+    - VPC with public/private subnets
+    - RDS PostgreSQL database
+    - ElastiCache Redis cluster
+    - ECS cluster and services
+    - Application Load Balancer
+    - S3 buckets
+    - Lambda functions
+    - CloudFront distribution
+  </Step>
+</Steps>
+
+## Docker Container Build
+
+### Dockerfile
+
+```dockerfile
+# Build stage
+FROM golang:1.22-alpine AS builder
+
+WORKDIR /app
+
+# Install dependencies
+RUN apk add --no-cache git
+
+# Copy go mod files
+COPY go.mod go.sum ./
+RUN go mod download
+
+# Copy source code
+COPY . .
+
+# Build application
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags '-extldflags "-static"' -o main cmd/server/main.go
+
+# Runtime stage
+FROM alpine:latest
+
+RUN apk --no-cache add ca-certificates
+
+WORKDIR /root/
+
+# Copy binary from builder
+COPY --from=builder /app/main .
+
+# Copy migrations
+COPY --from=builder /app/migrations ./migrations
+
+EXPOSE 8080
+
+CMD ["./main"]
+```
+
+### Build and Push to ECR
+
+<CodeGroup>
+```bash Create ECR Repository
+aws ecr create-repository \
+  --repository-name superbox-api \
+  --region us-east-1
+```
+
+```bash Build Image
+docker build -t superbox-api:latest .
+```
+
+```bash Tag Image
+aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin <account-id>.dkr.ecr.us-east-1.amazonaws.com
+
+docker tag superbox-api:latest <account-id>.dkr.ecr.us-east-1.amazonaws.com/superbox-api:latest
+```
+
+```bash Push Image
+docker push <account-id>.dkr.ecr.us-east-1.amazonaws.com/superbox-api:latest
+```
+</CodeGroup>
+
+## CI/CD Pipeline
+
+### GitHub Actions Workflow
+
+```yaml .github/workflows/deploy.yml
+name: Deploy to AWS
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY: superbox-api
+  ECS_CLUSTER: superbox-cluster
+  ECS_SERVICE: superbox-api
+  CONTAINER_NAME: api
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+      
+      - name: Run tests
+        run: go test ./... -v -cover
+      
+      - name: Run linter
+        uses: golangci/golangci-lint-action@v4
+        with:
+          version: latest
+
+  build-and-deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+      
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+      
+      - name: Download task definition
+        run: |
+          aws ecs describe-task-definition \
+            --task-definition superbox-api \
+            --query taskDefinition > task-definition.json
+      
+      - name: Fill in the new image ID in the Amazon ECS task definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          container-name: ${{ env.CONTAINER_NAME }}
+          image: ${{ steps.build-image.outputs.image }}
+      
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: ${{ env.ECS_SERVICE }}
+          cluster: ${{ env.ECS_CLUSTER }}
+          wait-for-service-stability: true
+```
+
+## Lambda Deployment
+
+### Lambda Function Code
+
+```python lambda/executor/handler.py
+import json
+import subprocess
+import tempfile
+import os
+from pathlib import Path
+
+def handler(event, context):
+    """
+    Execute MCP server tool in isolated Lambda environment
+    """
+    server_id = event['server_id']
+    tool_name = event['tool_name']
+    parameters = event.get('parameters', {})
+    
+    try:
+        # Download server code from S3
+        s3_key = f"servers/{server_id}/latest.zip"
+        local_path = f"/tmp/{server_id}"
+        
+        # Extract and setup
+        extract_server(s3_key, local_path)
+        
+        # Install dependencies
+        install_dependencies(local_path)
+        
+        # Execute tool
+        result = execute_tool(local_path, tool_name, parameters)
+        
+        return {
+            'statusCode': 200,
+            'body': json.dumps({
+                'result': result,
+                'duration_ms': context.get_remaining_time_in_millis()
+            })
+        }
+    
+    except Exception as e:
+        return {
+            'statusCode': 500,
+            'body': json.dumps({
+                'error': str(e)
+            })
+        }
+```
+
+### Deploy Lambda with Terraform
+
+```hcl lambda.tf
+resource "aws_lambda_function" "executor" {
+  filename      = "lambda-executor.zip"
+  function_name = "${var.app_name}-executor"
+  role          = aws_iam_role.lambda_exec.arn
+  handler       = "handler.handler"
+  runtime       = "python3.11"
+  timeout       = 30
+  memory_size   = 1024
+  
+  environment {
+    variables = {
+      S3_BUCKET = aws_s3_bucket.servers.id
+    }
+  }
+  
+  vpc_config {
+    subnet_ids         = aws_subnet.private[*].id
+    security_group_ids = [aws_security_group.lambda.id]
+  }
+  
+  tags = {
+    Name        = "${var.app_name}-executor"
+    Environment = var.environment
+  }
+}
+```
+
+## Monitoring & Logging
+
+<CardGroup cols={2}>
+  <Card title="CloudWatch Logs" icon="file-lines">
+    Centralized logging for all services
+  </Card>
+  <Card title="CloudWatch Metrics" icon="chart-line">
+    Custom metrics and alarms
+  </Card>
+  <Card title="X-Ray Tracing" icon="diagram-project">
+    Distributed tracing
+  </Card>
+  <Card title="CloudWatch Dashboard" icon="gauge">
+    Real-time monitoring
+  </Card>
+</CardGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Frontend Deployment" icon="rocket" href="/frontend/deployment">
+    Deploy Next.js to Vercel
+  </Card>
+  <Card title="CLI Setup" icon="terminal" href="/cli/installation">
+    Install Python CLI
+  </Card>
+  <Card title="API Documentation" icon="book" href="/api/introduction">
+    Explore API endpoints
+  </Card>
+  <Card title="Security Pipeline" icon="shield" href="/concepts/security">
+    5-step security scanning
+  </Card>
+</CardGroup>

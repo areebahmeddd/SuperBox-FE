@@ -1,0 +1,372 @@
+---
+title: 'Device Authorization Flow'
+description: 'OAuth 2.0 device flow for CLI authentication'
+api: 'POST https://api.superbox.com/v1/auth/device-flow'
+---
+
+## Overview
+
+Device authorization flow enables CLI tools and devices without browsers to authenticate users securely.
+
+<Info>
+  This is the authentication method used by SuperBox CLI (`superbox auth`)
+</Info>
+
+## Flow Steps
+
+<Steps>
+  <Step title="Request Device Code">
+    CLI requests device and user codes
+    
+    ```
+    POST /auth/device-flow/request
+    ```
+  </Step>
+
+  <Step title="Display Codes">
+    CLI displays verification URL and user code
+    
+    ```
+    Visit: https://superbox.com/device
+    Enter code: ABCD-1234
+    ```
+  </Step>
+
+  <Step title="User Authorization">
+    User visits URL, logs in, and enters code
+  </Step>
+
+  <Step title="Poll for Token">
+    CLI polls token endpoint until authorized
+    
+    ```
+    POST /auth/device-flow/token
+    ```
+  </Step>
+</Steps>
+
+## Request Device Code
+
+### Endpoint
+
+```
+POST /auth/device-flow/request
+```
+
+### Request Body
+
+<ParamField body="client_id" type="string" required>
+  Client application ID
+</ParamField>
+
+<ParamField body="scope" type="string">
+  Requested permissions (space-separated)
+  
+  Default: `read write`
+</ParamField>
+
+### Example Request
+
+<CodeGroup>
+```bash cURL
+curl -X POST https://api.superbox.com/v1/auth/device-flow/request \
+  -H "Content-Type: application/json" \
+  -d '{
+    "client_id": "superbox-cli",
+    "scope": "read write"
+  }'
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    'https://api.superbox.com/v1/auth/device-flow/request',
+    json={
+        'client_id': 'superbox-cli',
+        'scope': 'read write',
+    }
+)
+
+data = response.json()
+print(f"Visit: {data['verification_uri']}")
+print(f"Enter code: {data['user_code']}")
+```
+</CodeGroup>
+
+### Response (200)
+
+<ResponseField name="device_code" type="string">
+  Device verification code (internal use)
+</ResponseField>
+
+<ResponseField name="user_code" type="string">
+  User-friendly code to display (e.g., "ABCD-1234")
+</ResponseField>
+
+<ResponseField name="verification_uri" type="string">
+  URL for user to visit
+</ResponseField>
+
+<ResponseField name="verification_uri_complete" type="string">
+  URL with code pre-filled
+</ResponseField>
+
+<ResponseField name="expires_in" type="number">
+  Code expiration time in seconds (default: 600)
+</ResponseField>
+
+<ResponseField name="interval" type="number">
+  Polling interval in seconds (default: 5)
+</ResponseField>
+
+```json
+{
+  "device_code": "GmRhmhcxhwAzkoEqiMEg_DnyEysNkuNhszIySk9eS",
+  "user_code": "ABCD-1234",
+  "verification_uri": "https://superbox.com/device",
+  "verification_uri_complete": "https://superbox.com/device?code=ABCD-1234",
+  "expires_in": 600,
+  "interval": 5
+}
+```
+
+## Poll for Token
+
+### Endpoint
+
+```
+POST /auth/device-flow/token
+```
+
+### Request Body
+
+<ParamField body="device_code" type="string" required>
+  Device code from previous step
+</ParamField>
+
+<ParamField body="client_id" type="string" required>
+  Client application ID
+</ParamField>
+
+### Example Request
+
+<CodeGroup>
+```bash cURL
+curl -X POST https://api.superbox.com/v1/auth/device-flow/token \
+  -H "Content-Type: application/json" \
+  -d '{
+    "device_code": "GmRhmhcxhwAzkoEqiMEg_DnyEysNkuNhszIySk9eS",
+    "client_id": "superbox-cli"
+  }'
+```
+
+```python Python (with polling)
+import requests
+import time
+
+device_code = "GmRhmhcxhwAzkoEqiMEg_DnyEysNkuNhszIySk9eS"
+interval = 5
+
+while True:
+    response = requests.post(
+        'https://api.superbox.com/v1/auth/device-flow/token',
+        json={
+            'device_code': device_code,
+            'client_id': 'superbox-cli',
+        }
+    )
+    
+    if response.status_code == 200:
+        data = response.json()
+        print(f"Access token: {data['access_token']}")
+        break
+    elif response.status_code == 428:
+        # Still pending authorization
+        print("Waiting for authorization...")
+        time.sleep(interval)
+    else:
+        print(f"Error: {response.json()}")
+        break
+```
+</CodeGroup>
+
+### Success Response (200)
+
+```json
+{
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "token_type": "Bearer",
+  "expires_in": 86400,
+  "refresh_token": "rt_abcdef123456...",
+  "scope": "read write"
+}
+```
+
+### Pending Response (428)
+
+```json
+{
+  "error": "authorization_pending",
+  "message": "User has not completed authorization yet"
+}
+```
+
+### Error Responses
+
+<CodeGroup>
+```json 400 - Expired Code
+{
+  "error": "expired_token",
+  "message": "Device code has expired"
+}
+```
+
+```json 403 - Access Denied
+{
+  "error": "access_denied",
+  "message": "User denied authorization"
+}
+```
+
+```json 429 - Slow Down
+{
+  "error": "slow_down",
+  "message": "Polling too frequently. Increase interval by 5 seconds."
+}
+```
+</CodeGroup>
+
+## Complete Implementation
+
+<CodeGroup>
+```python Python CLI
+import requests
+import time
+import webbrowser
+
+def device_flow_auth():
+    # Step 1: Request device code
+    response = requests.post(
+        'https://api.superbox.com/v1/auth/device-flow/request',
+        json={'client_id': 'superbox-cli', 'scope': 'read write'}
+    )
+    data = response.json()
+    
+    device_code = data['device_code']
+    user_code = data['user_code']
+    verification_uri = data['verification_uri_complete']
+    interval = data['interval']
+    
+    # Step 2: Display code and open browser
+    print(f"\nVisit: {data['verification_uri']}")
+    print(f"Enter code: {user_code}\n")
+    
+    webbrowser.open(verification_uri)
+    
+    # Step 3: Poll for token
+    while True:
+        time.sleep(interval)
+        
+        response = requests.post(
+            'https://api.superbox.com/v1/auth/device-flow/token',
+            json={
+                'device_code': device_code,
+                'client_id': 'superbox-cli'
+            }
+        )
+        
+        if response.status_code == 200:
+            token_data = response.json()
+            print("✓ Authentication successful!")
+            return token_data['access_token']
+        
+        elif response.status_code == 428:
+            print("Waiting for authorization...")
+        
+        elif response.status_code == 429:
+            # Slow down polling
+            interval += 5
+        
+        else:
+            print(f"Error: {response.json()['message']}")
+            return None
+
+# Usage
+token = device_flow_auth()
+```
+
+```javascript JavaScript/Node.js
+const fetch = require('node-fetch');
+const open = require('open');
+
+async function deviceFlowAuth() {
+  // Step 1: Request device code
+  const requestResponse = await fetch(
+    'https://api.superbox.com/v1/auth/device-flow/request',
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        client_id: 'superbox-cli',
+        scope: 'read write',
+      }),
+    }
+  );
+  
+  const {
+    device_code,
+    user_code,
+    verification_uri,
+    verification_uri_complete,
+    interval,
+  } = await requestResponse.json();
+  
+  // Step 2: Display code and open browser
+  console.log(`\nVisit: ${verification_uri}`);
+  console.log(`Enter code: ${user_code}\n`);
+  
+  await open(verification_uri_complete);
+  
+  // Step 3: Poll for token
+  let pollInterval = interval;
+  
+  while (true) {
+    await new Promise((resolve) => setTimeout(resolve, pollInterval * 1000));
+    
+    const tokenResponse = await fetch(
+      'https://api.superbox.com/v1/auth/device-flow/token',
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          device_code,
+          client_id: 'superbox-cli',
+        }),
+      }
+    );
+    
+    if (tokenResponse.status === 200) {
+      const tokenData = await tokenResponse.json();
+      console.log('✓ Authentication successful!');
+      return tokenData.access_token;
+    } else if (tokenResponse.status === 428) {
+      console.log('Waiting for authorization...');
+    } else if (tokenResponse.status === 429) {
+      pollInterval += 5;
+    } else {
+      const error = await tokenResponse.json();
+      console.error(`Error: ${error.message}`);
+      return null;
+    }
+  }
+}
+
+// Usage
+deviceFlowAuth().then((token) => {
+  if (token) {
+    // Save token
+  }
+});
+```
+</CodeGroup>

@@ -1,0 +1,93 @@
+---
+title: 'superbox init'
+description: 'Initialize a new MCP server project'
+icon: 'plus'
+---
+
+## Usage
+
+```bash
+superbox init [NAME] [OPTIONS]
+```
+
+## Description
+
+Creates a new MCP server project with boilerplate code, configuration files, and directory structure.
+
+## Arguments
+
+<ParamField path="NAME" type="string" required>
+  Project name (lowercase, alphanumeric, hyphens)
+  
+  ```bash
+  superbox init weather-mcp
+  ```
+</ParamField>
+
+## Options
+
+<ParamField path="--template" type="string" default="python">
+  Project template: `python`, `typescript`, `go`
+  
+  ```bash
+  superbox init my-server --template typescript
+  ```
+</ParamField>
+
+<ParamField path="--category" type="string">
+  Server category: `data`, `api`, `automation`, `ml`, `other`
+  
+  ```bash
+  superbox init my-server --category data
+  ```
+</ParamField>
+
+<ParamField path="--path" type="string" default=".">
+  Target directory
+  
+  ```bash
+  superbox init my-server --path ~/projects
+  ```
+</ParamField>
+
+## Examples
+
+<CodeGroup>
+```bash Python Server
+superbox init weather-mcp --template python --category data
+```
+
+```bash TypeScript Server
+superbox init database-mcp --template typescript --category api
+```
+
+```bash Go Server
+superbox init file-mcp --template go --category automation
+```
+</CodeGroup>
+
+## Project Structure
+
+```
+weather-mcp/
+├── mcp_server.py      # Main server file
+├── tools/             # Tool implementations
+│   └── get_weather.py
+├── config.yaml        # Server configuration
+├── requirements.txt   # Dependencies
+├── tests/             # Test files
+│   └── test_weather.py
+├── README.md          # Documentation
+└── .gitignore
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Run Locally" icon="play" href="/cli/run">
+    Test your server
+  </Card>
+  <Card title="Push to SuperBox" icon="upload" href="/cli/push">
+    Publish your server
+  </Card>
+</CardGroup>

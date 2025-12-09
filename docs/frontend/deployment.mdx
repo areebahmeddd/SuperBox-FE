@@ -1,0 +1,576 @@
+---
+title: 'Frontend Deployment'
+description: 'Deploy SuperBox frontend to Vercel with automatic CI/CD'
+icon: 'rocket'
+---
+
+## Vercel Deployment
+
+SuperBox frontend is optimized for deployment on Vercel, the platform built by the creators of Next.js.
+
+<Info>
+  Vercel provides zero-configuration deployment, automatic HTTPS, global CDN, and instant rollbacks.
+</Info>
+
+## Prerequisites
+
+<Steps>
+  <Step title="Create Vercel Account">
+    Sign up at [vercel.com](https://vercel.com) using your GitHub account for seamless integration.
+  </Step>
+
+  <Step title="Install Vercel CLI (Optional)">
+    For local testing and deployment:
+    
+    ```bash
+    npm install -g vercel
+    ```
+  </Step>
+
+  <Step title="Prepare Environment Variables">
+    Ensure all required environment variables are documented and ready.
+  </Step>
+</Steps>
+
+## Deployment Methods
+
+### Method 1: GitHub Integration (Recommended)
+
+<AccordionGroup>
+  <Accordion title="Step 1: Connect Repository" icon="1">
+    1. Go to [vercel.com/new](https://vercel.com/new)
+    2. Select **Import Git Repository**
+    3. Choose the `SuperBox-FE` repository
+    4. Click **Import**
+  </Accordion>
+
+  <Accordion title="Step 2: Configure Project" icon="2">
+    Vercel auto-detects Next.js configuration. Verify settings:
+    
+    <ParamField path="Framework Preset" type="string" default="Next.js">
+      Automatically detected
+    </ParamField>
+    
+    <ParamField path="Root Directory" type="string" default="./">
+      Keep as root unless using monorepo
+    </ParamField>
+    
+    <ParamField path="Build Command" type="string" default="next build">
+      Default Next.js build command
+    </ParamField>
+    
+    <ParamField path="Output Directory" type="string" default=".next">
+      Next.js output directory
+    </ParamField>
+    
+    <ParamField path="Install Command" type="string" default="npm install">
+      Dependency installation command
+    </ParamField>
+  </Accordion>
+
+  <Accordion title="Step 3: Add Environment Variables" icon="3">
+    Add all environment variables in the Vercel dashboard:
+    
+    ```bash
+    # Required Variables
+    NEXT_PUBLIC_API_URL=https://api.superbox.com
+    NEXT_PUBLIC_API_VERSION=v1
+    
+    # Authentication
+    NEXT_PUBLIC_GOOGLE_CLIENT_ID=your_google_client_id
+    NEXT_PUBLIC_GITHUB_CLIENT_ID=your_github_client_id
+    GOOGLE_CLIENT_SECRET=your_google_client_secret
+    GITHUB_CLIENT_SECRET=your_github_client_secret
+    NEXTAUTH_SECRET=your_nextauth_secret
+    NEXTAUTH_URL=https://your-domain.vercel.app
+    
+    # Payment Gateway
+    NEXT_PUBLIC_RAZORPAY_KEY_ID=your_razorpay_key_id
+    RAZORPAY_KEY_SECRET=your_razorpay_secret
+    
+    # Analytics (Optional)
+    NEXT_PUBLIC_GA_TRACKING_ID=your_ga_tracking_id
+    SENTRY_DSN=your_sentry_dsn
+    
+    # Feature Flags
+    NEXT_PUBLIC_ENABLE_ANALYTICS=true
+    NEXT_PUBLIC_ENABLE_SENTRY=true
+    ```
+    
+    <Warning>
+      Environment variables prefixed with `NEXT_PUBLIC_` are exposed to the browser. Never include secrets in public variables.
+    </Warning>
+  </Accordion>
+
+  <Accordion title="Step 4: Deploy" icon="4">
+    Click **Deploy** button. Vercel will:
+    
+    1. Clone your repository
+    2. Install dependencies
+    3. Run the build process
+    4. Deploy to global CDN
+    5. Provide a production URL
+    
+    <Check>
+      **Deployment complete!** Your app is now live at `https://your-project.vercel.app`
+    </Check>
+  </Accordion>
+</AccordionGroup>
+
+### Method 2: Vercel CLI
+
+Deploy directly from your terminal:
+
+<CodeGroup>
+```bash First Deployment
+# Login to Vercel
+vercel login
+
+# Deploy to preview
+vercel
+
+# Deploy to production
+vercel --prod
+```
+
+```bash Subsequent Deployments
+# Preview deployment
+vercel
+
+# Production deployment
+git push origin main  # Auto-deploys via GitHub integration
+```
+</CodeGroup>
+
+### Method 3: Manual Deployment
+
+Upload your built application manually:
+
+<Steps>
+  <Step title="Build Locally">
+    ```bash
+    npm run build
+    ```
+  </Step>
+
+  <Step title="Test Production Build">
+    ```bash
+    npm run start
+    ```
+  </Step>
+
+  <Step title="Deploy via Dashboard">
+    1. Go to Vercel dashboard
+    2. Click **Add New** → **Project**
+    3. Upload the `.next` folder
+    4. Configure settings
+    5. Deploy
+  </Step>
+</Steps>
+
+<Warning>
+  Manual deployment is not recommended for production. Use GitHub integration for CI/CD benefits.
+</Warning>
+
+## Custom Domain Setup
+
+<Steps>
+  <Step title="Add Domain in Vercel">
+    1. Go to your project settings
+    2. Navigate to **Domains** tab
+    3. Click **Add Domain**
+    4. Enter your domain (e.g., `superbox.com`)
+  </Step>
+
+  <Step title="Configure DNS">
+    Add these DNS records in your domain registrar:
+    
+    <Tabs>
+      <Tab title="Apex Domain">
+        ```
+        Type: A
+        Name: @
+        Value: 76.76.21.21
+        TTL: 3600
+        ```
+      </Tab>
+      
+      <Tab title="www Subdomain">
+        ```
+        Type: CNAME
+        Name: www
+        Value: cname.vercel-dns.com
+        TTL: 3600
+        ```
+      </Tab>
+      
+      <Tab title="API Subdomain">
+        ```
+        Type: CNAME
+        Name: app
+        Value: cname.vercel-dns.com
+        TTL: 3600
+        ```
+      </Tab>
+    </Tabs>
+  </Step>
+
+  <Step title="Verify Domain">
+    Vercel automatically verifies DNS configuration and provisions SSL certificates.
+    
+    <Check>
+      HTTPS is automatically enabled for all domains with Let's Encrypt certificates.
+    </Check>
+  </Step>
+
+  <Step title="Update Environment Variables">
+    Update `NEXTAUTH_URL` to your custom domain:
+    
+    ```bash
+    NEXTAUTH_URL=https://superbox.com
+    ```
+  </Step>
+</Steps>
+
+## Deployment Configuration
+
+### vercel.json
+
+Customize deployment behavior with `vercel.json`:
+
+```json
+{
+  "version": 2,
+  "buildCommand": "npm run build",
+  "framework": "nextjs",
+  "regions": ["iad1", "sfo1"],
+  "env": {
+    "NEXT_PUBLIC_API_URL": "https://api.superbox.com"
+  },
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        }
+      ]
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/docs",
+      "destination": "/docs/introduction",
+      "permanent": true
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://api.superbox.com/:path*"
+    }
+  ]
+}
+```
+
+<ParamField path="regions" type="array">
+  Deploy to specific regions for lower latency:
+  - `iad1` - Washington, D.C., USA
+  - `sfo1` - San Francisco, USA
+  - `lhr1` - London, UK
+  - `hnd1` - Tokyo, Japan
+</ParamField>
+
+## CI/CD Pipeline
+
+### Automatic Deployments
+
+<CardGroup cols={2}>
+  <Card title="Production" icon="rocket" color="#000">
+    **Trigger:** Push to `main` branch
+    
+    Automatically deploys to production domain
+  </Card>
+  
+  <Card title="Preview" icon="eye" color="#0070F3">
+    **Trigger:** Pull requests & other branches
+    
+    Creates unique preview URLs for testing
+  </Card>
+</CardGroup>
+
+### Branch Configuration
+
+```yaml
+# .github/workflows/vercel.yml
+name: Vercel Deployment
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+env:
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install Vercel CLI
+        run: npm install -g vercel
+      
+      - name: Deploy to Vercel
+        run: |
+          if [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            vercel --prod --token=${{ secrets.VERCEL_TOKEN }}
+          else
+            vercel --token=${{ secrets.VERCEL_TOKEN }}
+          fi
+```
+
+### Deployment Protection
+
+Enable deployment protection in Vercel settings:
+
+<Check>**Require Approval** - Manual approval for production deployments</Check>
+<Check>**Protected Branches** - Only main branch deploys to production</Check>
+<Check>**Build Checks** - Block deployment if build fails</Check>
+<Check>**Preview Comments** - Automatic PR comments with preview URLs</Check>
+
+## Performance Optimization
+
+### Next.js Configuration
+
+Optimize your `next.config.mjs` for production:
+
+```javascript
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  // Enable React Strict Mode
+  reactStrictMode: true,
+  
+  // Optimize images
+  images: {
+    domains: ['api.superbox.com', 'avatars.githubusercontent.com'],
+    formats: ['image/avif', 'image/webp'],
+    minimumCacheTTL: 60,
+  },
+  
+  // Enable SWC minification
+  swcMinify: true,
+  
+  // Compress output
+  compress: true,
+  
+  // Experimental features
+  experimental: {
+    optimizePackageImports: ['framer-motion', 'lucide-react'],
+  },
+  
+  // Headers for security
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'X-DNS-Prefetch-Control',
+            value: 'on'
+          },
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=63072000; includeSubDomains; preload'
+          },
+          {
+            key: 'X-Frame-Options',
+            value: 'SAMEORIGIN'
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff'
+          },
+        ],
+      },
+    ]
+  },
+}
+
+export default nextConfig
+```
+
+### Edge Functions
+
+Use Vercel Edge Functions for ultra-low latency:
+
+```tsx app/api/health/route.ts
+export const runtime = 'edge'
+
+export async function GET() {
+  return Response.json({ 
+    status: 'healthy',
+    timestamp: new Date().toISOString()
+  })
+}
+```
+
+### Caching Strategy
+
+Implement intelligent caching:
+
+```tsx app/server/[id]/page.tsx
+export const revalidate = 3600 // Revalidate every hour
+
+export async function generateStaticParams() {
+  const servers = await fetchPopularServers()
+  
+  return servers.map((server) => ({
+    id: server.id,
+  }))
+}
+```
+
+## Monitoring & Analytics
+
+### Vercel Analytics
+
+Enable built-in analytics:
+
+```tsx app/layout.tsx
+import { Analytics } from '@vercel/analytics/react'
+import { SpeedInsights } from '@vercel/speed-insights/next'
+
+export default function RootLayout({ children }) {
+  return (
+    <html>
+      <body>
+        {children}
+        <Analytics />
+        <SpeedInsights />
+      </body>
+    </html>
+  )
+}
+```
+
+### Web Vitals
+
+Monitor Core Web Vitals:
+
+<CardGroup cols={3}>
+  <Card title="LCP" icon="gauge-high">
+    **Target:** < 2.5s
+    
+    Largest Contentful Paint
+  </Card>
+  
+  <Card title="FID" icon="hand-pointer">
+    **Target:** < 100ms
+    
+    First Input Delay
+  </Card>
+  
+  <Card title="CLS" icon="arrows-up-down">
+    **Target:** < 0.1
+    
+    Cumulative Layout Shift
+  </Card>
+</CardGroup>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Build Failures" icon="circle-xmark">
+    Check Vercel build logs for errors:
+    
+    ```bash
+    vercel logs [deployment-url]
+    ```
+    
+    Common issues:
+    - Missing environment variables
+    - TypeScript errors
+    - Dependency issues
+    - Memory limit exceeded
+  </Accordion>
+
+  <Accordion title="Environment Variables Not Working" icon="key">
+    Ensure variables are:
+    1. Added in Vercel dashboard
+    2. Assigned to correct environment (Production/Preview/Development)
+    3. Prefixed with `NEXT_PUBLIC_` if needed in browser
+    4. Redeployed after adding
+  </Accordion>
+
+  <Accordion title="404 Errors on Refresh" icon="magnifying-glass">
+    Vercel automatically handles Next.js routing. If you see 404s:
+    
+    1. Verify `next.config.mjs` is correct
+    2. Check file structure matches Next.js conventions
+    3. Ensure dynamic routes are properly configured
+  </Accordion>
+
+  <Accordion title="Slow Performance" icon="turtle">
+    Optimize your deployment:
+    
+    1. Enable image optimization
+    2. Implement code splitting
+    3. Use Edge Functions for API routes
+    4. Enable ISR (Incremental Static Regeneration)
+    5. Add proper caching headers
+  </Accordion>
+</AccordionGroup>
+
+## Rollback Strategy
+
+<Steps>
+  <Step title="View Deployments">
+    Go to your project dashboard and click **Deployments** tab
+  </Step>
+
+  <Step title="Select Previous Version">
+    Find the working deployment you want to restore
+  </Step>
+
+  <Step title="Promote to Production">
+    Click the **⋯** menu → **Promote to Production**
+  </Step>
+
+  <Step title="Verify">
+    Check that your production domain now serves the rolled-back version
+  </Step>
+</Steps>
+
+<Tip>
+  Vercel keeps all deployments indefinitely, making rollbacks instantaneous with zero downtime.
+</Tip>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Backend Deployment" icon="server" href="/backend/deployment">
+    Deploy Go API to AWS
+  </Card>
+  <Card title="API Documentation" icon="book" href="/api/introduction">
+    Explore API endpoints
+  </Card>
+  <Card title="Monitoring" icon="chart-line" href="/backend/architecture">
+    Set up monitoring and alerts
+  </Card>
+  <Card title="Security" icon="shield" href="/concepts/security">
+    Review security best practices
+  </Card>
+</CardGroup>

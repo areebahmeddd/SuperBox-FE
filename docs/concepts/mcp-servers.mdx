@@ -1,0 +1,700 @@
+---
+title: 'MCP Servers'
+description: 'Understanding Model Context Protocol (MCP) servers and their architecture'
+icon: 'server'
+---
+
+## What is MCP?
+
+The **Model Context Protocol (MCP)** is an open standard developed by Anthropic that enables seamless integration between AI applications and external data sources and tools.
+
+<Info>
+  MCP provides a standardized way for AI models like Claude to interact with various services, databases, and APIs through a unified interface.
+</Info>
+
+<Frame>
+  <img src="/images/mcp-diagram.png" alt="MCP Architecture" />
+</Frame>
+
+## MCP Architecture
+
+<Tabs>
+  <Tab title="Protocol Overview">
+    MCP defines a client-server architecture where:
+    
+    - **MCP Clients** (AI applications like Claude Desktop, IDEs)
+    - **MCP Servers** (Services that expose tools, resources, and prompts)
+    - **Transport Layer** (stdio, HTTP, or WebSocket)
+    
+    ```mermaid
+    graph LR
+        A[AI Application] -->|MCP Protocol| B[MCP Server]
+        B -->|Queries| C[Data Source]
+        B -->|API Calls| D[External Service]
+        B -->|File Access| E[File System]
+    ```
+  </Tab>
+
+  <Tab title="Core Concepts">
+    MCP servers can expose three main primitives:
+    
+    <CardGroup cols={3}>
+      <Card title="Tools" icon="wrench">
+        Functions that the AI can invoke to perform actions
+      </Card>
+      <Card title="Resources" icon="database">
+        Data sources that the AI can read from
+      </Card>
+      <Card title="Prompts" icon="comment">
+        Pre-built prompt templates
+      </Card>
+    </CardGroup>
+  </Tab>
+
+  <Tab title="Communication Flow">
+    ```json
+    {
+      "jsonrpc": "2.0",
+      "method": "tools/call",
+      "params": {
+        "name": "get_weather",
+        "arguments": {
+          "city": "San Francisco",
+          "units": "metric"
+        }
+      },
+      "id": 1
+    }
+    ```
+    
+    Response:
+    ```json
+    {
+      "jsonrpc": "2.0",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "The current weather in San Francisco is 18°C with clear skies."
+          }
+        ]
+      },
+      "id": 1
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## MCP Server Structure
+
+### Basic Server Implementation
+
+<CodeGroup>
+```python Python Server
+from mcp.server import Server
+from mcp.types import Tool, TextContent
+
+# Initialize MCP server
+server = Server("weather-server")
+
+@server.list_tools()
+async def list_tools():
+    """List available tools"""
+    return [
+        Tool(
+            name="get_weather",
+            description="Get current weather for a city",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "city": {
+                        "type": "string",
+                        "description": "City name"
+                    },
+                    "units": {
+                        "type": "string",
+                        "enum": ["metric", "imperial"],
+                        "description": "Temperature units"
+                    }
+                },
+                "required": ["city"]
+            }
+        )
+    ]
+
+@server.call_tool()
+async def call_tool(name: str, arguments: dict):
+    """Execute tool"""
+    if name == "get_weather":
+        city = arguments["city"]
+        units = arguments.get("units", "metric")
+        
+        # Fetch weather data
+        weather_data = await fetch_weather(city, units)
+        
+        return [
+            TextContent(
+                type="text",
+                text=f"Weather in {city}: {weather_data}"
+            )
+        ]
+
+# Run server
+if __name__ == "__main__":
+    server.run()
+```
+
+```typescript TypeScript Server
+import { Server } from "@modelcontextprotocol/sdk/server/index.js";
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import {
+  CallToolRequestSchema,
+  ListToolsRequestSchema,
+} from "@modelcontextprotocol/sdk/types.js";
+
+// Initialize server
+const server = new Server(
+  {
+    name: "weather-server",
+    version: "1.0.0",
+  },
+  {
+    capabilities: {
+      tools: {},
+    },
+  }
+);
+
+// List tools handler
+server.setRequestHandler(ListToolsRequestSchema, async () => {
+  return {
+    tools: [
+      {
+        name: "get_weather",
+        description: "Get current weather for a city",
+        inputSchema: {
+          type: "object",
+          properties: {
+            city: {
+              type: "string",
+              description: "City name",
+            },
+            units: {
+              type: "string",
+              enum: ["metric", "imperial"],
+              description: "Temperature units",
+            },
+          },
+          required: ["city"],
+        },
+      },
+    ],
+  };
+});
+
+// Call tool handler
+server.setRequestHandler(CallToolRequestSchema, async (request) => {
+  if (request.params.name === "get_weather") {
+    const { city, units = "metric" } = request.params.arguments;
+    
+    // Fetch weather data
+    const weatherData = await fetchWeather(city, units);
+    
+    return {
+      content: [
+        {
+          type: "text",
+          text: `Weather in ${city}: ${weatherData}`,
+        },
+      ],
+    };
+  }
+  
+  throw new Error(`Unknown tool: ${request.params.name}`);
+});
+
+// Start server
+async function main() {
+  const transport = new StdioServerTransport();
+  await server.connect(transport);
+}
+
+main().catch(console.error);
+```
+
+```go Go Server
+package main
+
+import (
+    "context"
+    "encoding/json"
+    "fmt"
+    "log"
+    
+    "github.com/modelcontextprotocol/go-sdk/server"
+    "github.com/modelcontextprotocol/go-sdk/types"
+)
+
+type WeatherServer struct {
+    *server.Server
+}
+
+func NewWeatherServer() *WeatherServer {
+    s := &WeatherServer{
+        Server: server.NewServer("weather-server"),
+    }
+    
+    // Register handlers
+    s.RegisterListToolsHandler(s.ListTools)
+    s.RegisterCallToolHandler(s.CallTool)
+    
+    return s
+}
+
+func (s *WeatherServer) ListTools(ctx context.Context) ([]types.Tool, error) {
+    return []types.Tool{
+        {
+            Name:        "get_weather",
+            Description: "Get current weather for a city",
+            InputSchema: map[string]interface{}{
+                "type": "object",
+                "properties": map[string]interface{}{
+                    "city": map[string]interface{}{
+                        "type":        "string",
+                        "description": "City name",
+                    },
+                    "units": map[string]interface{}{
+                        "type":        "string",
+                        "enum":        []string{"metric", "imperial"},
+                        "description": "Temperature units",
+                    },
+                },
+                "required": []string{"city"},
+            },
+        },
+    }, nil
+}
+
+func (s *WeatherServer) CallTool(ctx context.Context, name string, args map[string]interface{}) ([]types.Content, error) {
+    if name == "get_weather" {
+        city := args["city"].(string)
+        units, _ := args["units"].(string)
+        if units == "" {
+            units = "metric"
+        }
+        
+        // Fetch weather data
+        weatherData, err := fetchWeather(city, units)
+        if err != nil {
+            return nil, err
+        }
+        
+        return []types.Content{
+            {
+                Type: "text",
+                Text: fmt.Sprintf("Weather in %s: %s", city, weatherData),
+            },
+        }, nil
+    }
+    
+    return nil, fmt.Errorf("unknown tool: %s", name)
+}
+
+func main() {
+    server := NewWeatherServer()
+    if err := server.Run(); err != nil {
+        log.Fatal(err)
+    }
+}
+```
+</CodeGroup>
+
+## MCP Server Components
+
+### 1. Tools
+
+Tools are functions that AI can call to perform actions:
+
+<AccordionGroup>
+  <Accordion title="Tool Definition" icon="wrench">
+    ```json
+    {
+      "name": "search_database",
+      "description": "Search the customer database",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Search query"
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100,
+            "default": 10
+          },
+          "filters": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": ["active", "inactive"]
+              },
+              "created_after": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        },
+        "required": ["query"]
+      }
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="Tool Response" icon="arrow-right">
+    ```json
+    {
+      "content": [
+        {
+          "type": "text",
+          "text": "Found 5 customers matching 'tech startup':\n\n1. Acme Corp (ID: 123)\n2. Tech Solutions Inc (ID: 456)\n..."
+        },
+        {
+          "type": "resource",
+          "resource": {
+            "uri": "database://customers/123",
+            "name": "Acme Corp",
+            "mimeType": "application/json"
+          }
+        }
+      ],
+      "isError": false
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="Error Handling" icon="triangle-exclamation">
+    ```json
+    {
+      "content": [
+        {
+          "type": "text",
+          "text": "Error: Database connection timeout. Please try again later."
+        }
+      ],
+      "isError": true
+    }
+    ```
+  </Accordion>
+</AccordionGroup>
+
+### 2. Resources
+
+Resources provide access to data:
+
+<Tabs>
+  <Tab title="Resource Types">
+    <CardGroup cols={2}>
+      <Card title="Static Resources" icon="file">
+        Fixed data like configuration files
+      </Card>
+      <Card title="Dynamic Resources" icon="rotate">
+        Live data from databases or APIs
+      </Card>
+      <Card title="File Resources" icon="folder">
+        File system access
+      </Card>
+      <Card title="Network Resources" icon="globe">
+        External API data
+      </Card>
+    </CardGroup>
+  </Tab>
+
+  <Tab title="Resource Example">
+    ```python
+    @server.list_resources()
+    async def list_resources():
+        return [
+            Resource(
+                uri="file:///data/customers.json",
+                name="Customer Database",
+                mimeType="application/json",
+                description="All customer records"
+            ),
+            Resource(
+                uri="api://crm/contacts",
+                name="CRM Contacts",
+                mimeType="application/json",
+                description="Live contact data from CRM"
+            )
+        ]
+    
+    @server.read_resource()
+    async def read_resource(uri: str):
+        if uri == "file:///data/customers.json":
+            data = await read_file("/data/customers.json")
+            return [
+                TextContent(
+                    type="text",
+                    text=data
+                )
+            ]
+        elif uri == "api://crm/contacts":
+            contacts = await fetch_crm_contacts()
+            return [
+                TextContent(
+                    type="text",
+                    text=json.dumps(contacts, indent=2)
+                )
+            ]
+    ```
+  </Tab>
+</Tabs>
+
+### 3. Prompts
+
+Reusable prompt templates:
+
+```python
+@server.list_prompts()
+async def list_prompts():
+    return [
+        Prompt(
+            name="customer_analysis",
+            description="Analyze customer behavior and trends",
+            arguments=[
+                PromptArgument(
+                    name="customer_id",
+                    description="Customer ID to analyze",
+                    required=True
+                ),
+                PromptArgument(
+                    name="time_period",
+                    description="Analysis time period (days)",
+                    required=False
+                )
+            ]
+        )
+    ]
+
+@server.get_prompt()
+async def get_prompt(name: str, arguments: dict):
+    if name == "customer_analysis":
+        customer_id = arguments["customer_id"]
+        time_period = arguments.get("time_period", 30)
+        
+        # Fetch customer data
+        customer_data = await get_customer_data(customer_id, time_period)
+        
+        prompt_text = f"""
+        Analyze the following customer data for customer #{customer_id} 
+        over the last {time_period} days:
+        
+        {customer_data}
+        
+        Please provide:
+        1. Key behavioral patterns
+        2. Purchase trends
+        3. Engagement metrics
+        4. Recommendations for retention
+        """
+        
+        return GetPromptResult(
+            description=f"Customer analysis for #{customer_id}",
+            messages=[
+                PromptMessage(
+                    role="user",
+                    content=TextContent(
+                        type="text",
+                        text=prompt_text
+                    )
+                )
+            ]
+        )
+```
+
+## MCP Server Best Practices
+
+<Check>**Clear Tool Names** - Use descriptive, action-oriented names (e.g., `get_weather`, `search_database`)</Check>
+<Check>**Comprehensive Schemas** - Define all parameters with descriptions and constraints</Check>
+<Check>**Error Handling** - Return helpful error messages with context</Check>
+<Check>**Rate Limiting** - Implement rate limits to prevent abuse</Check>
+<Check>**Logging** - Log all tool invocations for debugging and analytics</Check>
+<Check>**Security** - Validate inputs, sanitize outputs, use authentication</Check>
+<Check>**Documentation** - Provide clear descriptions for all tools and resources</Check>
+<Check>**Testing** - Write comprehensive tests for all functionality</Check>
+
+## SuperBox MCP Integration
+
+SuperBox provides a complete platform for publishing, discovering, and running MCP servers:
+
+<Steps>
+  <Step title="Create MCP Server">
+    Develop your MCP server using any supported language:
+    
+    ```bash
+    superbox init my-mcp-server --template python
+    ```
+  </Step>
+
+  <Step title="Test Locally">
+    Test your server with the SuperBox playground:
+    
+    ```bash
+    superbox run my-mcp-server
+    ```
+  </Step>
+
+  <Step title="Security Scan">
+    Automatic 5-step security pipeline:
+    
+    - SonarQube: Code quality
+    - Bandit: Python security
+    - GitGuardian: Secrets detection
+    - Semgrep: Vulnerability scanning
+    - OWASP: Dependency check
+  </Step>
+
+  <Step title="Publish to SuperBox">
+    Deploy to SuperBox marketplace:
+    
+    ```bash
+    superbox push
+    ```
+  </Step>
+
+  <Step title="Sandboxed Execution">
+    Your MCP server runs in isolated AWS Lambda environments with:
+    
+    - Network isolation
+    - Resource limits
+    - Timeout protection
+    - Automatic scaling
+  </Step>
+</Steps>
+
+## Example MCP Servers
+
+<CardGroup cols={2}>
+  <Card title="Weather MCP" icon="cloud-sun">
+    Real-time weather data from multiple APIs
+    
+    **Tools:**
+    - get_current_weather
+    - get_forecast
+    - get_historical_data
+  </Card>
+  
+  <Card title="Database MCP" icon="database">
+    Safe database querying interface
+    
+    **Tools:**
+    - search_records
+    - get_statistics
+    - export_data
+  </Card>
+  
+  <Card title="File System MCP" icon="folder">
+    Secure file operations
+    
+    **Tools:**
+    - read_file
+    - list_directory
+    - search_files
+  </Card>
+  
+  <Card title="API Integration MCP" icon="plug">
+    Connect to external services
+    
+    **Tools:**
+    - call_api
+    - transform_data
+    - cache_results
+  </Card>
+</CardGroup>
+
+## Protocol Specification
+
+<Info>
+  Full MCP specification: [modelcontextprotocol.io](https://modelcontextprotocol.io)
+</Info>
+
+### JSON-RPC 2.0
+
+MCP uses JSON-RPC 2.0 for communication:
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/list",
+  "params": {}
+}
+```
+
+### Supported Transports
+
+<Tabs>
+  <Tab title="stdio">
+    Standard input/output for local processes:
+    
+    ```json
+    {
+      "mcpServers": {
+        "weather": {
+          "command": "python",
+          "args": ["-m", "weather_mcp"]
+        }
+      }
+    }
+    ```
+  </Tab>
+
+  <Tab title="HTTP/SSE">
+    HTTP with Server-Sent Events:
+    
+    ```json
+    {
+      "mcpServers": {
+        "weather": {
+          "url": "https://api.weather-mcp.com"
+        }
+      }
+    }
+    ```
+  </Tab>
+
+  <Tab title="WebSocket">
+    Bidirectional WebSocket connection:
+    
+    ```json
+    {
+      "mcpServers": {
+        "weather": {
+          "url": "wss://api.weather-mcp.com/ws"
+        }
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="CLI Guide" icon="terminal" href="/cli/introduction">
+    Learn to use SuperBox CLI
+  </Card>
+  <Card title="Sandboxes" icon="box" href="/concepts/sandboxes">
+    Understand Lambda sandboxing
+  </Card>
+  <Card title="Security" icon="shield" href="/concepts/security">
+    5-step security pipeline
+  </Card>
+  <Card title="API Reference" icon="book" href="/api/introduction">
+    Explore SuperBox APIs
+  </Card>
+</CardGroup>

@@ -1,0 +1,324 @@
+---
+title: 'Frontend Setup'
+description: 'Set up your local development environment for SuperBox frontend'
+icon: 'wrench'
+---
+
+## Prerequisites
+
+Before you begin, ensure you have the following installed:
+
+<CardGroup cols={3}>
+  <Card title="Node.js 20+" icon="node-js" color="#339933">
+    Download from [nodejs.org](https://nodejs.org)
+  </Card>
+  <Card title="npm or pnpm" icon="box" color="#CB3837">
+    Package manager (npm comes with Node.js)
+  </Card>
+  <Card title="Git" icon="git-alt" color="#F05032">
+    Version control system
+  </Card>
+</CardGroup>
+
+<Check>
+  **Recommended:** Use Node.js 20.x or later for optimal Next.js 16 performance
+</Check>
+
+## Quick Start
+
+<Steps>
+  <Step title="Clone the Repository">
+    Clone the SuperBox frontend repository to your local machine:
+
+    ```bash
+    git clone https://github.com/areebahmeddd/SuperBox-FE.git
+    cd SuperBox-FE
+    ```
+  </Step>
+
+  <Step title="Install Dependencies">
+    Install all required npm packages:
+
+    <CodeGroup>
+    ```bash npm
+    npm install
+    ```
+
+    ```bash pnpm
+    pnpm install
+    ```
+
+    ```bash yarn
+    yarn install
+    ```
+    </CodeGroup>
+
+    <Info>
+      This will install Next.js 16, React 19, Tailwind CSS 4.1, Framer Motion, and all other dependencies.
+    </Info>
+  </Step>
+
+  <Step title="Configure Environment Variables">
+    Create a `.env.local` file in the root directory:
+
+    ```bash
+    cp .env.example .env.local
+    ```
+
+    Edit `.env.local` with your configuration:
+
+    ```bash
+    # API Configuration
+    NEXT_PUBLIC_API_URL=http://localhost:8080
+    NEXT_PUBLIC_API_VERSION=v1
+
+    # Authentication
+    NEXT_PUBLIC_GOOGLE_CLIENT_ID=your_google_client_id
+    NEXT_PUBLIC_GITHUB_CLIENT_ID=your_github_client_id
+
+    # Payment Gateway
+    NEXT_PUBLIC_RAZORPAY_KEY_ID=your_razorpay_key_id
+
+    # Feature Flags
+    NEXT_PUBLIC_ENABLE_ANALYTICS=false
+    NEXT_PUBLIC_ENABLE_SENTRY=false
+    ```
+
+    <Warning>
+      Never commit `.env.local` to version control. It contains sensitive credentials.
+    </Warning>
+  </Step>
+
+  <Step title="Start Development Server">
+    Run the Next.js development server:
+
+    ```bash
+    npm run dev
+    ```
+
+    The application will be available at:
+    <Card>
+      🌐 **http://localhost:3000**
+    </Card>
+  </Step>
+</Steps>
+
+## Development Commands
+
+<AccordionGroup>
+  <Accordion title="npm run dev" icon="play">
+    Starts the Next.js development server with hot module replacement (HMR)
+    
+    ```bash
+    npm run dev
+    ```
+    
+    Server runs on **http://localhost:3000**
+  </Accordion>
+
+  <Accordion title="npm run build" icon="hammer">
+    Creates an optimized production build
+    
+    ```bash
+    npm run build
+    ```
+    
+    Output is generated in the `.next` directory
+  </Accordion>
+
+  <Accordion title="npm run start" icon="rocket">
+    Starts the production server (requires build first)
+    
+    ```bash
+    npm run build && npm run start
+    ```
+    
+    Serves the optimized production build
+  </Accordion>
+
+  <Accordion title="npm run lint" icon="circle-check">
+    Runs ESLint to check code quality
+    
+    ```bash
+    npm run lint
+    ```
+    
+    Identifies and fixes linting issues
+  </Accordion>
+
+  <Accordion title="npm run type-check" icon="shield-check">
+    Runs TypeScript type checking
+    
+    ```bash
+    npm run type-check
+    ```
+    
+    Validates TypeScript types without building
+  </Accordion>
+</AccordionGroup>
+
+## Project Structure
+
+```
+SuperBox-FE/
+├── public/                 # Static assets
+│   ├── icons/             # App icons and favicons
+│   ├── manifest.json      # PWA manifest
+│   ├── robots.txt         # SEO robots file
+│   └── sitemap.xml        # SEO sitemap
+├── src/
+│   ├── app/               # Next.js App Router pages
+│   │   ├── layout.tsx     # Root layout
+│   │   ├── page.tsx       # Home page
+│   │   ├── explore/       # Explore servers page
+│   │   ├── server/[id]/   # Dynamic server detail page
+│   │   └── ...
+│   ├── components/        # React components
+│   │   ├── header.tsx
+│   │   ├── server-card.tsx
+│   │   ├── auth-modal.tsx
+│   │   └── ...
+│   ├── lib/               # Utilities and types
+│   │   └── types.ts
+│   └── styles/
+│       └── globals.css    # Global styles
+├── .env.local             # Environment variables (create this)
+├── next.config.mjs        # Next.js configuration
+├── tailwind.config.ts     # Tailwind CSS configuration
+├── tsconfig.json          # TypeScript configuration
+└── package.json           # Dependencies
+```
+
+## IDE Configuration
+
+### VS Code (Recommended)
+
+Install recommended extensions for the best development experience:
+
+<CodeGroup>
+```json .vscode/extensions.json
+{
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "bradlc.vscode-tailwindcss",
+    "ms-vscode.vscode-typescript-next"
+  ]
+}
+```
+
+```json .vscode/settings.json
+{
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "tailwindCSS.experimental.classRegex": [
+    ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"]
+  ]
+}
+```
+</CodeGroup>
+
+### WebStorm / IntelliJ IDEA
+
+Enable these features:
+- TypeScript Language Service
+- ESLint integration
+- Prettier integration
+- Tailwind CSS IntelliSense
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Port 3000 already in use" icon="triangle-exclamation">
+    If port 3000 is occupied, specify a different port:
+    
+    ```bash
+    PORT=3001 npm run dev
+    ```
+    
+    Or kill the process using port 3000:
+    
+    ```bash
+    # On Linux/macOS
+    lsof -ti:3000 | xargs kill -9
+    
+    # On Windows
+    netstat -ano | findstr :3000
+    taskkill /PID <PID> /F
+    ```
+  </Accordion>
+
+  <Accordion title="Module not found errors" icon="circle-exclamation">
+    Clear node_modules and reinstall:
+    
+    ```bash
+    rm -rf node_modules package-lock.json
+    npm install
+    ```
+  </Accordion>
+
+  <Accordion title="TypeScript errors" icon="code">
+    Restart the TypeScript server in VS Code:
+    
+    1. Press `Cmd/Ctrl + Shift + P`
+    2. Type "TypeScript: Restart TS Server"
+    3. Press Enter
+  </Accordion>
+
+  <Accordion title="Tailwind styles not working" icon="paintbrush">
+    Ensure Tailwind is properly configured and rebuild:
+    
+    ```bash
+    npm run build
+    npm run dev
+    ```
+  </Accordion>
+
+  <Accordion title="API connection errors" icon="plug">
+    Verify your backend is running and environment variables are correct:
+    
+    ```bash
+    # Check backend status
+    curl http://localhost:8080/health
+    
+    # Verify .env.local
+    cat .env.local | grep NEXT_PUBLIC_API_URL
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Performance Tips
+
+<Tip>
+  Enable experimental features in `next.config.mjs` for better performance:
+  
+  ```javascript
+  const nextConfig = {
+    experimental: {
+      optimizePackageImports: ['framer-motion'],
+      serverActions: true,
+    },
+  }
+  ```
+</Tip>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Component Library" icon="layer-group" href="/frontend/components">
+    Explore reusable components
+  </Card>
+  <Card title="Backend Setup" icon="server" href="/backend/setup">
+    Set up the Go API backend
+  </Card>
+  <Card title="Deploy Frontend" icon="rocket" href="/frontend/deployment">
+    Deploy to Vercel
+  </Card>
+  <Card title="API Integration" icon="plug" href="/api/introduction">
+    Learn about API endpoints
+  </Card>
+</CardGroup>

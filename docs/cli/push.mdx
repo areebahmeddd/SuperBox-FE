@@ -1,0 +1,85 @@
+---
+title: 'superbox push'
+description: 'Publish MCP server to SuperBox marketplace with security scanning'
+icon: 'upload'
+---
+
+## Usage
+
+```bash
+superbox push [OPTIONS]
+```
+
+## Description
+
+Publishes your MCP server to SuperBox marketplace. Runs 5-step security scan, uploads code to S3, and deploys to Lambda.
+
+## Options
+
+<ParamField path="--category" type="string">
+  Server category: `data`, `api`, `automation`, `ml`, `other`
+</ParamField>
+
+<ParamField path="--tags" type="array">
+  Comma-separated tags
+  
+  ```bash
+  superbox push --tags weather,api,realtime
+  ```
+</ParamField>
+
+<ParamField path="--visibility" type="string" default="public">
+  `public` or `private`
+</ParamField>
+
+<ParamField path="--skip-tests" type="boolean">
+  Skip running tests before push
+</ParamField>
+
+<ParamField path="--skip-security" type="boolean">
+  Skip security scanning (not recommended)
+</ParamField>
+
+<ParamField path="--message" type="string">
+  Version commit message
+</ParamField>
+
+## Security Pipeline
+
+<Steps>
+  <Step title="SonarQube">Code quality analysis</Step>
+  <Step title="Bandit">Python security scan</Step>
+  <Step title="GitGuardian">Secrets detection</Step>
+  <Step title="Semgrep">Vulnerability scan</Step>
+  <Step title="OWASP">Dependency check</Step>
+</Steps>
+
+## Examples
+
+<CodeGroup>
+```bash Basic Push
+superbox push
+```
+
+```bash With Metadata
+superbox push \
+  --category data \
+  --tags weather,forecast,api \
+  --message "Added forecast tool"
+```
+
+```bash Quick Push
+superbox push --skip-tests --quiet
+```
+</CodeGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="View Server" icon="eye" href="/cli/inspect">
+    Inspect published server
+  </Card>
+  <Card title="Test Execution" icon="play" href="/cli/run">
+    Test server locally
+  </Card>
+</CardGroup>

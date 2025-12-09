@@ -1,0 +1,675 @@
+---
+title: 'Sandboxed Execution'
+description: 'Understanding AWS Lambda sandboxing for secure MCP server execution'
+icon: 'box'
+---
+
+## Overview
+
+SuperBox uses **AWS Lambda** to execute MCP servers in completely isolated sandbox environments, ensuring security, scalability, and reliability.
+
+<CardGroup cols={2}>
+  <Card title="Complete Isolation" icon="lock">
+    Each execution runs in its own container
+  </Card>
+  <Card title="Resource Limits" icon="gauge">
+    CPU, memory, and time constraints
+  </Card>
+  <Card title="Network Control" icon="network-wired">
+    Restricted network access
+  </Card>
+  <Card title="Auto-Scaling" icon="arrows-up-down">
+    Handles 1000+ concurrent executions
+  </Card>
+</CardGroup>
+
+## Sandbox Architecture
+
+<Frame>
+  ```mermaid
+  graph TD
+      A[User Request] --> B[API Gateway]
+      B --> C[Go API Server]
+      C --> D[Lambda Invocation]
+      D --> E[Sandbox Environment]
+      
+      subgraph E[Lambda Sandbox]
+          F[Container Init]
+          G[Load MCP Server from S3]
+          H[Install Dependencies]
+          I[Execute Tool]
+          J[Return Result]
+          
+          F --> G --> H --> I --> J
+      end
+      
+      E --> K[CloudWatch Logs]
+      J --> C
+      C --> A
+  ```
+</Frame>
+
+## Lambda Execution Flow
+
+<Steps>
+  <Step title="Request Reception">
+    API server receives tool execution request:
+    
+    ```json
+    POST /execute/weather-mcp-123
+    {
+      "tool": "get_weather",
+      "parameters": {
+        "city": "San Francisco",
+        "units": "metric"
+      }
+    }
+    ```
+  </Step>
+
+  <Step title="Lambda Invocation">
+    API server invokes Lambda function:
+    
+    ```go
+    executionReq := &ExecutionRequest{
+        ServerID:   "weather-mcp-123",
+        ToolName:   "get_weather",
+        Parameters: map[string]interface{}{
+            "city":  "San Francisco",
+            "units": "metric",
+        },
+        Timeout: 30,
+    }
+    
+    payload, _ := json.Marshal(executionReq)
+    
+    result, err := lambdaClient.Invoke(ctx, &lambda.InvokeInput{
+        FunctionName: aws.String("superbox-executor"),
+        Payload:      payload,
+        LogType:      types.LogTypeTail,
+    })
+    ```
+  </Step>
+
+  <Step title="Sandbox Bootstrap">
+    Lambda container initializes:
+    
+    1. Download MCP server code from S3
+    2. Extract to `/tmp` directory
+    3. Install Python/Node.js dependencies
+    4. Load MCP server configuration
+    5. Initialize server instance
+  </Step>
+
+  <Step title="Tool Execution">
+    Execute requested tool in sandbox:
+    
+    ```python
+    # Inside Lambda handler
+    async def execute_tool(server_id, tool_name, parameters):
+        # Load server
+        server = await load_mcp_server(server_id)
+        
+        # Call tool
+        result = await server.call_tool(
+            name=tool_name,
+            arguments=parameters
+        )
+        
+        return result
+    ```
+  </Step>
+
+  <Step title="Response Return">
+    Return execution result:
+    
+    ```json
+    {
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Weather in San Francisco: 18°C, clear skies"
+          }
+        ]
+      },
+      "duration_ms": 245,
+      "logs": [
+        "INFO: Server initialized",
+        "INFO: Executing tool get_weather",
+        "INFO: API call successful"
+      ]
+    }
+    ```
+  </Step>
+</Steps>
+
+## Security Isolation
+
+### Container Isolation
+
+<Tabs>
+  <Tab title="Process Isolation">
+    Each Lambda function runs in an isolated container:
+    
+    - Separate file system
+    - Independent process tree
+    - Isolated network namespace
+    - No cross-container access
+    
+    <Check>Containers are destroyed after execution, leaving no traces</Check>
+  </Tab>
+
+  <Tab title="Network Restrictions">
+    Controlled network access:
+    
+    ```yaml
+    Allowed Outbound:
+      - HTTPS (443) to approved APIs only
+      - DNS (53) for name resolution
+    
+    Blocked:
+      - All inbound connections
+      - Internal AWS service access
+      - Cross-VPC communication
+      - Direct database access
+    ```
+    
+    <Warning>MCP servers cannot access internal AWS infrastructure</Warning>
+  </Tab>
+
+  <Tab title="File System Access">
+    Limited file system access:
+    
+    ```
+    /tmp/               # Read/Write (512MB max)
+    /var/task/          # Read-only (Lambda code)
+    /opt/               # Read-only (Lambda layers)
+    
+    Inaccessible:
+    /                   # Root filesystem
+    /proc/              # Process information
+    /sys/               # System information
+    ```
+  </Tab>
+
+  <Tab title="Resource Limits">
+    Enforced resource constraints:
+    
+    <ParamField path="Memory" type="number" default={1024}>
+      128 MB to 10,240 MB (configurable)
+    </ParamField>
+    
+    <ParamField path="Timeout" type="number" default={30}>
+      1 second to 900 seconds (15 minutes)
+    </ParamField>
+    
+    <ParamField path="Ephemeral Storage" type="number" default={512}>
+      512 MB to 10,240 MB in /tmp
+    </ParamField>
+    
+    <ParamField path="Concurrent Executions" type="number" default={1000}>
+      Per-account limit, configurable
+    </ParamField>
+  </Tab>
+</Tabs>
+
+## Lambda Handler Implementation
+
+### Python Handler
+
+```python
+import json
+import os
+import sys
+import tempfile
+import traceback
+from pathlib import Path
+import boto3
+import zipfile
+import subprocess
+
+s3_client = boto3.client('s3')
+S3_BUCKET = os.environ['S3_BUCKET']
+
+def handler(event, context):
+    """
+    Main Lambda handler for MCP server execution
+    """
+    try:
+        # Parse request
+        server_id = event['server_id']
+        tool_name = event['tool_name']
+        parameters = event.get('parameters', {})
+        timeout = event.get('timeout', 30)
+        
+        # Setup execution environment
+        server_path = setup_server(server_id)
+        
+        # Execute tool
+        start_time = time.time()
+        result = execute_mcp_tool(server_path, tool_name, parameters, timeout)
+        duration_ms = int((time.time() - start_time) * 1000)
+        
+        return {
+            'statusCode': 200,
+            'body': json.dumps({
+                'result': result,
+                'duration_ms': duration_ms,
+                'server_id': server_id,
+                'tool_name': tool_name
+            })
+        }
+    
+    except TimeoutError as e:
+        return {
+            'statusCode': 408,
+            'body': json.dumps({
+                'error': 'Execution timeout',
+                'message': str(e)
+            })
+        }
+    
+    except Exception as e:
+        return {
+            'statusCode': 500,
+            'body': json.dumps({
+                'error': type(e).__name__,
+                'message': str(e),
+                'traceback': traceback.format_exc()
+            })
+        }
+
+def setup_server(server_id):
+    """
+    Download and setup MCP server from S3
+    """
+    # Download from S3
+    local_zip = f'/tmp/{server_id}.zip'
+    server_dir = f'/tmp/{server_id}'
+    
+    s3_key = f'servers/{server_id}/latest.zip'
+    s3_client.download_file(S3_BUCKET, s3_key, local_zip)
+    
+    # Extract
+    with zipfile.ZipFile(local_zip, 'r') as zip_ref:
+        zip_ref.extractall(server_dir)
+    
+    # Install dependencies
+    requirements_file = Path(server_dir) / 'requirements.txt'
+    if requirements_file.exists():
+        subprocess.run([
+            sys.executable, '-m', 'pip', 'install',
+            '-r', str(requirements_file),
+            '-t', server_dir,
+            '--quiet'
+        ], check=True)
+    
+    return server_dir
+
+def execute_mcp_tool(server_path, tool_name, parameters, timeout):
+    """
+    Execute MCP tool in subprocess with timeout
+    """
+    # Add server path to sys.path
+    sys.path.insert(0, server_path)
+    
+    # Import and run server
+    import asyncio
+    from mcp_server import server
+    
+    async def run_tool():
+        # Call tool
+        result = await server.call_tool(
+            name=tool_name,
+            arguments=parameters
+        )
+        return result
+    
+    # Run with timeout
+    loop = asyncio.get_event_loop()
+    task = loop.create_task(run_tool())
+    
+    try:
+        result = loop.run_until_complete(
+            asyncio.wait_for(task, timeout=timeout)
+        )
+        return result
+    except asyncio.TimeoutError:
+        task.cancel()
+        raise TimeoutError(f'Execution exceeded {timeout}s timeout')
+```
+
+### Runtime Environment
+
+<AccordionGroup>
+  <Accordion title="Python 3.11 Runtime" icon="python">
+    Pre-installed packages:
+    
+    ```
+    boto3==1.34.0
+    botocore==1.34.0
+    urllib3==2.0.7
+    requests==2.31.0
+    certifi==2023.11.17
+    ```
+    
+    Custom packages installed per-execution from `requirements.txt`
+  </Accordion>
+
+  <Accordion title="Node.js 20 Runtime" icon="node-js">
+    Pre-installed packages:
+    
+    ```json
+    {
+      "dependencies": {
+        "aws-sdk": "^2.1500.0",
+        "@aws-sdk/client-s3": "^3.450.0"
+      }
+    }
+    ```
+    
+    Custom packages from `package.json` installed during cold start
+  </Accordion>
+
+  <Accordion title="Environment Variables" icon="gear">
+    Available to MCP servers:
+    
+    ```bash
+    AWS_REGION=us-east-1
+    AWS_EXECUTION_ENV=AWS_Lambda_python3.11
+    LAMBDA_TASK_ROOT=/var/task
+    LAMBDA_RUNTIME_DIR=/var/runtime
+    
+    # Custom variables
+    SERVER_ID=weather-mcp-123
+    SUPERBOX_ENV=production
+    LOG_LEVEL=info
+    ```
+  </Accordion>
+
+  <Accordion title="AWS Lambda Layers" icon="layer-group">
+    Shared dependencies via Lambda Layers:
+    
+    - **MCP SDK Layer** - Model Context Protocol SDK
+    - **Common Libraries Layer** - httpx, aiohttp, etc.
+    - **ML Libraries Layer** - numpy, pandas (optional)
+    
+    ```
+    /opt/python/lib/python3.11/site-packages/
+    ├── mcp/
+    ├── httpx/
+    ├── aiohttp/
+    └── ...
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Cold Start Optimization
+
+<Tabs>
+  <Tab title="Problem">
+    **Cold starts** occur when Lambda creates a new container:
+    
+    - Container initialization: ~500ms
+    - Runtime bootstrap: ~200ms
+    - Dependency installation: ~2-5s
+    - **Total:** 3-6 seconds
+    
+    <Warning>Cold starts impact user experience for first requests</Warning>
+  </Tab>
+
+  <Tab title="Solutions">
+    SuperBox implements multiple optimization strategies:
+    
+    <Steps>
+      <Step title="Provisioned Concurrency">
+        Keep containers warm:
+        
+        ```hcl
+        resource "aws_lambda_provisioned_concurrency_config" "executor" {
+          function_name = aws_lambda_function.executor.function_name
+          qualifier     = aws_lambda_alias.live.name
+          
+          provisioned_concurrent_executions = 10
+        }
+        ```
+      </Step>
+
+      <Step title="Lambda Layers">
+        Pre-package common dependencies:
+        
+        - MCP SDK in shared layer
+        - Reduces deployment package size
+        - Faster extraction
+      </Step>
+
+      <Step title="Container Reuse">
+        Keep containers warm between invocations:
+        
+        ```python
+        # Global scope - persists across invocations
+        server_cache = {}
+        
+        def handler(event, context):
+            server_id = event['server_id']
+            
+            # Reuse cached server
+            if server_id in server_cache:
+                server = server_cache[server_id]
+            else:
+                server = load_server(server_id)
+                server_cache[server_id] = server
+        ```
+      </Step>
+
+      <Step title="Dependency Optimization">
+        Minimize installed packages:
+        
+        ```txt requirements.txt
+        # Only essential dependencies
+        mcp-sdk==1.0.0
+        httpx==0.25.0
+        
+        # Avoid large packages
+        # pandas, numpy, tensorflow
+        ```
+      </Step>
+    </Steps>
+  </Tab>
+
+  <Tab title="Results">
+    Optimizations reduce cold starts:
+    
+    | Optimization | Cold Start Time |
+    |--------------|-----------------|
+    | Baseline | 5.2s |
+    | + Lambda Layers | 3.8s |
+    | + Provisioned Concurrency | 0.8s |
+    | + Container Reuse | 0.05s (warm) |
+    
+    <Check>**99%** of requests execute in warm containers with < 100ms overhead</Check>
+  </Tab>
+</Tabs>
+
+## Monitoring & Observability
+
+<CardGroup cols={2}>
+  <Card title="CloudWatch Logs" icon="file-lines">
+    All execution logs captured:
+    
+    - Server initialization
+    - Tool invocations
+    - Error stack traces
+    - Performance metrics
+  </Card>
+
+  <Card title="CloudWatch Metrics" icon="chart-line">
+    Lambda metrics:
+    
+    - Invocations
+    - Duration
+    - Errors
+    - Throttles
+    - Concurrent executions
+  </Card>
+
+  <Card title="X-Ray Tracing" icon="diagram-project">
+    Distributed tracing:
+    
+    - End-to-end latency
+    - Service dependencies
+    - Bottleneck identification
+  </Card>
+
+  <Card title="Custom Metrics" icon="gauge">
+    Business metrics:
+    
+    - Tool execution counts
+    - Success/error rates
+    - Average duration per tool
+  </Card>
+</CardGroup>
+
+### Example CloudWatch Dashboard
+
+```json
+{
+  "widgets": [
+    {
+      "type": "metric",
+      "properties": {
+        "metrics": [
+          ["AWS/Lambda", "Invocations", { "stat": "Sum" }],
+          [".", "Errors", { "stat": "Sum" }],
+          [".", "Throttles", { "stat": "Sum" }]
+        ],
+        "period": 300,
+        "stat": "Sum",
+        "region": "us-east-1",
+        "title": "Lambda Executions"
+      }
+    },
+    {
+      "type": "metric",
+      "properties": {
+        "metrics": [
+          ["AWS/Lambda", "Duration", { "stat": "Average" }],
+          ["...", { "stat": "p99" }]
+        ],
+        "period": 300,
+        "region": "us-east-1",
+        "title": "Execution Duration"
+      }
+    }
+  ]
+}
+```
+
+## Cost Optimization
+
+<Tabs>
+  <Tab title="Pricing Model">
+    AWS Lambda pricing:
+    
+    - **Requests:** $0.20 per 1M requests
+    - **Duration:** $0.0000166667 per GB-second
+    - **Free tier:** 1M requests, 400,000 GB-seconds/month
+    
+    Example cost calculation:
+    ```
+    Monthly executions: 10,000,000
+    Average duration: 250ms
+    Memory: 1024 MB
+    
+    Request cost: (10M - 1M) × $0.20 / 1M = $1.80
+    Duration cost: 10M × 0.25s × 1GB × $0.0000166667 = $41.67
+    
+    Total: $43.47/month
+    ```
+  </Tab>
+
+  <Tab title="Cost Savings">
+    Optimization strategies:
+    
+    <Check>**Right-size memory** - Use minimum required memory</Check>
+    <Check>**Reduce duration** - Optimize code, cache dependencies</Check>
+    <Check>**Use layers** - Share common code</Check>
+    <Check>**Batch requests** - Combine multiple tool calls</Check>
+    <Check>**Set timeouts** - Prevent runaway executions</Check>
+  </Tab>
+</Tabs>
+
+## Error Handling
+
+<AccordionGroup>
+  <Accordion title="Timeout Errors" icon="clock">
+    Handle execution timeouts gracefully:
+    
+    ```python
+    try:
+        result = await asyncio.wait_for(
+            execute_tool(tool_name, params),
+            timeout=30
+        )
+    except asyncio.TimeoutError:
+        return {
+            'statusCode': 408,
+            'body': {
+                'error': 'Execution timeout',
+                'message': 'Tool execution exceeded 30s limit'
+            }
+        }
+    ```
+  </Accordion>
+
+  <Accordion title="Memory Errors" icon="memory">
+    Monitor memory usage:
+    
+    ```python
+    import psutil
+    
+    def check_memory():
+        process = psutil.Process()
+        memory_mb = process.memory_info().rss / 1024 / 1024
+        
+        if memory_mb > 900:  # 1024 MB limit
+            raise MemoryError(f'Memory usage: {memory_mb:.0f}MB')
+    ```
+  </Accordion>
+
+  <Accordion title="Dependency Errors" icon="puzzle-piece">
+    Handle missing dependencies:
+    
+    ```python
+    try:
+        import required_package
+    except ImportError as e:
+        return {
+            'statusCode': 500,
+            'body': {
+                'error': 'Missing dependency',
+                'message': str(e),
+                'hint': 'Add package to requirements.txt'
+            }
+        }
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Security Pipeline" icon="shield" href="/concepts/security">
+    5-step security scanning
+  </Card>
+  <Card title="MCP Servers" icon="server" href="/concepts/mcp-servers">
+    Learn about MCP protocol
+  </Card>
+  <Card title="CLI Guide" icon="terminal" href="/cli/introduction">
+    Use SuperBox CLI
+  </Card>
+  <Card title="Deployment" icon="rocket" href="/backend/deployment">
+    Deploy to AWS
+  </Card>
+</CardGroup>

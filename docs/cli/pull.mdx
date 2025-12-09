@@ -1,0 +1,75 @@
+---
+title: 'superbox pull'
+description: 'Download MCP server configuration for client integration'
+icon: 'download'
+---
+
+## Usage
+
+```bash
+superbox pull [SERVER_ID] [OPTIONS]
+```
+
+## Description
+
+Downloads MCP server configuration for integrating with MCP clients like Claude Desktop.
+
+## Arguments
+
+<ParamField path="SERVER_ID" type="string" required>
+  Server ID to download
+  
+  ```bash
+  superbox pull weather-mcp-123
+  ```
+</ParamField>
+
+## Options
+
+<ParamField path="--output" type="string" default="client_config.json">
+  Output file path
+</ParamField>
+
+<ParamField path="--format" type="string" default="json">
+  Output format: `json`, `yaml`
+</ParamField>
+
+## Examples
+
+<CodeGroup>
+```bash Basic Pull
+superbox pull weather-mcp-123
+```
+
+```bash Custom Output
+superbox pull weather-mcp-123 --output mcp-config.json
+```
+
+```bash YAML Format
+superbox pull weather-mcp-123 --format yaml --output config.yaml
+```
+</CodeGroup>
+
+## Configuration Format
+
+```json
+{
+  "mcpServers": {
+    "weather": {
+      "url": "https://api.superbox.com/execute/weather-mcp-123",
+      "apiKey": "your_api_key"
+    }
+  }
+}
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Inspect Server" icon="eye" href="/cli/inspect">
+    View server details
+  </Card>
+  <Card title="Run Locally" icon="play" href="/cli/run">
+    Test server execution
+  </Card>
+</CardGroup>

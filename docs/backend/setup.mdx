@@ -1,0 +1,614 @@
+---
+title: 'Backend Setup'
+description: 'Set up local development environment for Go API and Python CLI'
+icon: 'wrench'
+---
+
+## Prerequisites
+
+Install the required tools for backend development:
+
+<CardGroup cols={3}>
+  <Card title="Go 1.22+" icon="golang" color="#00ADD8">
+    [golang.org/dl](https://golang.org/dl)
+  </Card>
+  <Card title="Python 3.11+" icon="python" color="#3776AB">
+    [python.org/downloads](https://python.org/downloads)
+  </Card>
+  <Card title="PostgreSQL 16" icon="database" color="#336791">
+    [postgresql.org](https://postgresql.org)
+  </Card>
+  <Card title="Redis 7" icon="bolt" color="#DC382D">
+    [redis.io](https://redis.io)
+  </Card>
+  <Card title="Docker" icon="docker" color="#2496ED">
+    [docker.com](https://docker.com)
+  </Card>
+  <Card title="AWS CLI" icon="aws" color="#FF9900">
+    [aws.amazon.com/cli](https://aws.amazon.com/cli)
+  </Card>
+</CardGroup>
+
+<Check>
+  **Recommended:** Use Docker Compose to run PostgreSQL and Redis locally.
+</Check>
+
+## Quick Start - Go API
+
+<Steps>
+  <Step title="Clone Repository">
+    Clone the SuperBox backend repository:
+
+    ```bash
+    git clone https://github.com/areebahmeddd/SuperBox-API.git
+    cd SuperBox-API
+    ```
+  </Step>
+
+  <Step title="Install Go Dependencies">
+    Download all Go modules:
+
+    ```bash
+    go mod download
+    go mod verify
+    ```
+
+    <Info>
+      This installs Gin, GORM, JWT libraries, and AWS SDK.
+    </Info>
+  </Step>
+
+  <Step title="Start Database Services">
+    Use Docker Compose for PostgreSQL and Redis:
+
+    ```bash
+    docker-compose up -d
+    ```
+
+    <CodeGroup>
+    ```yaml docker-compose.yml
+    version: '3.8'
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        container_name: superbox-postgres
+        environment:
+          POSTGRES_DB: superbox
+          POSTGRES_USER: superbox
+          POSTGRES_PASSWORD: superbox123
+        ports:
+          - "5432:5432"
+        volumes:
+          - postgres_data:/var/lib/postgresql/data
+        healthcheck:
+          test: ["CMD-SHELL", "pg_isready -U superbox"]
+          interval: 10s
+          timeout: 5s
+          retries: 5
+
+      redis:
+        image: redis:7-alpine
+        container_name: superbox-redis
+        ports:
+          - "6379:6379"
+        volumes:
+          - redis_data:/data
+        command: redis-server --appendonly yes
+        healthcheck:
+          test: ["CMD", "redis-cli", "ping"]
+          interval: 10s
+          timeout: 3s
+          retries: 5
+
+    volumes:
+      postgres_data:
+      redis_data:
+    ```
+    </CodeGroup>
+
+    Verify services are running:
+
+    ```bash
+    docker-compose ps
+    ```
+  </Step>
+
+  <Step title="Configure Environment">
+    Create `.env` file with configuration:
+
+    ```bash
+    cp .env.example .env
+    ```
+
+    Edit `.env`:
+
+    ```bash
+    # Server Configuration
+    PORT=8080
+    ENV=development
+    LOG_LEVEL=debug
+
+    # Database
+    DB_HOST=localhost
+    DB_PORT=5432
+    DB_USER=superbox
+    DB_PASSWORD=superbox123
+    DB_NAME=superbox
+    DB_SSL_MODE=disable
+
+    # Redis
+    REDIS_HOST=localhost
+    REDIS_PORT=6379
+    REDIS_PASSWORD=
+    REDIS_DB=0
+
+    # JWT
+    JWT_SECRET=your-super-secret-jwt-key-change-in-production
+    JWT_EXPIRY=24h
+    REFRESH_TOKEN_EXPIRY=168h
+
+    # OAuth
+    GOOGLE_CLIENT_ID=your_google_client_id
+    GOOGLE_CLIENT_SECRET=your_google_client_secret
+    GITHUB_CLIENT_ID=your_github_client_id
+    GITHUB_CLIENT_SECRET=your_github_client_secret
+    OAUTH_REDIRECT_URL=http://localhost:3000/auth/callback
+
+    # AWS
+    AWS_REGION=us-east-1
+    AWS_ACCESS_KEY_ID=your_aws_access_key
+    AWS_SECRET_ACCESS_KEY=your_aws_secret_key
+    S3_BUCKET=superbox-servers
+    LAMBDA_FUNCTION_NAME=superbox-executor
+
+    # Razorpay
+    RAZORPAY_KEY_ID=your_razorpay_key_id
+    RAZORPAY_KEY_SECRET=your_razorpay_secret
+
+    # Security Scanning
+    SONARQUBE_URL=http://localhost:9000
+    SONARQUBE_TOKEN=your_sonarqube_token
+    GITGUARDIAN_API_KEY=your_gitguardian_key
+
+    # Rate Limiting
+    RATE_LIMIT_REQUESTS=100
+    RATE_LIMIT_WINDOW=1m
+
+    # CORS
+    CORS_ALLOWED_ORIGINS=http://localhost:3000,https://superbox.com
+    ```
+
+    <Warning>
+      Never commit `.env` to version control. Use `.env.example` as a template.
+    </Warning>
+  </Step>
+
+  <Step title="Run Database Migrations">
+    Initialize the database schema:
+
+    ```bash
+    go run cmd/migrate/main.go
+    ```
+
+    This creates all necessary tables:
+    - users
+    - mcp_servers
+    - tools
+    - executions
+    - payments
+    - security_scans
+  </Step>
+
+  <Step title="Start API Server">
+    Run the Go API server:
+
+    ```bash
+    go run cmd/server/main.go
+    ```
+
+    The API will be available at:
+    <Card>
+      🌐 **http://localhost:8080**
+    </Card>
+
+    Test the health endpoint:
+
+    ```bash
+    curl http://localhost:8080/health
+    ```
+
+    Expected response:
+    ```json
+    {
+      "status": "healthy",
+      "timestamp": "2024-01-01T12:00:00Z",
+      "version": "1.0.0"
+    }
+    ```
+  </Step>
+</Steps>
+
+## Quick Start - Python CLI
+
+<Steps>
+  <Step title="Clone CLI Repository">
+    ```bash
+    git clone https://github.com/areebahmeddd/SuperBox-CLI.git
+    cd SuperBox-CLI
+    ```
+  </Step>
+
+  <Step title="Create Virtual Environment">
+    <CodeGroup>
+    ```bash Using venv
+    python -m venv venv
+    source venv/bin/activate  # On Windows: venv\Scripts\activate
+    ```
+
+    ```bash Using conda
+    conda create -n superbox python=3.11
+    conda activate superbox
+    ```
+    </CodeGroup>
+  </Step>
+
+  <Step title="Install Dependencies">
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+    Or install in development mode:
+
+    ```bash
+    pip install -e ".[dev]"
+    ```
+
+    <Info>
+      Development mode includes testing, linting, and formatting tools.
+    </Info>
+  </Step>
+
+  <Step title="Configure CLI">
+    Initialize CLI configuration:
+
+    ```bash
+    python -m superbox config init
+    ```
+
+    This creates `~/.superbox/config.yaml`:
+
+    ```yaml
+    api:
+      base_url: http://localhost:8080
+      version: v1
+      timeout: 30
+
+    auth:
+      method: device_flow
+      token_file: ~/.superbox/token.json
+
+    security:
+      enabled: true
+      tools:
+        - sonarqube
+        - bandit
+        - gitguardian
+        - semgrep
+
+    output:
+      format: rich
+      color: true
+      verbose: false
+    ```
+  </Step>
+
+  <Step title="Verify Installation">
+    Check CLI version:
+
+    ```bash
+    python -m superbox --version
+    ```
+
+    Run help command:
+
+    ```bash
+    python -m superbox --help
+    ```
+
+    Expected output:
+    ```
+    SuperBox CLI v1.0.0
+    
+    Usage: superbox [OPTIONS] COMMAND [ARGS]...
+    
+    Commands:
+      init      Initialize a new MCP server project
+      auth      Authenticate with SuperBox
+      push      Publish server to SuperBox
+      pull      Download server configuration
+      run       Test MCP server locally
+      search    Search for MCP servers
+      inspect   Inspect server details
+      test      Run server tests
+    ```
+  </Step>
+</Steps>
+
+## Development Commands
+
+### Go API Commands
+
+<AccordionGroup>
+  <Accordion title="go run cmd/server/main.go" icon="play">
+    Start the development server with hot reload
+    
+    ```bash
+    # With Air for hot reload
+    air
+    
+    # Or manually
+    go run cmd/server/main.go
+    ```
+  </Accordion>
+
+  <Accordion title="go test ./..." icon="vial">
+    Run all tests with coverage
+    
+    ```bash
+    go test ./... -v -cover
+    
+    # Generate coverage report
+    go test ./... -coverprofile=coverage.out
+    go tool cover -html=coverage.out
+    ```
+  </Accordion>
+
+  <Accordion title="go build" icon="hammer">
+    Build production binary
+    
+    ```bash
+    # Build for current OS
+    go build -o bin/superbox-api cmd/server/main.go
+    
+    # Build for Linux
+    GOOS=linux GOARCH=amd64 go build -o bin/superbox-api-linux cmd/server/main.go
+    
+    # Build with optimization
+    go build -ldflags="-s -w" -o bin/superbox-api cmd/server/main.go
+    ```
+  </Accordion>
+
+  <Accordion title="Database Commands" icon="database">
+    Manage database migrations
+    
+    ```bash
+    # Run migrations
+    go run cmd/migrate/main.go up
+    
+    # Rollback migrations
+    go run cmd/migrate/main.go down
+    
+    # Reset database
+    go run cmd/migrate/main.go reset
+    
+    # Seed database
+    go run cmd/seed/main.go
+    ```
+  </Accordion>
+
+  <Accordion title="Linting & Formatting" icon="broom">
+    Code quality tools
+    
+    ```bash
+    # Format code
+    go fmt ./...
+    
+    # Run linter
+    golangci-lint run
+    
+    # Fix linting issues
+    golangci-lint run --fix
+    ```
+  </Accordion>
+</AccordionGroup>
+
+### Python CLI Commands
+
+<AccordionGroup>
+  <Accordion title="pytest" icon="vial">
+    Run CLI tests
+    
+    ```bash
+    # Run all tests
+    pytest
+    
+    # Run with coverage
+    pytest --cov=superbox --cov-report=html
+    
+    # Run specific test
+    pytest tests/test_auth.py -v
+    ```
+  </Accordion>
+
+  <Accordion title="black & ruff" icon="paintbrush">
+    Format and lint Python code
+    
+    ```bash
+    # Format code
+    black .
+    
+    # Check formatting
+    black --check .
+    
+    # Lint with ruff
+    ruff check .
+    
+    # Fix linting issues
+    ruff check --fix .
+    ```
+  </Accordion>
+
+  <Accordion title="mypy" icon="shield-check">
+    Type checking
+    
+    ```bash
+    mypy superbox/
+    ```
+  </Accordion>
+
+  <Accordion title="Build Distribution" icon="box">
+    Build Python package
+    
+    ```bash
+    # Build wheel and sdist
+    python -m build
+    
+    # Install locally
+    pip install dist/superbox-*.whl
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Project Structure
+
+### Go API Structure
+
+```
+SuperBox-API/
+├── cmd/
+│   ├── server/           # Main application entry point
+│   ├── migrate/          # Database migration tool
+│   └── seed/             # Database seeding
+├── internal/
+│   ├── api/
+│   │   ├── handlers/     # HTTP request handlers
+│   │   ├── middleware/   # HTTP middleware
+│   │   └── routes/       # Route definitions
+│   ├── models/           # Database models
+│   ├── services/         # Business logic
+│   ├── repository/       # Data access layer
+│   └── utils/            # Helper functions
+├── pkg/
+│   ├── auth/             # Authentication utilities
+│   ├── logger/           # Logging utilities
+│   └── validator/        # Input validation
+├── migrations/           # SQL migrations
+├── tests/                # Test files
+├── go.mod
+├── go.sum
+├── .env.example
+└── docker-compose.yml
+```
+
+### Python CLI Structure
+
+```
+SuperBox-CLI/
+├── superbox/
+│   ├── __init__.py
+│   ├── cli.py            # Main CLI entry point
+│   ├── commands/         # CLI commands
+│   │   ├── init.py
+│   │   ├── auth.py
+│   │   ├── push.py
+│   │   └── ...
+│   ├── api/              # API client
+│   ├── security/         # Security scanning
+│   ├── templates/        # Project templates
+│   └── utils/            # Helper functions
+├── tests/                # Test files
+├── pyproject.toml
+├── requirements.txt
+└── README.md
+```
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="PostgreSQL Connection Error" icon="database">
+    Verify PostgreSQL is running:
+    
+    ```bash
+    docker-compose ps postgres
+    ```
+    
+    Test connection:
+    
+    ```bash
+    psql -h localhost -U superbox -d superbox
+    ```
+    
+    Check logs:
+    
+    ```bash
+    docker-compose logs postgres
+    ```
+  </Accordion>
+
+  <Accordion title="Redis Connection Error" icon="bolt">
+    Verify Redis is running:
+    
+    ```bash
+    docker-compose ps redis
+    ```
+    
+    Test connection:
+    
+    ```bash
+    redis-cli ping
+    ```
+  </Accordion>
+
+  <Accordion title="Go Module Errors" icon="golang">
+    Clean and re-download modules:
+    
+    ```bash
+    go clean -modcache
+    go mod download
+    go mod tidy
+    ```
+  </Accordion>
+
+  <Accordion title="Python Import Errors" icon="python">
+    Reinstall dependencies:
+    
+    ```bash
+    pip uninstall superbox -y
+    pip install -e ".[dev]"
+    ```
+  </Accordion>
+
+  <Accordion title="AWS Credentials Error" icon="aws">
+    Configure AWS CLI:
+    
+    ```bash
+    aws configure
+    ```
+    
+    Or set environment variables:
+    
+    ```bash
+    export AWS_ACCESS_KEY_ID=your_key
+    export AWS_SECRET_ACCESS_KEY=your_secret
+    export AWS_REGION=us-east-1
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Architecture" icon="sitemap" href="/backend/architecture">
+    Understand system architecture
+  </Card>
+  <Card title="API Reference" icon="book" href="/api/introduction">
+    Explore API endpoints
+  </Card>
+  <Card title="CLI Commands" icon="terminal" href="/cli/introduction">
+    Learn CLI commands
+  </Card>
+  <Card title="Deploy to AWS" icon="aws" href="/backend/deployment">
+    Production deployment
+  </Card>
+</CardGroup>

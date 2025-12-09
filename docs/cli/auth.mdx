@@ -1,0 +1,104 @@
+---
+title: 'superbox auth'
+description: 'Authenticate with SuperBox using device authorization flow'
+icon: 'key'
+---
+
+## Usage
+
+```bash
+superbox auth [OPTIONS]
+```
+
+## Description
+
+Authenticates with SuperBox using OAuth 2.0 device authorization flow. Opens browser for authorization and stores token locally.
+
+## Options
+
+<ParamField path="--method" type="string" default="device_flow">
+  Authentication method: `device_flow`, `token`
+  
+  ```bash
+  superbox auth --method device_flow
+  ```
+</ParamField>
+
+<ParamField path="--token" type="string">
+  Provide API token directly
+  
+  ```bash
+  superbox auth --token sb_1234567890abcdef
+  ```
+</ParamField>
+
+<ParamField path="--logout" type="boolean">
+  Log out and remove stored token
+  
+  ```bash
+  superbox auth --logout
+  ```
+</ParamField>
+
+## Device Flow Process
+
+<Steps>
+  <Step title="Request Device Code">
+    CLI requests device code from API
+  </Step>
+
+  <Step title="Display Code">
+    ```
+    Visit: https://superbox.com/device
+    Enter code: ABCD-1234
+    ```
+  </Step>
+
+  <Step title="User Authorization">
+    User logs in and authorizes device
+  </Step>
+
+  <Step title="Token Storage">
+    Token saved to `~/.superbox/token.json`
+  </Step>
+</Steps>
+
+## Examples
+
+<CodeGroup>
+```bash Device Flow
+superbox auth
+# Opens browser automatically
+# Enter displayed code
+```
+
+```bash Direct Token
+export SUPERBOX_API_TOKEN=sb_your_token_here
+superbox auth --token $SUPERBOX_API_TOKEN
+```
+
+```bash Logout
+superbox auth --logout
+```
+</CodeGroup>
+
+## Troubleshooting
+
+<Accordion title="Browser doesn't open">
+  Manually visit the URL and enter the code:
+  
+  ```
+  https://superbox.com/device?code=ABCD-1234
+  ```
+</Accordion>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Initialize Project" icon="plus" href="/cli/init">
+    Create MCP server
+  </Card>
+  <Card title="Push Server" icon="upload" href="/cli/push">
+    Publish to marketplace
+  </Card>
+</CardGroup>

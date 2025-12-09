@@ -1,0 +1,744 @@
+---
+title: 'Update Server'
+api: 'PUT /servers/:name'
+description: 'Update metadata and configuration of an existing MCP server'
+---
+
+## Endpoint
+
+<Card>
+  <code>PUT https://api.superbox.dev/api/v1/servers/:name</code>
+</Card>
+
+## Authentication
+
+<Tabs>
+  <Tab title="Required">
+    This endpoint requires authentication. You must be the server owner.
+    
+    <Warning>
+      Only the server owner can update server metadata
+    </Warning>
+  </Tab>
+</Tabs>
+
+## Path Parameters
+
+<ParamField path="name" type="string" required>
+  Unique server identifier to update
+  
+  **Example:** `weather-mcp`, `database-query-mcp`
+</ParamField>
+
+## Request Body
+
+<Info>
+  All fields are optional. Only include fields you want to update.
+</Info>
+
+<ParamField body="version" type="string">
+  New semantic version number
+  
+  **Format:** `MAJOR.MINOR.PATCH`
+  
+  **Rules:**
+  - Must be greater than current version
+  - Follow semantic versioning
+  
+  **Example:** `1.2.0` → `1.3.0`
+</ParamField>
+
+<ParamField body="description" type="string">
+  Updated description
+  
+  **Length:** 20-500 characters
+</ParamField>
+
+<ParamField body="license" type="string">
+  Updated software license
+  
+  **Examples:** `MIT`, `Apache-2.0`, `GPL-3.0`
+</ParamField>
+
+<ParamField body="repository" type="object">
+  Updated repository information
+  
+  <Expandable title="properties">
+    <ParamField body="type" type="string">
+      Repository type
+    </ParamField>
+    
+    <ParamField body="url" type="string">
+      New repository URL (must be public)
+    </ParamField>
+  </Expandable>
+  
+  <Warning>
+    Changing repository URL will trigger a new security scan
+  </Warning>
+</ParamField>
+
+<ParamField body="pricing" type="object">
+  Updated pricing configuration
+  
+  <Expandable title="properties">
+    <ParamField body="currency" type="string">
+      Currency code
+    </ParamField>
+    
+    <ParamField body="amount" type="number">
+      New price amount
+    </ParamField>
+  </Expandable>
+  
+  <Note>
+    Pricing changes take effect immediately for new users
+  </Note>
+</ParamField>
+
+<ParamField body="metadata" type="object">
+  Optional metadata updates
+  
+  <Expandable title="properties">
+    <ParamField body="tags" type="array">
+      Updated topic tags
+    </ParamField>
+    
+    <ParamField body="homepage" type="string">
+      Updated homepage URL
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Indicates if update was successful
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  Updated server information
+  
+  <Expandable title="properties">
+    <ResponseField name="name" type="string">
+      Server identifier
+    </ResponseField>
+    
+    <ResponseField name="version" type="string">
+      Updated version
+    </ResponseField>
+    
+    <ResponseField name="updated_at" type="string">
+      ISO 8601 timestamp of update
+    </ResponseField>
+    
+    <ResponseField name="changes" type="array">
+      List of fields that were updated
+    </ResponseField>
+    
+    <ResponseField name="rescanRequired" type="boolean">
+      Whether a new security scan was triggered
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+## Examples
+
+<CodeGroup>
+```bash cURL
+# Update version and description
+curl -X PUT "https://api.superbox.dev/api/v1/servers/weather-mcp" \
+  -H "Authorization: Bearer $SUPERBOX_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "version": "1.3.0",
+    "description": "Enhanced weather server with 10-day forecasts"
+  }'
+
+# Update pricing
+curl -X PUT "https://api.superbox.dev/api/v1/servers/weather-mcp" \
+  -H "Authorization: Bearer $SUPERBOX_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "pricing": {
+      "currency": "USD",
+      "amount": 4.99
+    }
+  }'
+
+# Update multiple fields
+curl -X PUT "https://api.superbox.dev/api/v1/servers/weather-mcp" \
+  -H "Authorization: Bearer $SUPERBOX_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "version": "2.0.0",
+    "description": "Major update with new features",
+    "metadata": {
+      "tags": ["weather", "forecast", "climate"],
+      "homepage": "https://weather-mcp.dev"
+    }
+  }'
+```
+
+```javascript JavaScript
+// Update description
+const updates = {
+  description: "Enhanced weather server with 10-day forecasts and alerts"
+};
+
+const response = await fetch(
+  'https://api.superbox.dev/api/v1/servers/weather-mcp',
+  {
+    method: 'PUT',
+    headers: {
+      'Authorization': `Bearer ${process.env.SUPERBOX_API_TOKEN}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(updates)
+  }
+);
+
+const result = await response.json();
+
+if (result.success) {
+  console.log('✓ Server updated successfully');
+  console.log('Updated fields:', result.data.changes);
+} else {
+  console.error('Failed:', result.error.message);
+}
+
+// Update version
+async function bumpVersion(serverName, newVersion) {
+  const response = await fetch(
+    `https://api.superbox.dev/api/v1/servers/${serverName}`,
+    {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${process.env.SUPERBOX_API_TOKEN}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ version: newVersion })
+    }
+  );
+  
+  return response.json();
+}
+
+await bumpVersion('weather-mcp', '1.3.0');
+```
+
+```python Python
+import requests
+import os
+
+# Update pricing
+server_name = "weather-mcp"
+url = f"https://api.superbox.dev/api/v1/servers/{server_name}"
+
+updates = {
+    "pricing": {
+        "currency": "USD",
+        "amount": 4.99
+    }
+}
+
+headers = {
+    "Authorization": f"Bearer {os.getenv('SUPERBOX_API_TOKEN')}",
+    "Content-Type": "application/json"
+}
+
+response = requests.put(url, headers=headers, json=updates)
+result = response.json()
+
+if result['success']:
+    print(f"✓ Server updated successfully")
+    print(f"Changed: {', '.join(result['data']['changes'])}")
+else:
+    print(f"Failed: {result['error']['message']}")
+
+# Update multiple fields
+def update_server(server_name, **updates):
+    url = f"https://api.superbox.dev/api/v1/servers/{server_name}"
+    headers = {
+        "Authorization": f"Bearer {os.getenv('SUPERBOX_API_TOKEN')}",
+        "Content-Type": "application/json"
+    }
+    
+    response = requests.put(url, headers=headers, json=updates)
+    return response.json()
+
+# Usage
+update_server(
+    'weather-mcp',
+    version='2.0.0',
+    description='Major update with new features',
+    metadata={
+        'tags': ['weather', 'forecast', 'climate'],
+        'homepage': 'https://weather-mcp.dev'
+    }
+)
+```
+
+```go Go
+package main
+
+import (
+    "bytes"
+    "encoding/json"
+    "fmt"
+    "net/http"
+    "os"
+)
+
+type ServerUpdate struct {
+    Version     string   `json:"version,omitempty"`
+    Description string   `json:"description,omitempty"`
+    Pricing     *Pricing `json:"pricing,omitempty"`
+}
+
+type Pricing struct {
+    Currency string  `json:"currency"`
+    Amount   float64 `json:"amount"`
+}
+
+func updateServer(name string, updates ServerUpdate) error {
+    url := fmt.Sprintf("https://api.superbox.dev/api/v1/servers/%s", name)
+    
+    jsonData, _ := json.Marshal(updates)
+    
+    req, _ := http.NewRequest("PUT", url, bytes.NewBuffer(jsonData))
+    req.Header.Set("Authorization", "Bearer "+os.Getenv("SUPERBOX_API_TOKEN"))
+    req.Header.Set("Content-Type", "application/json")
+    
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    if err != nil {
+        return err
+    }
+    defer resp.Body.Close()
+    
+    var result map[string]interface{}
+    json.NewDecoder(resp.Body).Decode(&result)
+    
+    if result["success"].(bool) {
+        fmt.Println("✓ Server updated successfully")
+    }
+    
+    return nil
+}
+
+func main() {
+    updates := ServerUpdate{
+        Version:     "1.3.0",
+        Description: "Enhanced weather server",
+    }
+    
+    updateServer("weather-mcp", updates)
+}
+```
+</CodeGroup>
+
+## Response Examples
+
+<ResponseExample>
+```json 200 Success
+{
+  "success": true,
+  "data": {
+    "name": "weather-mcp",
+    "version": "1.3.0",
+    "updated_at": "2025-12-09T10:30:00Z",
+    "changes": ["version", "description", "metadata"],
+    "rescanRequired": false,
+    "message": "Server updated successfully"
+  },
+  "meta": {
+    "timestamp": "2025-12-09T10:30:00Z",
+    "version": "v1",
+    "requestId": "req_xyz789"
+  }
+}
+```
+
+```json 200 Success (With Rescan)
+{
+  "success": true,
+  "data": {
+    "name": "weather-mcp",
+    "version": "2.0.0",
+    "updated_at": "2025-12-09T10:30:00Z",
+    "changes": ["version", "repository"],
+    "rescanRequired": true,
+    "securityScanId": "scan_new123",
+    "message": "Server updated. Security scan initiated due to repository change."
+  }
+}
+```
+
+```json 400 Validation Error
+{
+  "success": false,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Invalid version number",
+    "details": {
+      "field": "version",
+      "current": "1.2.0",
+      "provided": "1.1.0",
+      "hint": "New version must be greater than current version"
+    }
+  }
+}
+```
+
+```json 403 Forbidden
+{
+  "success": false,
+  "error": {
+    "code": "FORBIDDEN",
+    "message": "You don't have permission to update this server",
+    "details": {
+      "server": "weather-mcp",
+      "owner": "johndoe",
+      "requester": "janedoe",
+      "hint": "Only the server owner can update it"
+    }
+  }
+}
+```
+
+```json 404 Not Found
+{
+  "success": false,
+  "error": {
+    "code": "RESOURCE_NOT_FOUND",
+    "message": "Server not found",
+    "details": {
+      "name": "non-existent-server"
+    }
+  }
+}
+```
+</ResponseExample>
+
+## Update Scenarios
+
+<AccordionGroup>
+  <Accordion title="Version Bump" icon="arrow-up">
+    **When to bump versions:**
+    
+    - **Patch (1.0.0 → 1.0.1)**: Bug fixes, minor changes
+    - **Minor (1.0.0 → 1.1.0)**: New features, backward compatible
+    - **Major (1.0.0 → 2.0.0)**: Breaking changes
+    
+    ```javascript
+    // Patch version
+    await fetch(url, {
+      method: 'PUT',
+      headers,
+      body: JSON.stringify({ version: '1.0.1' })
+    });
+    ```
+  </Accordion>
+  
+  <Accordion title="Pricing Changes" icon="dollar-sign">
+    **Common scenarios:**
+    
+    - Making a paid server free
+    - Adding premium pricing
+    - Adjusting based on features
+    
+    ```javascript
+    // Make server free
+    await fetch(url, {
+      method: 'PUT',
+      headers,
+      body: JSON.stringify({
+        pricing: { currency: 'USD', amount: 0 }
+      })
+    });
+    ```
+    
+    <Note>
+      Existing users keep their current pricing
+    </Note>
+  </Accordion>
+  
+  <Accordion title="Description Updates" icon="pen-to-square">
+    **Best practices:**
+    
+    - Keep it clear and concise
+    - Highlight new features
+    - Update for major versions
+    
+    ```python
+    requests.put(url, headers=headers, json={
+        'description': 'Now with 10-day forecasts and weather alerts!'
+    })
+    ```
+  </Accordion>
+  
+  <Accordion title="Repository Migration" icon="code-branch">
+    **When migrating repositories:**
+    
+    - Set up repository redirects
+    - Update documentation
+    - Notify users
+    - Triggers new security scan
+    
+    ```javascript
+    await fetch(url, {
+      method: 'PUT',
+      headers,
+      body: JSON.stringify({
+        repository: {
+          type: 'git',
+          url: 'https://github.com/new-org/weather-mcp'
+        }
+      })
+    });
+    ```
+    
+    <Warning>
+      Repository changes trigger a new security scan
+    </Warning>
+  </Accordion>
+</AccordionGroup>
+
+## Field-Specific Rules
+
+<Tabs>
+  <Tab title="Version">
+    **Rules:**
+    - Must follow semver format
+    - Must be greater than current version
+    - Cannot downgrade
+    
+    **Valid:**
+    - `1.0.0` → `1.0.1` ✅
+    - `1.0.0` → `1.1.0` ✅
+    - `1.9.9` → `2.0.0` ✅
+    
+    **Invalid:**
+    - `1.1.0` → `1.0.0` ❌ (downgrade)
+    - `1.0.0` → `1.0` ❌ (invalid format)
+  </Tab>
+  
+  <Tab title="Description">
+    **Rules:**
+    - 20-500 characters
+    - No profanity or spam
+    - Describe functionality clearly
+    
+    **Good:**
+    ```
+    "Get real-time weather data, 10-day forecasts, 
+     and severe weather alerts for any location"
+    ```
+    
+    **Too short:**
+    ```
+    "Weather tool"  ❌
+    ```
+  </Tab>
+  
+  <Tab title="Pricing">
+    **Rules:**
+    - Amount: 0 to 999.99
+    - Currency: Valid ISO 4217 code
+    - Can change anytime
+    
+    **Effects:**
+    - Immediate for new users
+    - Existing users unaffected
+    - Display updated on server page
+  </Tab>
+  
+  <Tab title="Repository">
+    **Rules:**
+    - Must be publicly accessible
+    - Must be valid Git URL
+    - Triggers new security scan
+    
+    **Side effects:**
+    - Server temporarily unavailable during scan
+    - Deployment may be rejected if scan fails
+    - Takes 1-2 minutes
+  </Tab>
+</Tabs>
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Semantic Versioning" icon="tags">
+    Follow semver strictly to communicate changes clearly to users
+  </Card>
+  
+  <Card title="Document Changes" icon="file-lines">
+    Update your README and changelog when making updates
+  </Card>
+  
+  <Card title="Test Before Update" icon="vial">
+    Test changes in your repository before updating the server
+  </Card>
+  
+  <Card title="Notify Users" icon="bell">
+    For breaking changes, notify users through your communication channels
+  </Card>
+  
+  <Card title="Gradual Pricing" icon="chart-line">
+    If adding pricing, consider a gradual introduction
+  </Card>
+  
+  <Card title="Backup First" icon="floppy-disk">
+    Keep backups of working versions before major updates
+  </Card>
+</CardGroup>
+
+## Update Strategies
+
+<Tabs>
+  <Tab title="Rolling Updates">
+    Update incrementally for minimal disruption:
+    
+    ```javascript
+    // Week 1: Update description
+    await updateServer({ description: 'New features coming!' });
+    
+    // Week 2: Bump version after testing
+    await updateServer({ version: '1.1.0' });
+    
+    // Week 3: Adjust pricing if needed
+    await updateServer({
+      pricing: { currency: 'USD', amount: 4.99 }
+    });
+    ```
+  </Tab>
+  
+  <Tab title="Major Release">
+    For major updates, bundle all changes:
+    
+    ```javascript
+    await updateServer({
+      version: '2.0.0',
+      description: 'Complete rewrite with new features',
+      repository: {
+        type: 'git',
+        url: 'https://github.com/user/server-v2'
+      },
+      metadata: {
+        tags: ['weather', 'v2', 'enhanced']
+      }
+    });
+    ```
+    
+    <Warning>
+      Repository changes trigger security rescanning
+    </Warning>
+  </Tab>
+  
+  <Tab title="Emergency Fixes">
+    For urgent bug fixes:
+    
+    ```javascript
+    // Quick patch
+    await updateServer({
+      version: '1.0.1',
+      description: 'Critical bug fix for API rate limiting'
+    });
+    ```
+    
+    <Tip>
+      Patch versions can be deployed quickly
+    </Tip>
+  </Tab>
+</Tabs>
+
+## Monitoring Updates
+
+Track update status:
+
+<CodeGroup>
+```javascript JavaScript
+async function monitorUpdate(serverName) {
+  const response = await fetch(
+    `https://api.superbox.dev/api/v1/servers/${serverName}`,
+    {
+      headers: {
+        'Authorization': `Bearer ${process.env.SUPERBOX_API_TOKEN}`
+      }
+    }
+  );
+  
+  const { data } = await response.json();
+  
+  console.log(`Current version: ${data.version}`);
+  console.log(`Last updated: ${data.updated_at}`);
+  
+  if (data.security_report?.metadata.scan_date) {
+    console.log(`Last scanned: ${data.security_report.metadata.scan_date}`);
+  }
+}
+```
+
+```python Python
+def get_update_history(server_name):
+    url = f"https://api.superbox.dev/api/v1/servers/{server_name}/history"
+    headers = {'Authorization': f'Bearer {os.getenv("SUPERBOX_API_TOKEN")}'}
+    
+    response = requests.get(url, headers=headers)
+    history = response.json()['data']
+    
+    for update in history:
+        print(f"{update['version']} - {update['updated_at']}")
+        print(f"  Changes: {', '.join(update['changes'])}")
+```
+</CodeGroup>
+
+## Common Errors
+
+<AccordionGroup>
+  <Accordion title="Version Conflict" icon="triangle-exclamation">
+    **Error:** New version must be greater than current version
+    
+    **Solution:** Check current version first, then increment appropriately
+    
+    ```javascript
+    const current = await getCurrentVersion('weather-mcp');
+    const [major, minor, patch] = current.split('.').map(Number);
+    const newVersion = `${major}.${minor}.${patch + 1}`;
+    ```
+  </Accordion>
+  
+  <Accordion title="Unauthorized" icon="lock">
+    **Error:** You don't have permission to update this server
+    
+    **Solution:** Ensure you're the server owner and using the correct token
+  </Accordion>
+  
+  <Accordion title="Invalid Repository" icon="github">
+    **Error:** Unable to access new repository URL
+    
+    **Solution:** Verify the repository is public and URL is correct
+  </Accordion>
+</AccordionGroup>
+
+## Related Endpoints
+
+<CardGroup cols={3}>
+  <Card title="Get Server" icon="eye" href="/api/servers/get">
+    View current server details
+  </Card>
+  
+  <Card title="Create Server" icon="plus" href="/api/servers/create">
+    Deploy a new server
+  </Card>
+  
+  <Card title="Delete Server" icon="trash" href="/api/servers/delete">
+    Remove a server
+  </Card>
+</CardGroup>
+
+<Check>
+  Keep your servers up-to-date with regular version bumps and improvements!
+</Check>

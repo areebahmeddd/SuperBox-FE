@@ -1,0 +1,57 @@
+---
+title: 'CLI Installation'
+description: 'Install SuperBox CLI on your system'
+icon: 'download'
+---
+
+## Installation Methods
+
+<Tabs>
+  <Tab title="pip (Recommended)">
+    Install via Python Package Index:
+    
+    ```bash
+    pip install superbox-cli
+    ```
+    
+    <Check>Works on Linux, macOS, and Windows</Check>
+  </Tab>
+
+  <Tab title="pipx">
+    Install in isolated environment:
+    
+    ```bash
+    pipx install superbox-cli
+    ```
+    
+    <Info>Recommended for CLI tools to avoid dependency conflicts</Info>
+  </Tab>
+
+  <Tab title="From Source">
+    Install from GitHub:
+    
+    ```bash
+    git clone https://github.com/areebahmeddd/SuperBox-CLI.git
+    cd SuperBox-CLI
+    pip install -e .
+    ```
+  </Tab>
+</Tabs>
+
+## Verify Installation
+
+```bash
+superbox --version
+# Output: superbox-cli v1.0.0
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Authenticate" icon="key" href="/cli/auth">
+    Connect to SuperBox
+  </Card>
+  <Card title="Initialize Project" icon="plus" href="/cli/init">
+    Create MCP server
+  </Card>
+</CardGroup>

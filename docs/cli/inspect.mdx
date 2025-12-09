@@ -1,0 +1,89 @@
+---
+title: 'superbox inspect'
+description: 'View detailed information about an MCP server'
+icon: 'eye'
+---
+
+## Usage
+
+```bash
+superbox inspect [SERVER_ID] [OPTIONS]
+```
+
+## Description
+
+Display comprehensive information about an MCP server including tools, metadata, and statistics.
+
+## Arguments
+
+<ParamField path="SERVER_ID" type="string" required>
+  Server ID to inspect
+  
+  ```bash
+  superbox inspect weather-mcp-123
+  ```
+</ParamField>
+
+## Options
+
+<ParamField path="--tools" type="boolean">
+  Show only tools list
+</ParamField>
+
+<ParamField path="--json" type="boolean">
+  Output as JSON
+</ParamField>
+
+## Examples
+
+<CodeGroup>
+```bash Basic Inspect
+superbox inspect weather-mcp-123
+```
+
+```bash Tools Only
+superbox inspect weather-mcp-123 --tools
+```
+
+```bash JSON Output
+superbox inspect weather-mcp-123 --json > server.json
+```
+</CodeGroup>
+
+## Output
+
+```
+╭─────────────── Weather MCP ───────────────╮
+│                                             │
+│  ID: weather-mcp-123                       │
+│  Author: @johndoe                          │
+│  Category: Data                            │
+│  Downloads: 1,234                          │
+│  Rating: ★★★★★ 4.8 (42 reviews)           │
+│                                             │
+│  Description:                               │
+│  Real-time weather data and forecasts      │
+│  from multiple APIs                         │
+│                                             │
+│  Tools:                                     │
+│  • get_weather - Get current weather       │
+│  • get_forecast - Get weather forecast     │
+│  • get_historical - Get historical data    │
+│                                             │
+│  Tags: weather, api, realtime              │
+│  Version: 1.2.0                            │
+│  Last updated: 2 days ago                  │
+│                                             │
+╰─────────────────────────────────────────────╯
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Pull Config" icon="download" href="/cli/pull">
+    Download configuration
+  </Card>
+  <Card title="Test Locally" icon="play" href="/cli/run">
+    Run server locally
+  </Card>
+</CardGroup>

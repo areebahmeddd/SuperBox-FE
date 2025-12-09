@@ -20,6 +20,7 @@
     "build": "next build",
     "start": "next start",
     "dev": "next dev",
+    "docs": "cd docs && mintlify dev",
     "format": "npx prettier --write ."
   },
   "dependencies": {
@@ -34,10 +35,11 @@
     "@types/node": "^24",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "mintlify": "^4.2.230",
+    "postcss": "^8.5",
     "prettier": "^3.7.4",
     "prettier-plugin-organize-imports": "^4.3.0",
     "prettier-plugin-tailwindcss": "^0.7.2",
-    "postcss": "^8.5",
     "tailwindcss": "^4.1.9",
     "typescript": "^5"
   }

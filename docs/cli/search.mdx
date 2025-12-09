@@ -1,0 +1,96 @@
+---
+title: 'superbox search'
+description: 'Search SuperBox marketplace for MCP servers'
+icon: 'magnifying-glass'
+---
+
+## Usage
+
+```bash
+superbox search [QUERY] [OPTIONS]
+```
+
+## Description
+
+Search for MCP servers in the SuperBox marketplace.
+
+## Arguments
+
+<ParamField path="QUERY" type="string">
+  Search query (searches name and description)
+  
+  ```bash
+  superbox search "weather"
+  ```
+</ParamField>
+
+## Options
+
+<ParamField path="--category" type="string">
+  Filter by category
+  
+  ```bash
+  superbox search weather --category data
+  ```
+</ParamField>
+
+<ParamField path="--tags" type="array">
+  Filter by tags
+  
+  ```bash
+  superbox search --tags api,realtime
+  ```
+</ParamField>
+
+<ParamField path="--limit" type="number" default={20}>
+  Number of results
+</ParamField>
+
+<ParamField path="--sort" type="string" default="downloads">
+  Sort by: `downloads`, `rating`, `recent`
+</ParamField>
+
+## Examples
+
+<CodeGroup>
+```bash Basic Search
+superbox search "weather"
+```
+
+```bash Filtered Search
+superbox search "api" --category data --tags realtime
+```
+
+```bash Sort by Rating
+superbox search --sort rating --limit 10
+```
+</CodeGroup>
+
+## Output
+
+```
+╭──────────────────── Search Results ────────────────────╮
+│                                                         │
+│  Weather MCP                       ★ 4.8  ↓ 1.2k      │
+│  Real-time weather data and forecasts                 │
+│  Tags: weather, api, data                             │
+│  ID: weather-mcp-123                                   │
+│                                                         │
+│  Climate Data MCP                  ★ 4.6  ↓ 850       │
+│  Historical climate data access                        │
+│  Tags: weather, data, historical                      │
+│  ID: climate-mcp-456                                   │
+│                                                         │
+╰─────────────────────────────────────────────────────────╯
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Inspect Server" icon="eye" href="/cli/inspect">
+    View server details
+  </Card>
+  <Card title="Pull Configuration" icon="download" href="/cli/pull">
+    Download server config
+  </Card>
+</CardGroup>
