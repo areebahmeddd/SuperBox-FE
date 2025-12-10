@@ -1,7 +1,7 @@
 ---
-title: 'Sandboxed Execution'
-description: 'Understanding AWS Lambda sandboxing for secure MCP server execution'
-icon: 'box'
+title: "Sandboxed Execution"
+description: "Understanding AWS Lambda sandboxing for secure MCP server execution"
+icon: "box"
 ---
 
 ## Overview
@@ -91,34 +91,18 @@ SuperBox uses **AWS Lambda** to execute MCP servers in completely isolated sandb
     ```
   </Step>
 
-  <Step title="Sandbox Bootstrap">
-    Lambda container initializes:
-    
-    1. Download MCP server code from S3
-    2. Extract to `/tmp` directory
-    3. Install Python/Node.js dependencies
-    4. Load MCP server configuration
-    5. Initialize server instance
-  </Step>
+<Step title="Sandbox Bootstrap">
+  Lambda container initializes: 1. Download MCP server code from S3 2. Extract
+  to `/tmp` directory 3. Install Python/Node.js dependencies 4. Load MCP server
+  configuration 5. Initialize server instance
+</Step>
 
-  <Step title="Tool Execution">
-    Execute requested tool in sandbox:
-    
-    ```python
-    # Inside Lambda handler
-    async def execute_tool(server_id, tool_name, parameters):
-        # Load server
-        server = await load_mcp_server(server_id)
-        
-        # Call tool
-        result = await server.call_tool(
-            name=tool_name,
-            arguments=parameters
-        )
-        
-        return result
-    ```
-  </Step>
+<Step title="Tool Execution">
+  Execute requested tool in sandbox: ```python # Inside Lambda handler async def
+  execute_tool(server_id, tool_name, parameters): # Load server server = await
+  load_mcp_server(server_id) # Call tool result = await server.call_tool(
+  name=tool_name, arguments=parameters ) return result ```
+</Step>
 
   <Step title="Response Return">
     Return execution result:
@@ -160,58 +144,57 @@ SuperBox uses **AWS Lambda** to execute MCP servers in completely isolated sandb
     <Check>Containers are destroyed after execution, leaving no traces</Check>
   </Tab>
 
-  <Tab title="Network Restrictions">
-    Controlled network access:
-    
-    ```yaml
-    Allowed Outbound:
-      - HTTPS (443) to approved APIs only
-      - DNS (53) for name resolution
-    
-    Blocked:
-      - All inbound connections
-      - Internal AWS service access
-      - Cross-VPC communication
-      - Direct database access
-    ```
-    
-    <Warning>MCP servers cannot access internal AWS infrastructure</Warning>
-  </Tab>
+<Tab title="Network Restrictions">
+  Controlled network access:
+  
+  ```yaml
+  Allowed Outbound:
+    - HTTPS (443) to approved APIs only
+    - DNS (53) for name resolution
 
-  <Tab title="File System Access">
-    Limited file system access:
-    
-    ```
-    /tmp/               # Read/Write (512MB max)
-    /var/task/          # Read-only (Lambda code)
-    /opt/               # Read-only (Lambda layers)
-    
-    Inaccessible:
-    /                   # Root filesystem
-    /proc/              # Process information
-    /sys/               # System information
-    ```
-  </Tab>
+Blocked: - All inbound connections - Internal AWS service access - Cross-VPC communication - Direct database access
 
-  <Tab title="Resource Limits">
-    Enforced resource constraints:
-    
-    <ParamField path="Memory" type="number" default={1024}>
-      128 MB to 10,240 MB (configurable)
-    </ParamField>
-    
-    <ParamField path="Timeout" type="number" default={30}>
-      1 second to 900 seconds (15 minutes)
-    </ParamField>
-    
-    <ParamField path="Ephemeral Storage" type="number" default={512}>
-      512 MB to 10,240 MB in /tmp
-    </ParamField>
-    
-    <ParamField path="Concurrent Executions" type="number" default={1000}>
-      Per-account limit, configurable
-    </ParamField>
-  </Tab>
+```
+
+<Warning>MCP servers cannot access internal AWS infrastructure</Warning>
+</Tab>
+
+<Tab title="File System Access">
+Limited file system access:
+
+```
+
+/tmp/ # Read/Write (512MB max)
+/var/task/ # Read-only (Lambda code)
+/opt/ # Read-only (Lambda layers)
+
+Inaccessible:
+/ # Root filesystem
+/proc/ # Process information
+/sys/ # System information
+
+````
+</Tab>
+
+<Tab title="Resource Limits">
+  Enforced resource constraints:
+
+  <ParamField path="Memory" type="number" default={1024}>
+    128 MB to 10,240 MB (configurable)
+  </ParamField>
+
+  <ParamField path="Timeout" type="number" default={30}>
+    1 second to 900 seconds (15 minutes)
+  </ParamField>
+
+  <ParamField path="Ephemeral Storage" type="number" default={512}>
+    512 MB to 10,240 MB in /tmp
+  </ParamField>
+
+  <ParamField path="Concurrent Executions" type="number" default={1000}>
+    Per-account limit, configurable
+  </ParamField>
+</Tab>
 </Tabs>
 
 ## Lambda Handler Implementation
@@ -233,112 +216,112 @@ s3_client = boto3.client('s3')
 S3_BUCKET = os.environ['S3_BUCKET']
 
 def handler(event, context):
-    """
-    Main Lambda handler for MCP server execution
-    """
-    try:
-        # Parse request
-        server_id = event['server_id']
-        tool_name = event['tool_name']
-        parameters = event.get('parameters', {})
-        timeout = event.get('timeout', 30)
-        
-        # Setup execution environment
-        server_path = setup_server(server_id)
-        
-        # Execute tool
-        start_time = time.time()
-        result = execute_mcp_tool(server_path, tool_name, parameters, timeout)
-        duration_ms = int((time.time() - start_time) * 1000)
-        
-        return {
-            'statusCode': 200,
-            'body': json.dumps({
-                'result': result,
-                'duration_ms': duration_ms,
-                'server_id': server_id,
-                'tool_name': tool_name
-            })
-        }
-    
-    except TimeoutError as e:
-        return {
-            'statusCode': 408,
-            'body': json.dumps({
-                'error': 'Execution timeout',
-                'message': str(e)
-            })
-        }
-    
-    except Exception as e:
-        return {
-            'statusCode': 500,
-            'body': json.dumps({
-                'error': type(e).__name__,
-                'message': str(e),
-                'traceback': traceback.format_exc()
-            })
-        }
+  """
+  Main Lambda handler for MCP server execution
+  """
+  try:
+      # Parse request
+      server_id = event['server_id']
+      tool_name = event['tool_name']
+      parameters = event.get('parameters', {})
+      timeout = event.get('timeout', 30)
+
+      # Setup execution environment
+      server_path = setup_server(server_id)
+
+      # Execute tool
+      start_time = time.time()
+      result = execute_mcp_tool(server_path, tool_name, parameters, timeout)
+      duration_ms = int((time.time() - start_time) * 1000)
+
+      return {
+          'statusCode': 200,
+          'body': json.dumps({
+              'result': result,
+              'duration_ms': duration_ms,
+              'server_id': server_id,
+              'tool_name': tool_name
+          })
+      }
+
+  except TimeoutError as e:
+      return {
+          'statusCode': 408,
+          'body': json.dumps({
+              'error': 'Execution timeout',
+              'message': str(e)
+          })
+      }
+
+  except Exception as e:
+      return {
+          'statusCode': 500,
+          'body': json.dumps({
+              'error': type(e).__name__,
+              'message': str(e),
+              'traceback': traceback.format_exc()
+          })
+      }
 
 def setup_server(server_id):
-    """
-    Download and setup MCP server from S3
-    """
-    # Download from S3
-    local_zip = f'/tmp/{server_id}.zip'
-    server_dir = f'/tmp/{server_id}'
-    
-    s3_key = f'servers/{server_id}/latest.zip'
-    s3_client.download_file(S3_BUCKET, s3_key, local_zip)
-    
-    # Extract
-    with zipfile.ZipFile(local_zip, 'r') as zip_ref:
-        zip_ref.extractall(server_dir)
-    
-    # Install dependencies
-    requirements_file = Path(server_dir) / 'requirements.txt'
-    if requirements_file.exists():
-        subprocess.run([
-            sys.executable, '-m', 'pip', 'install',
-            '-r', str(requirements_file),
-            '-t', server_dir,
-            '--quiet'
-        ], check=True)
-    
-    return server_dir
+  """
+  Download and setup MCP server from S3
+  """
+  # Download from S3
+  local_zip = f'/tmp/{server_id}.zip'
+  server_dir = f'/tmp/{server_id}'
+
+  s3_key = f'servers/{server_id}/latest.zip'
+  s3_client.download_file(S3_BUCKET, s3_key, local_zip)
+
+  # Extract
+  with zipfile.ZipFile(local_zip, 'r') as zip_ref:
+      zip_ref.extractall(server_dir)
+
+  # Install dependencies
+  requirements_file = Path(server_dir) / 'requirements.txt'
+  if requirements_file.exists():
+      subprocess.run([
+          sys.executable, '-m', 'pip', 'install',
+          '-r', str(requirements_file),
+          '-t', server_dir,
+          '--quiet'
+      ], check=True)
+
+  return server_dir
 
 def execute_mcp_tool(server_path, tool_name, parameters, timeout):
-    """
-    Execute MCP tool in subprocess with timeout
-    """
-    # Add server path to sys.path
-    sys.path.insert(0, server_path)
-    
-    # Import and run server
-    import asyncio
-    from mcp_server import server
-    
-    async def run_tool():
-        # Call tool
-        result = await server.call_tool(
-            name=tool_name,
-            arguments=parameters
-        )
-        return result
-    
-    # Run with timeout
-    loop = asyncio.get_event_loop()
-    task = loop.create_task(run_tool())
-    
-    try:
-        result = loop.run_until_complete(
-            asyncio.wait_for(task, timeout=timeout)
-        )
-        return result
-    except asyncio.TimeoutError:
-        task.cancel()
-        raise TimeoutError(f'Execution exceeded {timeout}s timeout')
-```
+  """
+  Execute MCP tool in subprocess with timeout
+  """
+  # Add server path to sys.path
+  sys.path.insert(0, server_path)
+
+  # Import and run server
+  import asyncio
+  from mcp_server import server
+
+  async def run_tool():
+      # Call tool
+      result = await server.call_tool(
+          name=tool_name,
+          arguments=parameters
+      )
+      return result
+
+  # Run with timeout
+  loop = asyncio.get_event_loop()
+  task = loop.create_task(run_tool())
+
+  try:
+      result = loop.run_until_complete(
+          asyncio.wait_for(task, timeout=timeout)
+      )
+      return result
+  except asyncio.TimeoutError:
+      task.cancel()
+      raise TimeoutError(f'Execution exceeded {timeout}s timeout')
+````
 
 ### Runtime Environment
 
@@ -372,21 +355,12 @@ def execute_mcp_tool(server_path, tool_name, parameters, timeout):
     Custom packages from `package.json` installed during cold start
   </Accordion>
 
-  <Accordion title="Environment Variables" icon="gear">
-    Available to MCP servers:
-    
-    ```bash
-    AWS_REGION=us-east-1
-    AWS_EXECUTION_ENV=AWS_Lambda_python3.11
-    LAMBDA_TASK_ROOT=/var/task
-    LAMBDA_RUNTIME_DIR=/var/runtime
-    
-    # Custom variables
-    SERVER_ID=weather-mcp-123
-    SUPERBOX_ENV=production
-    LOG_LEVEL=info
-    ```
-  </Accordion>
+<Accordion title="Environment Variables" icon="gear">
+  Available to MCP servers: ```bash AWS_REGION=us-east-1
+  AWS_EXECUTION_ENV=AWS_Lambda_python3.11 LAMBDA_TASK_ROOT=/var/task
+  LAMBDA_RUNTIME_DIR=/var/runtime # Custom variables SERVER_ID=weather-mcp-123
+  SUPERBOX_ENV=production LOG_LEVEL=info ```
+</Accordion>
 
   <Accordion title="AWS Lambda Layers" icon="layer-group">
     Shared dependencies via Lambda Layers:
@@ -438,7 +412,7 @@ def execute_mcp_tool(server_path, tool_name, parameters, timeout):
 
       <Step title="Lambda Layers">
         Pre-package common dependencies:
-        
+
         - MCP SDK in shared layer
         - Reduces deployment package size
         - Faster extraction
@@ -446,14 +420,14 @@ def execute_mcp_tool(server_path, tool_name, parameters, timeout):
 
       <Step title="Container Reuse">
         Keep containers warm between invocations:
-        
+
         ```python
         # Global scope - persists across invocations
         server_cache = {}
-        
+
         def handler(event, context):
             server_id = event['server_id']
-            
+
             # Reuse cached server
             if server_id in server_cache:
                 server = server_cache[server_id]
@@ -465,17 +439,18 @@ def execute_mcp_tool(server_path, tool_name, parameters, timeout):
 
       <Step title="Dependency Optimization">
         Minimize installed packages:
-        
+
         ```txt requirements.txt
         # Only essential dependencies
         mcp-sdk==1.0.0
         httpx==0.25.0
-        
+
         # Avoid large packages
         # pandas, numpy, tensorflow
         ```
       </Step>
     </Steps>
+
   </Tab>
 
   <Tab title="Results">
@@ -504,23 +479,15 @@ def execute_mcp_tool(server_path, tool_name, parameters, timeout):
     - Performance metrics
   </Card>
 
-  <Card title="CloudWatch Metrics" icon="chart-line">
-    Lambda metrics:
-    
-    - Invocations
-    - Duration
-    - Errors
-    - Throttles
-    - Concurrent executions
-  </Card>
+<Card title="CloudWatch Metrics" icon="chart-line">
+  Lambda metrics: - Invocations - Duration - Errors - Throttles - Concurrent
+  executions
+</Card>
 
-  <Card title="X-Ray Tracing" icon="diagram-project">
-    Distributed tracing:
-    
-    - End-to-end latency
-    - Service dependencies
-    - Bottleneck identification
-  </Card>
+<Card title="X-Ray Tracing" icon="diagram-project">
+  Distributed tracing: - End-to-end latency - Service dependencies - Bottleneck
+  identification
+</Card>
 
   <Card title="Custom Metrics" icon="gauge">
     Business metrics:

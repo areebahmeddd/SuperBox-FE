@@ -1,7 +1,8 @@
 ---
-title: 'Verify Payment'
-description: 'POST /payment/verify-payment - Verify Razorpay payment signature'
-api: 'POST https://api.superbox.com/v1/payment/verify-payment'
+title: "Verify Payment"
+description: "POST /payment/verify-payment - Verify Razorpay payment signature"
+api: "POST https://api.superbox.com/v1/payment/verify-payment"
+icon: "check-circle"
 ---
 
 ## Endpoint
@@ -45,18 +46,21 @@ curl -X POST https://api.superbox.com/v1/payment/verify-payment \
 ```
 
 ```javascript JavaScript
-const response = await fetch('https://api.superbox.com/v1/payment/verify-payment', {
-  method: 'POST',
-  headers: {
-    'Authorization': `Bearer ${token}`,
-    'Content-Type': 'application/json',
+const response = await fetch(
+  "https://api.superbox.com/v1/payment/verify-payment",
+  {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      order_id: razorpayResponse.razorpay_order_id,
+      payment_id: razorpayResponse.razorpay_payment_id,
+      signature: razorpayResponse.razorpay_signature,
+    }),
   },
-  body: JSON.stringify({
-    order_id: razorpayResponse.razorpay_order_id,
-    payment_id: razorpayResponse.razorpay_payment_id,
-    signature: razorpayResponse.razorpay_signature,
-  }),
-});
+);
 
 const result = await response.json();
 ```
@@ -76,6 +80,7 @@ response = requests.post(
 
 result = response.json()
 ```
+
 </CodeGroup>
 
 ## Response
@@ -86,57 +91,57 @@ result = response.json()
 
 <ResponseField name="payment" type="object">
   Payment details
-  
   <Expandable title="properties">
     <ResponseField name="id" type="string">
       Payment record ID
     </ResponseField>
-    
+
     <ResponseField name="order_id" type="string">
       Razorpay order ID
     </ResponseField>
-    
+
     <ResponseField name="payment_id" type="string">
       Razorpay payment ID
     </ResponseField>
-    
+
     <ResponseField name="amount" type="number">
       Payment amount
     </ResponseField>
-    
+
     <ResponseField name="currency" type="string">
       Currency code
     </ResponseField>
-    
+
     <ResponseField name="status" type="string">
       Payment status: `success`, `failed`
     </ResponseField>
-    
+
     <ResponseField name="created_at" type="string">
       Payment timestamp
     </ResponseField>
+
   </Expandable>
 </ResponseField>
 
 <ResponseField name="subscription" type="object">
   Updated subscription details
-  
   <Expandable title="properties">
     <ResponseField name="plan" type="string">
       Subscription plan
     </ResponseField>
-    
+
     <ResponseField name="status" type="string">
       Subscription status
     </ResponseField>
-    
+
     <ResponseField name="starts_at" type="string">
       Subscription start date
     </ResponseField>
-    
+
     <ResponseField name="expires_at" type="string">
       Subscription expiry date
     </ResponseField>
+
   </Expandable>
 </ResponseField>
 
@@ -174,13 +179,14 @@ func verifySignature(orderID, paymentID, signature, secret string) bool {
     mac := hmac.New(sha256.New, []byte(secret))
     mac.Write([]byte(message))
     expectedSignature := hex.EncodeToString(mac.Sum(nil))
-    
+
     return hmac.Equal([]byte(signature), []byte(expectedSignature))
 }
 ```
 
 <Check>
-  Signature verification ensures the payment callback is authentic and hasn't been tampered with.
+  Signature verification ensures the payment callback is authentic and hasn't
+  been tampered with.
 </Check>
 
 ## Webhook Handling
@@ -192,6 +198,7 @@ POST /payment/webhook
 ```
 
 Webhook events:
+
 - `payment.authorized` - Payment successful
 - `payment.failed` - Payment failed
 - `payment.captured` - Payment captured
@@ -221,6 +228,7 @@ Webhook events:
   "message": "This payment has already been processed"
 }
 ```
+
 </CodeGroup>
 
 ## Complete Payment Flow
@@ -234,30 +242,21 @@ Webhook events:
     ```
   </Step>
 
-  <Step title="Open Checkout">
-    Frontend opens Razorpay checkout with order details
-    
-    ```javascript
-    const razorpay = new Razorpay(options);
-    razorpay.open();
-    ```
-  </Step>
+<Step title="Open Checkout">
+  Frontend opens Razorpay checkout with order details ```javascript const
+  razorpay = new Razorpay(options); razorpay.open(); ```
+</Step>
 
-  <Step title="User Pays">
-    User completes payment in Razorpay checkout
-  </Step>
+<Step title="User Pays">User completes payment in Razorpay checkout</Step>
 
-  <Step title="Verify Signature">
-    Frontend sends payment response to backend for verification
-    
-    ```
-    POST /payment/verify-payment
-    ```
-  </Step>
+<Step title="Verify Signature">
+  Frontend sends payment response to backend for verification ``` POST
+  /payment/verify-payment ```
+</Step>
 
-  <Step title="Activate Subscription">
-    Backend verifies signature and activates subscription
-  </Step>
+<Step title="Activate Subscription">
+  Backend verifies signature and activates subscription
+</Step>
 
   <Step title="Webhook Confirmation">
     Razorpay sends webhook event for additional confirmation

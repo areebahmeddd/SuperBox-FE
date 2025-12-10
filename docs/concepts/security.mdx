@@ -1,7 +1,7 @@
 ---
-title: 'Security Pipeline'
-description: '5-step automated security scanning for MCP servers'
-icon: 'shield-halved'
+title: "Security Pipeline"
+description: "5-step automated security scanning for MCP servers"
+icon: "shield-halved"
 ---
 
 ## Overview
@@ -9,9 +9,12 @@ icon: 'shield-halved'
 SuperBox implements a comprehensive **5-step security pipeline** that automatically scans every MCP server before publication to ensure security, quality, and reliability.
 
 <Frame>
-  <div className="bg-gradient-to-r from-red-500 via-orange-500 to-green-500 p-6 rounded-lg text-white">
-    <h3 className="text-2xl font-bold mb-4">Zero-Trust Security Model</h3>
-    <p>Every MCP server undergoes rigorous automated security scanning before deployment.</p>
+  <div className="rounded-lg bg-gradient-to-r from-red-500 via-orange-500 to-green-500 p-6 text-white">
+    <h3 className="mb-4 text-2xl font-bold">Zero-Trust Security Model</h3>
+    <p>
+      Every MCP server undergoes rigorous automated security scanning before
+      deployment.
+    </p>
   </div>
 </Frame>
 
@@ -44,23 +47,23 @@ graph TD
     B --> C{Step 1: SonarQube}
     C -->|Pass| D{Step 2: Bandit}
     C -->|Fail| Z[Reject with report]
-    
+
     D -->|Pass| E{Step 3: GitGuardian}
     D -->|Fail| Z
-    
+
     E -->|Pass| F{Step 4: Semgrep}
     E -->|Critical| Z
     E -->|Warning| F
-    
+
     F -->|Pass| G{Step 5: OWASP}
     F -->|Fail| Z
-    
+
     G -->|Pass| H[Upload to S3]
     G -->|Fail| Z
-    
+
     H --> I[Deploy to Lambda]
     I --> J[Publish to Marketplace]
-    
+
     Z --> K[Developer fixes issues]
     K --> B
 ```
@@ -106,54 +109,63 @@ graph TD
         - Target: >80% coverage
       </Accordion>
     </AccordionGroup>
+
   </Tab>
 
-  <Tab title="Configuration">
-    ```yaml sonar-project.properties
-    sonar.projectKey=superbox-mcp-server
-    sonar.projectName=Weather MCP Server
-    sonar.projectVersion=1.0.0
-    
-    # Source code location
-    sonar.sources=src
-    sonar.tests=tests
-    
-    # Language
-    sonar.language=py
-    sonar.python.version=3.11
-    
-    # Coverage
-    sonar.python.coverage.reportPaths=coverage.xml
-    
-    # Quality gates
-    sonar.qualitygate.wait=true
-    sonar.qualitygate.timeout=300
-    
-    # Rules
-    sonar.python.pylint.reportPath=pylint-report.txt
-    sonar.python.xunit.reportPath=xunit-report.xml
-    ```
-  </Tab>
+<Tab title="Configuration">
+  ```properties sonar-project.properties
+  sonar.projectKey=superbox-mcp-server
+  sonar.projectName=Weather MCP Server
+  sonar.projectVersion=1.0.0
 
-  <Tab title="Execution">
-    ```bash
-    # Run SonarQube scanner
-    sonar-scanner \
-      -Dsonar.host.url=https://sonarqube.superbox.com \
-      -Dsonar.login=$SONAR_TOKEN \
-      -Dsonar.projectKey=$PROJECT_KEY
-    
-    # Wait for quality gate
-    quality_gate=$(curl -s -u $SONAR_TOKEN: \
-      "https://sonarqube.superbox.com/api/qualitygates/project_status?projectKey=$PROJECT_KEY" \
-      | jq -r '.projectStatus.status')
-    
-    if [ "$quality_gate" != "OK" ]; then
-      echo "Quality gate failed"
-      exit 1
-    fi
-    ```
-  </Tab>
+# Source code location
+
+sonar.sources=src
+sonar.tests=tests
+
+# Language
+
+sonar.language=py
+sonar.python.version=3.11
+
+# Coverage
+
+sonar.python.coverage.reportPaths=coverage.xml
+
+# Quality gates
+
+sonar.qualitygate.wait=true
+sonar.qualitygate.timeout=300
+
+# Rules
+
+sonar.python.pylint.reportPath=pylint-report.txt
+sonar.python.xunit.reportPath=xunit-report.xml
+
+````
+</Tab>
+
+<Tab title="Execution">
+```bash
+# Run SonarQube scanner
+sonar-scanner \
+  -Dsonar.host.url=https://sonarqube.superbox.com \
+  -Dsonar.login=$SONAR_TOKEN \
+  -Dsonar.projectKey=$PROJECT_KEY
+
+# Wait for quality gate
+quality_gate=$(curl -s \
+  -u $SONAR_TOKEN: \
+  "https://sonarqube.superbox.com/api/qualitygates/project_status?projectKey=$PROJECT_KEY" \
+  | jq -r '.projectStatus.status')
+
+if [ "$quality_gate" != "OK" ]; then
+  echo "Quality gate failed"
+  exit 1
+fi
+````
+
+</Tab>
 
   <Tab title="Results">
     Example SonarQube report:
@@ -234,7 +246,7 @@ graph TD
         ```python
         # ❌ Vulnerable
         app.run(debug=True)
-        
+
         # ✅ Secure
         app.run(debug=False)
         ```
@@ -245,7 +257,7 @@ graph TD
         # ❌ Vulnerable
         import yaml
         data = yaml.load(file)
-        
+
         # ✅ Secure
         data = yaml.safe_load(file)
         ```
@@ -255,134 +267,133 @@ graph TD
         ```python
         # ❌ Vulnerable
         query = f"SELECT * FROM users WHERE id = {user_id}"
-        
+
         # ✅ Secure
         query = "SELECT * FROM users WHERE id = %s"
         cursor.execute(query, (user_id,))
         ```
       </Accordion>
     </AccordionGroup>
+
   </Tab>
 
-  <Tab title="Configuration">
-    ```yaml .bandit
-    # Bandit configuration
-    exclude_dirs:
-      - /tests/
-      - /venv/
-      - /.venv/
-    
-    # Skip specific tests
-    skips:
-      - B101  # assert_used (common in tests)
-    
-    # Severity thresholds
-    severity:
-      - HIGH
-      - MEDIUM
-    
-    confidence:
-      - HIGH
-      - MEDIUM
-    
-    # Custom plugins
-    plugins:
-      - superbox_checks
-    ```
-  </Tab>
+<Tab title="Configuration">
+  ```yaml .bandit
+  # Bandit configuration
+  exclude_dirs:
+    - /tests/
+    - /venv/
+    - /.venv/
 
-  <Tab title="Execution">
-    ```bash
-    # Run Bandit scanner
-    bandit -r src/ -f json -o bandit-report.json
-    
-    # Parse results
-    python3 << EOF
-    import json
-    
-    with open('bandit-report.json') as f:
-        report = json.load(f)
-    
-    # Check for high severity issues
-    high_severity = [
-        issue for issue in report['results']
-        if issue['issue_severity'] == 'HIGH'
-    ]
-    
-    if high_severity:
-        print(f"Found {len(high_severity)} high severity issues")
-        for issue in high_severity:
-            print(f"  {issue['test_id']}: {issue['issue_text']}")
-        exit(1)
-    
-    print("✓ No high severity issues found")
-    EOF
-    ```
-  </Tab>
+# Skip specific tests
+
+skips: - B101 # assert_used (common in tests)
+
+# Severity thresholds
+
+severity: - HIGH - MEDIUM
+confidence: - HIGH - MEDIUM
+
+# Custom plugins
+
+plugins: - superbox_checks
+
+````
+</Tab>
+
+<Tab title="Execution">
+  ```bash
+  # Run Bandit scanner
+  bandit -r src/ -f json -o bandit-report.json
+
+  # Parse results
+  python3 << EOF
+  import json
+
+  with open('bandit-report.json') as f:
+      report = json.load(f)
+
+  # Check for high severity issues
+  high_severity = [
+      issue for issue in report['results']
+      if issue['issue_severity'] == 'HIGH'
+  ]
+
+  if high_severity:
+      print(f"Found {len(high_severity)} high severity issues")
+      for issue in high_severity:
+          print(f"  {issue['test_id']}: {issue['issue_text']}")
+      exit(1)
+
+  print("✓ No high severity issues found")
+  EOF
+  ```
+</Tab>
 </Tabs>
 
 ### Step 3: GitGuardian Secrets Detection
 
 <Tabs>
-  <Tab title="Overview">
-    **GitGuardian** scans for exposed secrets and credentials:
-    
-    <CardGroup cols={2}>
-      <Card title="350+ Detectors" icon="key">
-        API keys, tokens, passwords
-      </Card>
-      <Card title="High Accuracy" icon="bullseye">
-        Low false positive rate
-      </Card>
-      <Card title="Real-time Scanning" icon="bolt">
-        Scans commits in real-time
-      </Card>
-      <Card title="Remediation" icon="wrench">
-        Automatic secret rotation
-      </Card>
-    </CardGroup>
-  </Tab>
+<Tab title="Overview">
+  **GitGuardian** scans for exposed secrets and credentials:
 
-  <Tab title="Detected Secrets">
-    Common secrets detected:
-    
-    - AWS Access Keys (AKIA...)
-    - GitHub Tokens (ghp_...)
-    - OpenAI API Keys (sk-...)
-    - Database URLs (postgres://user:pass@...)
-    - Private Keys (-----BEGIN RSA PRIVATE KEY-----)
-    - JWT Tokens
-    - Stripe API Keys (sk_live_...)
-    - Google API Keys
-    - Slack Webhooks
-    - And 340+ more...
-  </Tab>
+  <CardGroup cols={2}>
+    <Card title="350+ Detectors" icon="key">
+      API keys, tokens, passwords
+    </Card>
+    <Card title="High Accuracy" icon="bullseye">
+      Low false positive rate
+    </Card>
+    <Card title="Real-time Scanning" icon="bolt">
+      Scans commits in real-time
+    </Card>
+    <Card title="Remediation" icon="wrench">
+      Automatic secret rotation
+    </Card>
+  </CardGroup>
+</Tab>
 
-  <Tab title="Configuration">
-    ```yaml .gitguardian.yaml
-    version: 2
-    
-    # Paths to scan
-    paths-ignore:
-      - tests/fixtures/*.key
-      - docs/examples/*.txt
-    
-    # Custom detectors
-    detectors:
-      - name: SuperBox API Key
-        regex: 'sb_[a-zA-Z0-9]{32}'
-        description: SuperBox API key
-    
-    # Severity thresholds
-    exit-zero: false
-    minimum-occurrences: 1
-    
-    # Outputs
-    output:
-      - json
-      - sarif
-    ```
-  </Tab>
+<Tab title="Detected Secrets">
+Common secrets detected:
+
+- AWS Access Keys (AKIA...)
+- GitHub Tokens (ghp_...)
+- OpenAI API Keys (sk-...)
+- Database URLs (postgres://user:pass@...)
+- Private Keys (-----BEGIN RSA PRIVATE KEY-----)
+- JWT Tokens
+- Stripe API Keys (sk_live_...)
+- Google API Keys
+- Slack Webhooks
+- And 340+ more...
+</Tab>
+
+<Tab title="Configuration">
+```yaml .gitguardian.yaml
+version: 2
+
+# Paths to scan
+paths-ignore:
+  - tests/fixtures/*.key
+  - docs/examples/*.txt
+
+# Custom detectors
+detectors:
+  - name: SuperBox API Key
+    regex: 'sb_[a-zA-Z0-9]{32}'
+    description: SuperBox API key
+
+# Severity thresholds
+exit-zero: false
+minimum-occurrences: 1
+
+# Outputs
+output:
+  - json
+  - sarif
+````
+
+</Tab>
 
   <Tab title="Results">
     Example GitGuardian output:
@@ -421,36 +432,17 @@ graph TD
     - Integration with CI/CD
   </Tab>
 
-  <Tab title="Security Rules">
-    ```yaml semgrep-rules.yaml
-    rules:
-      - id: dangerous-eval
-        pattern: eval($X)
-        message: Using eval() is dangerous
-        severity: ERROR
-        languages: [python]
-      
-      - id: insecure-randomness
-        pattern: random.random()
-        message: Use secrets module for security
-        severity: WARNING
-        languages: [python]
-      
-      - id: command-injection
-        patterns:
-          - pattern: subprocess.call($CMD, shell=True)
-          - pattern-not: subprocess.call("...", shell=True)
-        message: Command injection risk
-        severity: ERROR
-        languages: [python]
-      
-      - id: path-traversal
-        pattern: open(os.path.join(..., $USER_INPUT))
-        message: Path traversal vulnerability
-        severity: ERROR
-        languages: [python]
-    ```
-  </Tab>
+<Tab title="Security Rules">
+  ```yaml semgrep-rules.yaml rules: - id: dangerous-eval pattern: eval($X)
+  message: Using eval() is dangerous severity: ERROR languages: [python] - id:
+  insecure-randomness pattern: random.random() message: Use secrets module for
+  security severity: WARNING languages: [python] - id: command-injection
+  patterns: - pattern: subprocess.call($CMD, shell=True) - pattern-not:
+  subprocess.call("...", shell=True) message: Command injection risk severity:
+  ERROR languages: [python] - id: path-traversal pattern: open(os.path.join(...,
+  $USER_INPUT)) message: Path traversal vulnerability severity: ERROR languages:
+  [python] ```
+</Tab>
 
   <Tab title="Execution">
     ```bash
@@ -579,15 +571,12 @@ Each scan contributes to an overall security score:
     ```
   </Tab>
 
-  <Tab title="Score Grades">
-    | Score | Grade | Status |
-    |-------|-------|--------|
-    | 95-100 | A+ | ✅ Excellent - Auto-approved |
-    | 85-94 | A | ✅ Good - Auto-approved |
-    | 75-84 | B | ⚠️ Fair - Manual review |
-    | 65-74 | C | ⚠️ Needs improvement |
-    | 0-64 | F | ❌ Rejected - Fix issues |
-  </Tab>
+<Tab title="Score Grades">
+  | Score | Grade | Status | |-------|-------|--------| | 95-100 | A+ |
+  Excellent - Auto-approved | | 85-94 | A | Good - Auto-approved | | 75-84 | B |
+  Fair - Manual review | | 65-74 | C | Needs improvement | | 0-64 | F | Rejected
+  - Fix issues |
+</Tab>
 
   <Tab title="Example Report">
     ```json
@@ -648,52 +637,52 @@ on:
 jobs:
   security-scan:
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
-      
+          python-version: "3.11"
+
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
           pip install bandit pytest pytest-cov
-      
+
       - name: Run tests with coverage
         run: |
           pytest --cov=src --cov-report=xml
-      
+
       - name: SonarQube Scan
         uses: sonarsource/sonarqube-scan-action@master
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-      
+
       - name: Bandit Security Scan
         run: |
           bandit -r src/ -f json -o bandit-report.json
           python scripts/check_bandit.py
-      
+
       - name: GitGuardian Scan
         uses: GitGuardian/ggshield-action@master
         env:
           GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
-      
+
       - name: Semgrep Scan
         uses: returntocorp/semgrep-action@v1
         with:
           config: auto
-      
+
       - name: OWASP Dependency Check
         uses: dependency-check/Dependency-Check_Action@main
         with:
-          project: 'MCP Server'
-          path: '.'
-          format: 'JSON'
-      
+          project: "MCP Server"
+          path: "."
+          format: "JSON"
+
       - name: Upload Security Reports
         uses: actions/upload-artifact@v4
         with:

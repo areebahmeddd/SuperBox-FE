@@ -1,7 +1,7 @@
 ---
-title: 'Backend Setup'
-description: 'Set up local development environment for Go API and Python CLI'
-icon: 'wrench'
+title: "Backend Setup"
+description: "Set up local development environment for Go API and Python CLI"
+icon: "wrench"
 ---
 
 ## Prerequisites
@@ -43,6 +43,7 @@ Install the required tools for backend development:
     git clone https://github.com/areebahmeddd/SuperBox-API.git
     cd SuperBox-API
     ```
+
   </Step>
 
   <Step title="Install Go Dependencies">
@@ -56,6 +57,7 @@ Install the required tools for backend development:
     <Info>
       This installs Gin, GORM, JWT libraries, and AWS SDK.
     </Info>
+
   </Step>
 
   <Step title="Start Database Services">
@@ -112,6 +114,7 @@ Install the required tools for backend development:
     ```bash
     docker-compose ps
     ```
+
   </Step>
 
   <Step title="Configure Environment">
@@ -182,6 +185,7 @@ Install the required tools for backend development:
     <Warning>
       Never commit `.env` to version control. Use `.env.example` as a template.
     </Warning>
+
   </Step>
 
   <Step title="Run Database Migrations">
@@ -198,6 +202,7 @@ Install the required tools for backend development:
     - executions
     - payments
     - security_scans
+
   </Step>
 
   <Step title="Start API Server">
@@ -226,6 +231,7 @@ Install the required tools for backend development:
       "version": "1.0.0"
     }
     ```
+
   </Step>
 </Steps>
 
@@ -251,6 +257,7 @@ Install the required tools for backend development:
     conda activate superbox
     ```
     </CodeGroup>
+
   </Step>
 
   <Step title="Install Dependencies">
@@ -267,6 +274,7 @@ Install the required tools for backend development:
     <Info>
       Development mode includes testing, linting, and formatting tools.
     </Info>
+
   </Step>
 
   <Step title="Configure CLI">
@@ -301,6 +309,7 @@ Install the required tools for backend development:
       color: true
       verbose: false
     ```
+
   </Step>
 
   <Step title="Verify Installation">
@@ -319,9 +328,9 @@ Install the required tools for backend development:
     Expected output:
     ```
     SuperBox CLI v1.0.0
-    
+
     Usage: superbox [OPTIONS] COMMAND [ARGS]...
-    
+
     Commands:
       init      Initialize a new MCP server project
       auth      Authenticate with SuperBox
@@ -332,6 +341,7 @@ Install the required tools for backend development:
       inspect   Inspect server details
       test      Run server tests
     ```
+
   </Step>
 </Steps>
 
@@ -352,50 +362,25 @@ Install the required tools for backend development:
     ```
   </Accordion>
 
-  <Accordion title="go test ./..." icon="vial">
-    Run all tests with coverage
-    
-    ```bash
-    go test ./... -v -cover
-    
-    # Generate coverage report
-    go test ./... -coverprofile=coverage.out
-    go tool cover -html=coverage.out
-    ```
-  </Accordion>
+<Accordion title="go test ./..." icon="vial">
+  Run all tests with coverage ```bash go test ./... -v -cover # Generate
+  coverage report go test ./... -coverprofile=coverage.out go tool cover
+  -html=coverage.out ```
+</Accordion>
 
-  <Accordion title="go build" icon="hammer">
-    Build production binary
-    
-    ```bash
-    # Build for current OS
-    go build -o bin/superbox-api cmd/server/main.go
-    
-    # Build for Linux
-    GOOS=linux GOARCH=amd64 go build -o bin/superbox-api-linux cmd/server/main.go
-    
-    # Build with optimization
-    go build -ldflags="-s -w" -o bin/superbox-api cmd/server/main.go
-    ```
-  </Accordion>
+<Accordion title="go build" icon="hammer">
+  Build production binary ```bash # Build for current OS go build -o
+  bin/superbox-api cmd/server/main.go # Build for Linux GOOS=linux GOARCH=amd64
+  go build -o bin/superbox-api-linux cmd/server/main.go # Build with
+  optimization go build -ldflags="-s -w" -o bin/superbox-api cmd/server/main.go
+  ```
+</Accordion>
 
-  <Accordion title="Database Commands" icon="database">
-    Manage database migrations
-    
-    ```bash
-    # Run migrations
-    go run cmd/migrate/main.go up
-    
-    # Rollback migrations
-    go run cmd/migrate/main.go down
-    
-    # Reset database
-    go run cmd/migrate/main.go reset
-    
-    # Seed database
-    go run cmd/seed/main.go
-    ```
-  </Accordion>
+<Accordion title="Database Commands" icon="database">
+  Manage database migrations ```bash # Run migrations go run cmd/migrate/main.go
+  up # Rollback migrations go run cmd/migrate/main.go down # Reset database go
+  run cmd/migrate/main.go reset # Seed database go run cmd/seed/main.go ```
+</Accordion>
 
   <Accordion title="Linting & Formatting" icon="broom">
     Code quality tools
@@ -431,31 +416,15 @@ Install the required tools for backend development:
     ```
   </Accordion>
 
-  <Accordion title="black & ruff" icon="paintbrush">
-    Format and lint Python code
-    
-    ```bash
-    # Format code
-    black .
-    
-    # Check formatting
-    black --check .
-    
-    # Lint with ruff
-    ruff check .
-    
-    # Fix linting issues
-    ruff check --fix .
-    ```
-  </Accordion>
+<Accordion title="black & ruff" icon="paintbrush">
+  Format and lint Python code ```bash # Format code black . # Check formatting
+  black --check . # Lint with ruff ruff check . # Fix linting issues ruff check
+  --fix . ```
+</Accordion>
 
-  <Accordion title="mypy" icon="shield-check">
-    Type checking
-    
-    ```bash
-    mypy superbox/
-    ```
-  </Accordion>
+<Accordion title="mypy" icon="shield-check">
+  Type checking ```bash mypy superbox/ ```
+</Accordion>
 
   <Accordion title="Build Distribution" icon="box">
     Build Python package
@@ -546,38 +515,20 @@ SuperBox-CLI/
     ```
   </Accordion>
 
-  <Accordion title="Redis Connection Error" icon="bolt">
-    Verify Redis is running:
-    
-    ```bash
-    docker-compose ps redis
-    ```
-    
-    Test connection:
-    
-    ```bash
-    redis-cli ping
-    ```
-  </Accordion>
+<Accordion title="Redis Connection Error" icon="bolt">
+  Verify Redis is running: ```bash docker-compose ps redis ``` Test connection:
+  ```bash redis-cli ping ```
+</Accordion>
 
-  <Accordion title="Go Module Errors" icon="golang">
-    Clean and re-download modules:
-    
-    ```bash
-    go clean -modcache
-    go mod download
-    go mod tidy
-    ```
-  </Accordion>
+<Accordion title="Go Module Errors" icon="golang">
+  Clean and re-download modules: ```bash go clean -modcache go mod download go
+  mod tidy ```
+</Accordion>
 
-  <Accordion title="Python Import Errors" icon="python">
-    Reinstall dependencies:
-    
-    ```bash
-    pip uninstall superbox -y
-    pip install -e ".[dev]"
-    ```
-  </Accordion>
+<Accordion title="Python Import Errors" icon="python">
+  Reinstall dependencies: ```bash pip uninstall superbox -y pip install -e
+  ".[dev]" ```
+</Accordion>
 
   <Accordion title="AWS Credentials Error" icon="aws">
     Configure AWS CLI:

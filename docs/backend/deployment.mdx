@@ -1,7 +1,7 @@
 ---
-title: 'Backend Deployment'
-description: 'Deploy SuperBox backend to AWS with automated CI/CD pipelines'
-icon: 'aws'
+title: "Backend Deployment"
+description: "Deploy SuperBox backend to AWS with automated CI/CD pipelines"
+icon: "aws"
 ---
 
 ## AWS Infrastructure
@@ -36,41 +36,22 @@ SuperBox backend runs on AWS with a highly available, scalable architecture.
     Create an AWS account at [aws.amazon.com](https://aws.amazon.com)
   </Step>
 
-  <Step title="AWS CLI">
-    Install and configure AWS CLI:
-    
-    ```bash
-    # Install AWS CLI
-    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-    unzip awscliv2.zip
-    sudo ./aws/install
-    
-    # Configure credentials
-    aws configure
-    ```
-    
-    Enter your AWS credentials:
-    ```
-    AWS Access Key ID: your_access_key
-    AWS Secret Access Key: your_secret_key
-    Default region name: us-east-1
-    Default output format: json
-    ```
-  </Step>
+<Step title="AWS CLI">
+  Install and configure AWS CLI: ```bash # Install AWS CLI curl
+  "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+  unzip awscliv2.zip sudo ./aws/install # Configure credentials aws configure
+  ``` Enter your AWS credentials: ``` AWS Access Key ID: your_access_key AWS
+  Secret Access Key: your_secret_key Default region name: us-east-1 Default
+  output format: json ```
+</Step>
 
-  <Step title="Terraform">
-    Install Terraform for infrastructure as code:
-    
-    ```bash
-    # Download Terraform
-    wget https://releases.hashicorp.com/terraform/1.6.0/terraform_1.6.0_linux_amd64.zip
-    unzip terraform_1.6.0_linux_amd64.zip
-    sudo mv terraform /usr/local/bin/
-    
-    # Verify installation
-    terraform version
-    ```
-  </Step>
+<Step title="Terraform">
+  Install Terraform for infrastructure as code: ```bash # Download Terraform
+  wget
+  https://releases.hashicorp.com/terraform/1.6.0/terraform_1.6.0_linux_amd64.zip
+  unzip terraform_1.6.0_linux_amd64.zip sudo mv terraform /usr/local/bin/ #
+  Verify installation terraform version ```
+</Step>
 
   <Step title="Docker">
     Install Docker for containerization:
@@ -373,28 +354,19 @@ terraform/
     ```
   </Step>
 
-  <Step title="Create terraform.tfvars">
-    ```hcl
-    aws_region  = "us-east-1"
-    environment = "production"
-    app_name    = "superbox"
-    db_username = "superbox_admin"
-    db_password = "change-this-password"
-    jwt_secret  = "your-jwt-secret-key"
-    ```
-    
-    <Warning>
-      Store sensitive values in AWS Secrets Manager or use Terraform Cloud for secure variable management.
-    </Warning>
-  </Step>
+<Step title="Create terraform.tfvars">
+  ```hcl aws_region = "us-east-1" environment = "production" app_name =
+  "superbox" db_username = "superbox_admin" db_password = "change-this-password"
+  jwt_secret = "your-jwt-secret-key" ```
+  <Warning>
+    Store sensitive values in AWS Secrets Manager or use Terraform Cloud for
+    secure variable management.
+  </Warning>
+</Step>
 
-  <Step title="Plan Infrastructure">
-    ```bash
-    terraform plan -out=tfplan
-    ```
-    
-    Review the planned changes carefully.
-  </Step>
+<Step title="Plan Infrastructure">
+  ```bash terraform plan -out=tfplan ``` Review the planned changes carefully.
+</Step>
 
   <Step title="Apply Infrastructure">
     ```bash
@@ -476,6 +448,7 @@ docker tag superbox-api:latest <account-id>.dkr.ecr.us-east-1.amazonaws.com/supe
 ```bash Push Image
 docker push <account-id>.dkr.ecr.us-east-1.amazonaws.com/superbox-api:latest
 ```
+
 </CodeGroup>
 
 ## CI/CD Pipeline
@@ -503,15 +476,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.22'
-      
+          go-version: "1.22"
+
       - name: Run tests
         run: go test ./... -v -cover
-      
+
       - name: Run linter
         uses: golangci/golangci-lint-action@v4
         with:
@@ -521,21 +494,21 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
-    
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
-      
+
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
-      
+
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
         env:
@@ -547,13 +520,13 @@ jobs:
           docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
-      
+
       - name: Download task definition
         run: |
           aws ecs describe-task-definition \
             --task-definition superbox-api \
             --query taskDefinition > task-definition.json
-      
+
       - name: Fill in the new image ID in the Amazon ECS task definition
         id: task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
@@ -561,7 +534,7 @@ jobs:
           task-definition: task-definition.json
           container-name: ${{ env.CONTAINER_NAME }}
           image: ${{ steps.build-image.outputs.image }}
-      
+
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
@@ -589,21 +562,21 @@ def handler(event, context):
     server_id = event['server_id']
     tool_name = event['tool_name']
     parameters = event.get('parameters', {})
-    
+
     try:
         # Download server code from S3
         s3_key = f"servers/{server_id}/latest.zip"
         local_path = f"/tmp/{server_id}"
-        
+
         # Extract and setup
         extract_server(s3_key, local_path)
-        
+
         # Install dependencies
         install_dependencies(local_path)
-        
+
         # Execute tool
         result = execute_tool(local_path, tool_name, parameters)
-        
+
         return {
             'statusCode': 200,
             'body': json.dumps({
@@ -611,7 +584,7 @@ def handler(event, context):
                 'duration_ms': context.get_remaining_time_in_millis()
             })
         }
-    
+
     except Exception as e:
         return {
             'statusCode': 500,
@@ -632,18 +605,18 @@ resource "aws_lambda_function" "executor" {
   runtime       = "python3.11"
   timeout       = 30
   memory_size   = 1024
-  
+
   environment {
     variables = {
       S3_BUCKET = aws_s3_bucket.servers.id
     }
   }
-  
+
   vpc_config {
     subnet_ids         = aws_subnet.private[*].id
     security_group_ids = [aws_security_group.lambda.id]
   }
-  
+
   tags = {
     Name        = "${var.app_name}-executor"
     Environment = var.environment

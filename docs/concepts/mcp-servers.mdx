@@ -1,7 +1,7 @@
 ---
-title: 'MCP Servers'
-description: 'Understanding Model Context Protocol (MCP) servers and their architecture'
-icon: 'server'
+title: "MCP Servers"
+description: "Understanding Model Context Protocol (MCP) servers and their architecture"
+icon: "server"
 ---
 
 ## What is MCP?
@@ -9,7 +9,8 @@ icon: 'server'
 The **Model Context Protocol (MCP)** is an open standard developed by Anthropic that enables seamless integration between AI applications and external data sources and tools.
 
 <Info>
-  MCP provides a standardized way for AI models like Claude to interact with various services, databases, and APIs through a unified interface.
+  MCP provides a standardized way for AI models like Claude to interact with
+  various services, databases, and APIs through a unified interface.
 </Info>
 
 <Frame>
@@ -35,21 +36,20 @@ The **Model Context Protocol (MCP)** is an open standard developed by Anthropic 
     ```
   </Tab>
 
-  <Tab title="Core Concepts">
-    MCP servers can expose three main primitives:
-    
-    <CardGroup cols={3}>
-      <Card title="Tools" icon="wrench">
-        Functions that the AI can invoke to perform actions
-      </Card>
-      <Card title="Resources" icon="database">
-        Data sources that the AI can read from
-      </Card>
-      <Card title="Prompts" icon="comment">
-        Pre-built prompt templates
-      </Card>
-    </CardGroup>
-  </Tab>
+<Tab title="Core Concepts">
+  MCP servers can expose three main primitives:
+  <CardGroup cols={3}>
+    <Card title="Tools" icon="wrench">
+      Functions that the AI can invoke to perform actions
+    </Card>
+    <Card title="Resources" icon="database">
+      Data sources that the AI can read from
+    </Card>
+    <Card title="Prompts" icon="comment">
+      Pre-built prompt templates
+    </Card>
+  </CardGroup>
+</Tab>
 
   <Tab title="Communication Flow">
     ```json
@@ -95,43 +95,44 @@ from mcp.server import Server
 from mcp.types import Tool, TextContent
 
 # Initialize MCP server
+
 server = Server("weather-server")
 
 @server.list_tools()
 async def list_tools():
-    """List available tools"""
-    return [
-        Tool(
-            name="get_weather",
-            description="Get current weather for a city",
-            inputSchema={
-                "type": "object",
-                "properties": {
-                    "city": {
-                        "type": "string",
-                        "description": "City name"
-                    },
-                    "units": {
-                        "type": "string",
-                        "enum": ["metric", "imperial"],
-                        "description": "Temperature units"
-                    }
-                },
-                "required": ["city"]
-            }
-        )
-    ]
+"""List available tools"""
+return [
+Tool(
+name="get_weather",
+description="Get current weather for a city",
+inputSchema={
+"type": "object",
+"properties": {
+"city": {
+"type": "string",
+"description": "City name"
+},
+"units": {
+"type": "string",
+"enum": ["metric", "imperial"],
+"description": "Temperature units"
+}
+},
+"required": ["city"]
+}
+)
+]
 
 @server.call_tool()
 async def call_tool(name: str, arguments: dict):
-    """Execute tool"""
-    if name == "get_weather":
-        city = arguments["city"]
-        units = arguments.get("units", "metric")
-        
+"""Execute tool"""
+if name == "get_weather":
+city = arguments["city"]
+units = arguments.get("units", "metric")
+
         # Fetch weather data
         weather_data = await fetch_weather(city, units)
-        
+
         return [
             TextContent(
                 type="text",
@@ -140,9 +141,11 @@ async def call_tool(name: str, arguments: dict):
         ]
 
 # Run server
-if __name__ == "__main__":
-    server.run()
-```
+
+if **name** == "**main**":
+server.run()
+
+````
 
 ```typescript TypeScript Server
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
@@ -196,10 +199,10 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   if (request.params.name === "get_weather") {
     const { city, units = "metric" } = request.params.arguments;
-    
+
     // Fetch weather data
     const weatherData = await fetchWeather(city, units);
-    
+
     return {
       content: [
         {
@@ -209,7 +212,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       ],
     };
   }
-  
+
   throw new Error(`Unknown tool: ${request.params.name}`);
 });
 
@@ -220,7 +223,7 @@ async function main() {
 }
 
 main().catch(console.error);
-```
+````
 
 ```go Go Server
 package main
@@ -230,7 +233,7 @@ import (
     "encoding/json"
     "fmt"
     "log"
-    
+
     "github.com/modelcontextprotocol/go-sdk/server"
     "github.com/modelcontextprotocol/go-sdk/types"
 )
@@ -243,11 +246,11 @@ func NewWeatherServer() *WeatherServer {
     s := &WeatherServer{
         Server: server.NewServer("weather-server"),
     }
-    
+
     // Register handlers
     s.RegisterListToolsHandler(s.ListTools)
     s.RegisterCallToolHandler(s.CallTool)
-    
+
     return s
 }
 
@@ -282,13 +285,13 @@ func (s *WeatherServer) CallTool(ctx context.Context, name string, args map[stri
         if units == "" {
             units = "metric"
         }
-        
+
         // Fetch weather data
         weatherData, err := fetchWeather(city, units)
         if err != nil {
             return nil, err
         }
-        
+
         return []types.Content{
             {
                 Type: "text",
@@ -296,7 +299,7 @@ func (s *WeatherServer) CallTool(ctx context.Context, name string, args map[stri
             },
         }, nil
     }
-    
+
     return nil, fmt.Errorf("unknown tool: %s", name)
 }
 
@@ -307,6 +310,7 @@ func main() {
     }
 }
 ```
+
 </CodeGroup>
 
 ## MCP Server Components
@@ -485,23 +489,23 @@ async def get_prompt(name: str, arguments: dict):
     if name == "customer_analysis":
         customer_id = arguments["customer_id"]
         time_period = arguments.get("time_period", 30)
-        
+
         # Fetch customer data
         customer_data = await get_customer_data(customer_id, time_period)
-        
+
         prompt_text = f"""
-        Analyze the following customer data for customer #{customer_id} 
+        Analyze the following customer data for customer #{customer_id}
         over the last {time_period} days:
-        
+
         {customer_data}
-        
+
         Please provide:
         1. Key behavioral patterns
         2. Purchase trends
         3. Engagement metrics
         4. Recommendations for retention
         """
-        
+
         return GetPromptResult(
             description=f"Customer analysis for #{customer_id}",
             messages=[
@@ -518,13 +522,25 @@ async def get_prompt(name: str, arguments: dict):
 
 ## MCP Server Best Practices
 
-<Check>**Clear Tool Names** - Use descriptive, action-oriented names (e.g., `get_weather`, `search_database`)</Check>
-<Check>**Comprehensive Schemas** - Define all parameters with descriptions and constraints</Check>
+<Check>
+  **Clear Tool Names** - Use descriptive, action-oriented names (e.g.,
+  `get_weather`, `search_database`)
+</Check>
+<Check>
+  **Comprehensive Schemas** - Define all parameters with descriptions and
+  constraints
+</Check>
 <Check>**Error Handling** - Return helpful error messages with context</Check>
 <Check>**Rate Limiting** - Implement rate limits to prevent abuse</Check>
-<Check>**Logging** - Log all tool invocations for debugging and analytics</Check>
-<Check>**Security** - Validate inputs, sanitize outputs, use authentication</Check>
-<Check>**Documentation** - Provide clear descriptions for all tools and resources</Check>
+<Check>
+  **Logging** - Log all tool invocations for debugging and analytics
+</Check>
+<Check>
+  **Security** - Validate inputs, sanitize outputs, use authentication
+</Check>
+<Check>
+  **Documentation** - Provide clear descriptions for all tools and resources
+</Check>
 <Check>**Testing** - Write comprehensive tests for all functionality</Check>
 
 ## SuperBox MCP Integration
@@ -540,31 +556,20 @@ SuperBox provides a complete platform for publishing, discovering, and running M
     ```
   </Step>
 
-  <Step title="Test Locally">
-    Test your server with the SuperBox playground:
-    
-    ```bash
-    superbox run my-mcp-server
-    ```
-  </Step>
+<Step title="Test Locally">
+  Test your server with the SuperBox playground: ```bash superbox run
+  my-mcp-server ```
+</Step>
 
-  <Step title="Security Scan">
-    Automatic 5-step security pipeline:
-    
-    - SonarQube: Code quality
-    - Bandit: Python security
-    - GitGuardian: Secrets detection
-    - Semgrep: Vulnerability scanning
-    - OWASP: Dependency check
-  </Step>
+<Step title="Security Scan">
+  Automatic 5-step security pipeline: - SonarQube: Code quality - Bandit: Python
+  security - GitGuardian: Secrets detection - Semgrep: Vulnerability scanning -
+  OWASP: Dependency check
+</Step>
 
-  <Step title="Publish to SuperBox">
-    Deploy to SuperBox marketplace:
-    
-    ```bash
-    superbox push
-    ```
-  </Step>
+<Step title="Publish to SuperBox">
+  Deploy to SuperBox marketplace: ```bash superbox push ```
+</Step>
 
   <Step title="Sandboxed Execution">
     Your MCP server runs in isolated AWS Lambda environments with:
@@ -580,46 +585,30 @@ SuperBox provides a complete platform for publishing, discovering, and running M
 
 <CardGroup cols={2}>
   <Card title="Weather MCP" icon="cloud-sun">
-    Real-time weather data from multiple APIs
-    
-    **Tools:**
-    - get_current_weather
-    - get_forecast
-    - get_historical_data
+    Real-time weather data from multiple APIs **Tools:** - get_current_weather -
+    get_forecast - get_historical_data
   </Card>
-  
-  <Card title="Database MCP" icon="database">
-    Safe database querying interface
-    
-    **Tools:**
-    - search_records
-    - get_statistics
-    - export_data
-  </Card>
-  
-  <Card title="File System MCP" icon="folder">
-    Secure file operations
-    
-    **Tools:**
-    - read_file
-    - list_directory
-    - search_files
-  </Card>
-  
+
+<Card title="Database MCP" icon="database">
+  Safe database querying interface **Tools:** - search_records - get_statistics
+  - export_data
+</Card>
+
+<Card title="File System MCP" icon="folder">
+  Secure file operations **Tools:** - read_file - list_directory - search_files
+</Card>
+
   <Card title="API Integration MCP" icon="plug">
-    Connect to external services
-    
-    **Tools:**
-    - call_api
-    - transform_data
-    - cache_results
+    Connect to external services **Tools:** - call_api - transform_data -
+    cache_results
   </Card>
 </CardGroup>
 
 ## Protocol Specification
 
 <Info>
-  Full MCP specification: [modelcontextprotocol.io](https://modelcontextprotocol.io)
+  Full MCP specification:
+  [modelcontextprotocol.io](https://modelcontextprotocol.io)
 </Info>
 
 ### JSON-RPC 2.0

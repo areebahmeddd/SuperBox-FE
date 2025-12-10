@@ -1,7 +1,8 @@
 ---
-title: 'Get Server'
-api: 'GET /servers/:name'
-description: 'Retrieve detailed information about a specific MCP server'
+title: "Get Server"
+api: "GET /servers/:name"
+description: "Retrieve detailed information about a specific MCP server"
+icon: "magnifying-glass"
 ---
 
 ## Endpoint
@@ -15,9 +16,9 @@ description: 'Retrieve detailed information about a specific MCP server'
 <Tabs>
   <Tab title="Optional">
     This endpoint works with or without authentication.
-    
     <Info>
-      Authenticated requests have access to additional details and higher rate limits
+      Authenticated requests have access to additional details and higher rate
+      limits
     </Info>
   </Tab>
 </Tabs>
@@ -25,9 +26,8 @@ description: 'Retrieve detailed information about a specific MCP server'
 ## Path Parameters
 
 <ParamField path="name" type="string" required>
-  Unique server identifier (lowercase with hyphens)
-  
-  **Example:** `weather-mcp`, `database-query-mcp`
+  Unique server identifier (lowercase with hyphens) **Example:** `weather-mcp`,
+  `database-query-mcp`
 </ParamField>
 
 ## Response
@@ -38,157 +38,151 @@ description: 'Retrieve detailed information about a specific MCP server'
 
 <ResponseField name="data" type="object">
   Detailed server information
-  
   <Expandable title="Server Object">
     <ResponseField name="name" type="string" required>
       Unique server identifier
     </ResponseField>
-    
+
     <ResponseField name="version" type="string" required>
       Current semantic version
     </ResponseField>
-    
+
     <ResponseField name="description" type="string" required>
       Detailed description of the server's functionality
     </ResponseField>
-    
+
     <ResponseField name="author" type="string" required>
       Server creator/maintainer name
     </ResponseField>
-    
+
     <ResponseField name="lang" type="string" required>
       Programming language (python, javascript, typescript, go, rust)
     </ResponseField>
-    
+
     <ResponseField name="license" type="string" required>
       Software license (MIT, Apache-2.0, GPL-3.0, etc.)
     </ResponseField>
-    
+
     <ResponseField name="entrypoint" type="string" required>
       Entry point file for server execution
     </ResponseField>
-    
+
     <ResponseField name="repository" type="object" required>
       Repository information
-      
       <Expandable title="properties">
         <ResponseField name="type" type="string">
           Repository type (usually "git")
         </ResponseField>
-        
+
         <ResponseField name="url" type="string">
           Full repository URL
         </ResponseField>
       </Expandable>
     </ResponseField>
-    
+
     <ResponseField name="tools" type="object">
       Available tools information
-      
       <Expandable title="properties">
         <ResponseField name="count" type="integer">
           Total number of tools provided
         </ResponseField>
-        
+
         <ResponseField name="names" type="array">
           Array of tool names
         </ResponseField>
       </Expandable>
     </ResponseField>
-    
+
     <ResponseField name="pricing" type="object" required>
       Pricing information
-      
       <Expandable title="properties">
         <ResponseField name="currency" type="string">
           Three-letter currency code (USD, EUR, etc.)
         </ResponseField>
-        
+
         <ResponseField name="amount" type="number">
           Price amount (0 for free servers)
         </ResponseField>
       </Expandable>
     </ResponseField>
-    
+
     <ResponseField name="security_report" type="object">
       Comprehensive security scan results
-      
       <Expandable title="properties">
         <ResponseField name="metadata" type="object">
           Scan metadata
-          
           <Expandable title="properties">
             <ResponseField name="repository" type="string">
               Repository name
             </ResponseField>
-            
+
             <ResponseField name="repo_url" type="string">
               Repository URL
             </ResponseField>
-            
+
             <ResponseField name="scan_date" type="string">
               ISO 8601 timestamp of scan
             </ResponseField>
-            
+
             <ResponseField name="scanners_used" type="array">
               List of security scanners used
             </ResponseField>
           </Expandable>
         </ResponseField>
-        
+
         <ResponseField name="summary" type="object">
           Summary of security findings
-          
           <Expandable title="properties">
             <ResponseField name="scan_passed" type="boolean">
               Overall scan result
             </ResponseField>
-            
+
             <ResponseField name="total_issues_all_scanners" type="integer">
               Total issues found across all scanners
             </ResponseField>
-            
+
             <ResponseField name="critical_issues" type="integer">
               Number of critical security issues
             </ResponseField>
-            
+
             <ResponseField name="sonarcloud_url" type="string">
               Link to SonarCloud dashboard
             </ResponseField>
           </Expandable>
         </ResponseField>
-        
+
         <ResponseField name="sonarqube" type="object">
           SonarQube/SonarCloud analysis results
         </ResponseField>
-        
+
         <ResponseField name="gitguardian" type="object">
           GitGuardian secrets detection results
         </ResponseField>
-        
+
         <ResponseField name="bandit" type="object">
           Bandit security audit results (Python only)
         </ResponseField>
-        
+
         <ResponseField name="recommendations" type="array">
           Array of security recommendations
         </ResponseField>
       </Expandable>
     </ResponseField>
+
   </Expandable>
 </ResponseField>
 
 <ResponseField name="meta" type="object">
   Response metadata
-  
   <Expandable title="properties">
     <ResponseField name="timestamp" type="string">
       ISO 8601 timestamp
     </ResponseField>
-    
+
     <ResponseField name="version" type="string">
       API version
     </ResponseField>
+
   </Expandable>
 </ResponseField>
 
@@ -201,10 +195,12 @@ curl -X GET "https://api.superbox.dev/api/v1/servers/weather-mcp" \
   -H "Content-Type: application/json"
 
 # With authentication for additional details
+
 curl -X GET "https://api.superbox.dev/api/v1/servers/weather-mcp" \
-  -H "Authorization: Bearer $SUPERBOX_API_TOKEN" \
-  -H "Content-Type: application/json"
-```
+ -H "Authorization: Bearer $SUPERBOX_API_TOKEN" \
+ -H "Content-Type: application/json"
+
+````
 
 ```javascript JavaScript
 // Basic request
@@ -236,7 +232,7 @@ if (server.data.security_report?.summary.scan_passed) {
 } else {
   console.warn('⚠ Security issues found');
 }
-```
+````
 
 ```python Python
 import requests
@@ -282,20 +278,20 @@ import (
 func main() {
     serverName := "weather-mcp"
     url := fmt.Sprintf("https://api.superbox.dev/api/v1/servers/%s", serverName)
-    
+
     // Create request
     req, err := http.NewRequest("GET", url, nil)
     if err != nil {
         panic(err)
     }
-    
+
     // Add authentication (optional)
     token := os.Getenv("SUPERBOX_API_TOKEN")
     if token != "" {
         req.Header.Set("Authorization", "Bearer "+token)
     }
     req.Header.Set("Content-Type", "application/json")
-    
+
     // Make request
     client := &http.Client{}
     resp, err := client.Do(req)
@@ -303,7 +299,7 @@ func main() {
         panic(err)
     }
     defer resp.Body.Close()
-    
+
     // Parse response
     var result struct {
         Success bool `json:"success"`
@@ -313,15 +309,16 @@ func main() {
             Author  string `json:"author"`
         } `json:"data"`
     }
-    
+
     json.NewDecoder(resp.Body).Decode(&result)
-    
-    fmt.Printf("%s v%s by %s\n", 
-        result.Data.Name, 
-        result.Data.Version, 
+
+    fmt.Printf("%s v%s by %s\n",
+        result.Data.Name,
+        result.Data.Version,
         result.Data.Author)
 }
 ```
+
 </CodeGroup>
 
 ## Response Examples
@@ -448,6 +445,7 @@ func main() {
   }
 }
 ```
+
 </ResponseExample>
 
 ## Use Cases
@@ -535,47 +533,24 @@ The `security_report` object provides comprehensive security analysis:
 
 <Tabs>
   <Tab title="SonarQube">
-    **Code Quality Analysis**
-    
-    - **Bugs**: Actual coding errors
-    - **Vulnerabilities**: Security vulnerabilities
-    - **Code Smells**: Maintainability issues
-    - **Coverage**: Test coverage percentage
-    - **Quality Gate**: Overall pass/fail status
-    
-    **Ratings (A-E):**
-    - A: Excellent
-    - B: Good
-    - C: Acceptable
-    - D: Poor
-    - E: Critical issues
+    **Code Quality Analysis** - **Bugs**: Actual coding errors -
+    **Vulnerabilities**: Security vulnerabilities - **Code Smells**:
+    Maintainability issues - **Coverage**: Test coverage percentage - **Quality
+    Gate**: Overall pass/fail status **Ratings (A-E):** - A: Excellent - B: Good
+    - C: Acceptable - D: Poor - E: Critical issues
   </Tab>
-  
-  <Tab title="GitGuardian">
-    **Secrets Detection**
-    
-    Scans for exposed credentials:
-    - API keys
-    - Access tokens
-    - Passwords
-    - Private keys
-    - Database credentials
-    
-    `scan_passed: true` means no secrets found
-  </Tab>
-  
+
+<Tab title="GitGuardian">
+  **Secrets Detection** Scans for exposed credentials: - API keys - Access
+  tokens - Passwords - Private keys - Database credentials `scan_passed: true`
+  means no secrets found
+</Tab>
+
   <Tab title="Bandit">
-    **Python Security Audit** (Python servers only)
-    
-    - **High Severity**: Critical security flaws
-    - **Medium Severity**: Potential vulnerabilities
-    - **Low Severity**: Minor security concerns
-    
-    Checks for:
-    - Unsafe function usage
-    - SQL injection risks
-    - Command injection risks
-    - Cryptography issues
+    **Python Security Audit** (Python servers only) - **High Severity**:
+    Critical security flaws - **Medium Severity**: Potential vulnerabilities -
+    **Low Severity**: Minor security concerns Checks for: - Unsafe function
+    usage - SQL injection risks - Command injection risks - Cryptography issues
   </Tab>
 </Tabs>
 
@@ -585,15 +560,15 @@ The `security_report` object provides comprehensive security analysis:
   <Card title="Cache Details" icon="database">
     Cache server details with a 10-15 minute TTL to reduce API calls
   </Card>
-  
-  <Card title="Check Security" icon="shield">
-    Always validate security scan status before deploying or purchasing
-  </Card>
-  
-  <Card title="Handle 404s" icon="triangle-exclamation">
-    Gracefully handle cases where servers don't exist
-  </Card>
-  
+
+<Card title="Check Security" icon="shield">
+  Always validate security scan status before deploying or purchasing
+</Card>
+
+<Card title="Handle 404s" icon="triangle-exclamation">
+  Gracefully handle cases where servers don't exist
+</Card>
+
   <Card title="Display Tools" icon="wrench">
     Show available tools to help users understand server capabilities
   </Card>
@@ -605,11 +580,11 @@ The `security_report` object provides comprehensive security analysis:
   <Card title="List Servers" icon="list" href="/api/servers/list">
     Browse all available servers
   </Card>
-  
-  <Card title="Create Server" icon="plus" href="/api/servers/create">
-    Deploy a new server
-  </Card>
-  
+
+<Card title="Create Server" icon="plus" href="/api/servers/create">
+  Deploy a new server
+</Card>
+
   <Card title="Update Server" icon="pen" href="/api/servers/update">
     Modify server metadata
   </Card>

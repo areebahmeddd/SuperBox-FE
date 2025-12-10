@@ -1,7 +1,7 @@
 ---
-title: 'superbox auth'
-description: 'Authenticate with SuperBox using device authorization flow'
-icon: 'key'
+title: "superbox auth"
+description: "Authenticate with SuperBox using device authorization flow"
+icon: "key"
 ---
 
 ## Usage
@@ -16,28 +16,18 @@ Authenticates with SuperBox using OAuth 2.0 device authorization flow. Opens bro
 
 ## Options
 
-<ParamField path="--method" type="string" default="device_flow">
-  Authentication method: `device_flow`, `token`
-  
-  ```bash
-  superbox auth --method device_flow
-  ```
+<ParamField path="--method" type="string">
+  Authentication method: `device_flow`, `token` ```bash superbox auth --method
+  device_flow ```
 </ParamField>
 
 <ParamField path="--token" type="string">
-  Provide API token directly
-  
-  ```bash
-  superbox auth --token sb_1234567890abcdef
+  Provide API token directly ```bash superbox auth --token sb_1234567890abcdef
   ```
 </ParamField>
 
 <ParamField path="--logout" type="boolean">
-  Log out and remove stored token
-  
-  ```bash
-  superbox auth --logout
-  ```
+  Log out and remove stored token ```bash superbox auth --logout ```
 </ParamField>
 
 ## Device Flow Process
@@ -47,16 +37,11 @@ Authenticates with SuperBox using OAuth 2.0 device authorization flow. Opens bro
     CLI requests device code from API
   </Step>
 
-  <Step title="Display Code">
-    ```
-    Visit: https://superbox.com/device
-    Enter code: ABCD-1234
-    ```
-  </Step>
+<Step title="Display Code">
+  ``` Visit: https://superbox.com/device Enter code: ABCD-1234 ```
+</Step>
 
-  <Step title="User Authorization">
-    User logs in and authorizes device
-  </Step>
+<Step title="User Authorization">User logs in and authorizes device</Step>
 
   <Step title="Token Storage">
     Token saved to `~/.superbox/token.json`
@@ -80,16 +65,14 @@ superbox auth --token $SUPERBOX_API_TOKEN
 ```bash Logout
 superbox auth --logout
 ```
+
 </CodeGroup>
 
 ## Troubleshooting
 
 <Accordion title="Browser doesn't open">
-  Manually visit the URL and enter the code:
-  
-  ```
-  https://superbox.com/device?code=ABCD-1234
-  ```
+  Manually visit the URL and enter the code: ```
+  https://superbox.com/device?code=ABCD-1234 ```
 </Accordion>
 
 ## Next Steps

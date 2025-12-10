@@ -1,7 +1,7 @@
 ---
-title: 'Component Library'
-description: 'Comprehensive guide to SuperBox reusable React components'
-icon: 'layer-group'
+title: "Component Library"
+description: "Comprehensive guide to SuperBox reusable React components"
+icon: "layer-group"
 ---
 
 ## Overview
@@ -43,15 +43,16 @@ The main navigation header with authentication and user menu.
       )
     }
     ```
+
   </Tab>
 
-  <Tab title="Props">
-    | Prop | Type | Default | Description |
-    |------|------|---------|-------------|
-    | `transparent` | `boolean` | `false` | Transparent background on scroll |
-    | `hideAuth` | `boolean` | `false` | Hide authentication buttons |
-    | `className` | `string` | `''` | Additional CSS classes |
-  </Tab>
+<Tab title="Props">
+  | Prop | Type | Default | Description |
+  |------|------|---------|-------------| | `transparent` | `boolean` | `false`
+  | Transparent background on scroll | | `hideAuth` | `boolean` | `false` | Hide
+  authentication buttons | | `className` | `string` | `''` | Additional CSS
+  classes |
+</Tab>
 
   <Tab title="Features">
     - Responsive navigation menu
@@ -73,13 +74,13 @@ import ServerCard from '@/components/server-card'
 
 <ServerCard
   server={{
-    id: '123',
-    name: 'Weather MCP',
-    description: 'Real-time weather data provider',
-    author: 'John Doe',
+    id: "123",
+    name: "Weather MCP",
+    description: "Real-time weather data provider",
+    author: "John Doe",
     downloads: 1234,
     rating: 4.5,
-    tags: ['weather', 'api', 'data']
+    tags: ["weather", "api", "data"],
   }}
 />
 ```
@@ -96,11 +97,11 @@ import ServerCard from '@/components/server-card'
 ```tsx Skeleton Loading
 <ServerCard loading />
 ```
+
 </CodeGroup>
 
 <ParamField path="server" type="object" required>
   Server data object
-  
   <Expandable title="Server Object Properties">
     <ParamField path="id" type="string" required>
       Unique server identifier
@@ -146,7 +147,7 @@ Modal dialog for user authentication with multiple providers.
         <button onClick={() => setShowAuthModal(true)}>
           Sign In
         </button>
-        
+
         <AuthModal
           isOpen={showAuthModal}
           onClose={() => setShowAuthModal(false)}
@@ -155,6 +156,7 @@ Modal dialog for user authentication with multiple providers.
       </>
     )
     ```
+
   </Step>
 
   <Step title="Handle Callbacks">
@@ -175,7 +177,8 @@ Modal dialog for user authentication with multiple providers.
 </Steps>
 
 <Info>
-  The Auth Modal supports email/password, Google OAuth, and GitHub OAuth authentication methods.
+  The Auth Modal supports email/password, Google OAuth, and GitHub OAuth
+  authentication methods.
 </Info>
 
 ### Server Detail Component
@@ -183,22 +186,17 @@ Modal dialog for user authentication with multiple providers.
 Comprehensive server information display with tabs and actions.
 
 ```tsx
-import ServerDetail from '@/components/server-detail'
+import ServerDetail from "@/components/server-detail";
 
-<ServerDetail
-  serverId="server-123"
-  initialData={serverData}
-/>
+<ServerDetail serverId="server-123" initialData={serverData} />;
 ```
 
 <Accordion title="Server Detail Features">
-  - **Overview Tab:** Description, stats, and quick actions
-  - **Tools Tab:** List of available MCP tools
-  - **Documentation Tab:** Markdown-rendered documentation
-  - **Reviews Tab:** User ratings and reviews
-  - **Install Button:** One-click installation via CLI
-  - **Share Button:** Social sharing options
-  - **Report Button:** Security issue reporting
+  - **Overview Tab:** Description, stats, and quick actions - **Tools Tab:**
+  List of available MCP tools - **Documentation Tab:** Markdown-rendered
+  documentation - **Reviews Tab:** User ratings and reviews - **Install
+  Button:** One-click installation via CLI - **Share Button:** Social sharing
+  options - **Report Button:** Security issue reporting
 </Accordion>
 
 ### Tool Card Component
@@ -211,29 +209,27 @@ import ToolCard from '@/components/tool-card'
 
 <ToolCard
   tool={{
-    name: 'get_weather',
-    description: 'Fetch current weather data',
+    name: "get_weather",
+    description: "Fetch current weather data",
     parameters: {
-      city: { type: 'string', required: true },
-      units: { type: 'string', enum: ['metric', 'imperial'] }
+      city: { type: "string", required: true },
+      units: { type: "string", enum: ["metric", "imperial"] },
     },
     returns: {
-      type: 'object',
+      type: "object",
       properties: {
-        temperature: 'number',
-        conditions: 'string'
-      }
-    }
+        temperature: "number",
+        conditions: "string",
+      },
+    },
   }}
 />
 ```
 
 ```tsx Compact View
-<ToolCard
-  tool={toolData}
-  compact
-/>
+<ToolCard tool={toolData} compact />
 ```
+
 </CodeGroup>
 
 ### Custom Dropdown Component
@@ -241,21 +237,22 @@ import ToolCard from '@/components/tool-card'
 Accessible dropdown menu with keyboard navigation.
 
 ```tsx
-import CustomDropdown from '@/components/custom-dropdown'
+import CustomDropdown from "@/components/custom-dropdown";
 
 <CustomDropdown
   trigger={<button>Options</button>}
   items={[
-    { label: 'Edit', icon: 'pencil', onClick: handleEdit },
-    { label: 'Delete', icon: 'trash', onClick: handleDelete },
-    { type: 'separator' },
-    { label: 'Share', icon: 'share', onClick: handleShare }
+    { label: "Edit", icon: "pencil", onClick: handleEdit },
+    { label: "Delete", icon: "trash", onClick: handleDelete },
+    { type: "separator" },
+    { label: "Share", icon: "share", onClick: handleShare },
   ]}
-/>
+/>;
 ```
 
 <Warning>
-  Dropdown automatically closes on outside click and Escape key press for better UX.
+  Dropdown automatically closes on outside click and Escape key press for better
+  UX.
 </Warning>
 
 ### Toast Provider Component
@@ -278,6 +275,7 @@ Global toast notification system.
       )
     }
     ```
+
   </Tab>
 
   <Tab title="Usage">
@@ -300,9 +298,10 @@ Global toast notification system.
     toast.custom('Custom message', {
       duration: 5000,
       position: 'top-center',
-      icon: '🚀'
+      icon: 'rocket'
     })
     ```
+
   </Tab>
 
   <Tab title="Options">
@@ -320,14 +319,14 @@ Global toast notification system.
 Premium features upgrade modal with Razorpay integration.
 
 ```tsx
-import PaywallModal from '@/components/paywall-modal'
+import PaywallModal from "@/components/paywall-modal";
 
 <PaywallModal
   isOpen={showPaywall}
   onClose={() => setShowPaywall(false)}
   feature="Advanced Search"
   plan="pro"
-/>
+/>;
 ```
 
 ### Publish Modal Component
@@ -335,12 +334,8 @@ import PaywallModal from '@/components/paywall-modal'
 Multi-step wizard for publishing MCP servers.
 
 <Steps>
-  <Step title="Server Details">
-    Name, description, and category selection
-  </Step>
-  <Step title="Tool Configuration">
-    Define MCP tools and parameters
-  </Step>
+  <Step title="Server Details">Name, description, and category selection</Step>
+  <Step title="Tool Configuration">Define MCP tools and parameters</Step>
   <Step title="Security Scan">
     Automated security checks (SonarQube, Bandit, GitGuardian)
   </Step>
@@ -350,16 +345,16 @@ Multi-step wizard for publishing MCP servers.
 </Steps>
 
 ```tsx
-import PublishModal from '@/components/publish-modal'
+import PublishModal from "@/components/publish-modal";
 
 <PublishModal
   isOpen={showPublish}
   onClose={() => setShowPublish(false)}
   onSuccess={(server) => {
-    toast.success('Server published!')
-    router.push(`/server/${server.id}`)
+    toast.success("Server published!");
+    router.push(`/server/${server.id}`);
   }}
-/>
+/>;
 ```
 
 ### Reviews Section Component
@@ -367,7 +362,7 @@ import PublishModal from '@/components/publish-modal'
 Display and manage user reviews with ratings.
 
 ```tsx
-import ReviewsSection from '@/components/reviews-section'
+import ReviewsSection from "@/components/reviews-section";
 
 <ReviewsSection
   serverId="server-123"
@@ -375,9 +370,9 @@ import ReviewsSection from '@/components/reviews-section'
   totalReviews={42}
   userReview={{
     rating: 5,
-    comment: 'Excellent MCP server!'
+    comment: "Excellent MCP server!",
   }}
-/>
+/>;
 ```
 
 ### Security Report Component
@@ -385,12 +380,9 @@ import ReviewsSection from '@/components/reviews-section'
 Report security vulnerabilities in MCP servers.
 
 ```tsx
-import SecurityReport from '@/components/security-report'
+import SecurityReport from "@/components/security-report";
 
-<SecurityReport
-  serverId="server-123"
-  serverName="Weather MCP"
-/>
+<SecurityReport serverId="server-123" serverName="Weather MCP" />;
 ```
 
 ### Page Transition Component
@@ -398,18 +390,16 @@ import SecurityReport from '@/components/security-report'
 Smooth page transitions with Framer Motion.
 
 ```tsx app/layout.tsx
-import PageTransition from '@/components/page-transition'
+import PageTransition from "@/components/page-transition";
 
 export default function RootLayout({ children }) {
   return (
     <html>
       <body>
-        <PageTransition>
-          {children}
-        </PageTransition>
+        <PageTransition>{children}</PageTransition>
       </body>
     </html>
-  )
+  );
 }
 ```
 
@@ -418,14 +408,14 @@ export default function RootLayout({ children }) {
 Animated SVG wave background for hero sections.
 
 ```tsx
-import WaveBackground from '@/components/wave-background'
+import WaveBackground from "@/components/wave-background";
 
 <section className="relative">
   <WaveBackground />
   <div className="relative z-10">
     <h1>Welcome to SuperBox</h1>
   </div>
-</section>
+</section>;
 ```
 
 ## Component Patterns
@@ -440,12 +430,12 @@ Build complex UIs by composing simple components:
     <ServerCard.Title>{server.name}</ServerCard.Title>
     <ServerCard.Badge>{server.category}</ServerCard.Badge>
   </ServerCard.Header>
-  
+
   <ServerCard.Body>
     <ServerCard.Description>{server.description}</ServerCard.Description>
     <ServerCard.Stats downloads={server.downloads} rating={server.rating} />
   </ServerCard.Body>
-  
+
   <ServerCard.Footer>
     <ServerCard.InstallButton serverId={server.id} />
     <ServerCard.FavoriteButton serverId={server.id} />
@@ -460,9 +450,9 @@ Share logic between components:
 ```tsx
 <DataFetcher url="/api/servers">
   {({ data, loading, error }) => {
-    if (loading) return <Skeleton />
-    if (error) return <ErrorMessage error={error} />
-    return <ServerList servers={data} />
+    if (loading) return <Skeleton />;
+    if (error) return <ErrorMessage error={error} />;
+    return <ServerList servers={data} />;
   }}
 </DataFetcher>
 ```
@@ -472,13 +462,13 @@ Share logic between components:
 Reusable logic extracted into hooks:
 
 ```tsx
-import { useAuth } from '@/lib/hooks/use-auth'
-import { useServers } from '@/lib/hooks/use-servers'
+import { useAuth } from "@/lib/hooks/use-auth";
+import { useServers } from "@/lib/hooks/use-servers";
 
 function MyComponent() {
-  const { user, isAuthenticated } = useAuth()
-  const { servers, loading } = useServers({ userId: user?.id })
-  
+  const { user, isAuthenticated } = useAuth();
+  const { servers, loading } = useServers({ userId: user?.id });
+
   // Component logic
 }
 ```
@@ -486,33 +476,40 @@ function MyComponent() {
 ## Styling Guidelines
 
 <Tip>
-  Use Tailwind CSS utility classes for styling. Avoid custom CSS unless absolutely necessary.
+  Use Tailwind CSS utility classes for styling. Avoid custom CSS unless
+  absolutely necessary.
 </Tip>
 
 ### Common Patterns
 
 ```tsx
 // Card styling
-className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6"
+className = "bg-white dark:bg-gray-800 rounded-lg shadow-md p-6";
 
 // Button styling
-className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
+className =
+  "px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors";
 
 // Input styling
-className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+className =
+  "w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500";
 
 // Responsive layout
-className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6";
 ```
 
 ## Accessibility Features
 
 All components follow WCAG 2.1 AA standards:
 
-<Check>**Keyboard Navigation** - Full keyboard support with focus management</Check>
+<Check>
+  **Keyboard Navigation** - Full keyboard support with focus management
+</Check>
 <Check>**Screen Readers** - Semantic HTML and ARIA attributes</Check>
 <Check>**Color Contrast** - Minimum 4.5:1 contrast ratio</Check>
-<Check>**Focus Indicators** - Visible focus states for all interactive elements</Check>
+<Check>
+  **Focus Indicators** - Visible focus states for all interactive elements
+</Check>
 
 ## Next Steps
 

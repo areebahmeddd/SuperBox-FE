@@ -1,7 +1,8 @@
 ---
-title: 'Create Payment Order'
-description: 'POST /payment/create-order - Create Razorpay payment order'
-api: 'POST https://api.superbox.com/v1/payment/create-order'
+title: "Create Payment Order"
+description: "POST /payment/create-order - Create Razorpay payment order"
+api: "POST https://api.superbox.com/v1/payment/create-order"
+icon: "credit-card"
 ---
 
 ## Endpoint
@@ -45,18 +46,21 @@ curl -X POST https://api.superbox.com/v1/payment/create-order \
 ```
 
 ```javascript JavaScript
-const response = await fetch('https://api.superbox.com/v1/payment/create-order', {
-  method: 'POST',
-  headers: {
-    'Authorization': `Bearer ${token}`,
-    'Content-Type': 'application/json',
+const response = await fetch(
+  "https://api.superbox.com/v1/payment/create-order",
+  {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      plan: "pro",
+      billing_cycle: "monthly",
+      currency: "INR",
+    }),
   },
-  body: JSON.stringify({
-    plan: 'pro',
-    billing_cycle: 'monthly',
-    currency: 'INR',
-  }),
-});
+);
 
 const order = await response.json();
 ```
@@ -76,6 +80,7 @@ response = requests.post(
 
 order = response.json()
 ```
+
 </CodeGroup>
 
 ## Response
@@ -98,15 +103,15 @@ order = response.json()
 
 <ResponseField name="user" type="object">
   User details for prefilling checkout
-  
   <Expandable title="properties">
     <ResponseField name="name" type="string">
       User name
     </ResponseField>
-    
+
     <ResponseField name="email" type="string">
       User email
     </ResponseField>
+
   </Expandable>
 </ResponseField>
 
@@ -131,20 +136,13 @@ order = response.json()
 
 <CardGroup cols={2}>
   <Card title="Pro Plan" icon="rocket">
-    **₹499/month** or **₹4,990/year**
-    
-    - Unlimited servers
-    - Advanced analytics
-    - Priority support
+    **₹499/month** or **₹4,990/year** - Unlimited servers - Advanced analytics -
+    Priority support
   </Card>
-  
+
   <Card title="Enterprise Plan" icon="building">
-    **₹2,999/month** or **₹29,990/year**
-    
-    - Everything in Pro
-    - Custom domains
-    - Dedicated support
-    - SLA guarantee
+    **₹2,999/month** or **₹29,990/year** - Everything in Pro - Custom domains -
+    Dedicated support - SLA guarantee
   </Card>
 </CardGroup>
 
@@ -155,22 +153,22 @@ order = response.json()
 import { useEffect } from 'react';
 
 function CheckoutButton() {
-  const handlePayment = async () => {
-    // Create order
-    const orderResponse = await fetch('/api/payment/create-order', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        plan: 'pro',
-        billing_cycle': 'monthly',
-      }),
-    });
-    
+const handlePayment = async () => {
+// Create order
+const orderResponse = await fetch('/api/payment/create-order', {
+method: 'POST',
+headers: {
+'Authorization': `Bearer ${token}`,
+'Content-Type': 'application/json',
+},
+body: JSON.stringify({
+plan: 'pro',
+billing_cycle': 'monthly',
+}),
+});
+
     const order = await orderResponse.json();
-    
+
     // Initialize Razorpay
     const options = {
       key: order.razorpay_key,
@@ -200,31 +198,34 @@ function CheckoutButton() {
             signature: response.razorpay_signature,
           }),
         });
-        
+
         // Redirect to success page
         window.location.href = '/payment/success';
       },
     };
-    
+
     const razorpay = new window.Razorpay(options);
     razorpay.open();
-  };
-  
-  useEffect(() => {
-    // Load Razorpay script
-    const script = document.createElement('script');
-    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-    script.async = true;
-    document.body.appendChild(script);
-  }, []);
-  
-  return (
-    <button onClick={handlePayment}>
-      Upgrade to Pro
-    </button>
-  );
+
+};
+
+useEffect(() => {
+// Load Razorpay script
+const script = document.createElement('script');
+script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+script.async = true;
+document.body.appendChild(script);
+}, []);
+
+return (
+
+<button onClick={handlePayment}>
+Upgrade to Pro
+</button>
+);
 }
-```
+
+````
 
 ```javascript Next.js
 // app/checkout/page.tsx
@@ -235,19 +236,19 @@ import { useState } from 'react';
 
 export default function CheckoutPage() {
   const [loading, setLoading] = useState(false);
-  
+
   const initiatePayment = async () => {
     setLoading(true);
-    
+
     try {
       const response = await fetch('/api/payment/create-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ plan: 'pro' }),
       });
-      
+
       const order = await response.json();
-      
+
       const options = {
         key: order.razorpay_key,
         amount: order.amount,
@@ -262,14 +263,14 @@ export default function CheckoutPage() {
           });
         },
       };
-      
+
       const razorpay = new window.Razorpay(options);
       razorpay.open();
     } finally {
       setLoading(false);
     }
   };
-  
+
   return (
     <>
       <Script src="https://checkout.razorpay.com/v1/checkout.js" />
@@ -279,7 +280,8 @@ export default function CheckoutPage() {
     </>
   );
 }
-```
+````
+
 </CodeGroup>
 
 ## Error Responses
@@ -305,6 +307,7 @@ export default function CheckoutPage() {
   "message": "User already has an active subscription"
 }
 ```
+
 </CodeGroup>
 
 ## Next Steps

@@ -1,7 +1,8 @@
 ---
-title: 'OAuth Authentication'
-description: 'OAuth 2.0 authentication with Google and GitHub'
-api: 'GET https://api.superbox.com/v1/auth/oauth/{provider}'
+title: "OAuth Authentication"
+description: "OAuth 2.0 authentication with Google and GitHub"
+api: "GET https://api.superbox.com/v1/auth/oauth/{provider}"
+icon: "key"
 ---
 
 ## Supported Providers
@@ -27,17 +28,12 @@ api: 'GET https://api.superbox.com/v1/auth/oauth/{provider}'
     ```
   </Step>
 
-  <Step title="User Authorization">
-    User grants permissions on provider site
-  </Step>
+<Step title="User Authorization">User grants permissions on provider site</Step>
 
-  <Step title="Callback">
-    Provider redirects to callback URL with code
-    
-    ```
-    https://superbox.com/auth/callback?code=abc123&state=xyz
-    ```
-  </Step>
+<Step title="Callback">
+  Provider redirects to callback URL with code ```
+  https://superbox.com/auth/callback?code=abc123&state=xyz ```
+</Step>
 
   <Step title="Token Exchange">
     Backend exchanges code for user data and creates session
@@ -54,7 +50,7 @@ curl https://api.superbox.com/v1/auth/oauth/google
 ```
 
 ```javascript JavaScript
-window.location.href = 'https://api.superbox.com/v1/auth/oauth/google';
+window.location.href = "https://api.superbox.com/v1/auth/oauth/google";
 ```
 
 ```python Python
@@ -63,14 +59,13 @@ import requests
 response = requests.get('https://api.superbox.com/v1/auth/oauth/google')
 # Redirect user to response.url
 ```
+
 </CodeGroup>
 
 ### Query Parameters
 
 <ParamField query="redirect_uri" type="string">
-  Callback URL after authorization
-  
-  Default: `https://superbox.com/auth/callback`
+  Callback URL after authorization Default: `https://superbox.com/auth/callback`
 </ParamField>
 
 <ParamField query="state" type="string">
@@ -126,6 +121,7 @@ GET /auth/oauth/github?redirect_uri=https://yourapp.com/callback
   "provider": "google"
 }
 ```
+
 </CodeGroup>
 
 ## Frontend Integration
@@ -166,22 +162,23 @@ function GoogleLogin() {
 // pages/api/auth/callback.js
 export default async function handler(req, res) {
   const { code, state } = req.query;
-  
+
   // Exchange code for token
   const response = await fetch(
-    'https://api.superbox.com/v1/auth/oauth/callback',
+    "https://api.superbox.com/v1/auth/oauth/callback",
     {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ code, state }),
-    }
+    },
   );
-  
+
   const { token, user } = await response.json();
-  
+
   // Set secure cookie
-  res.setHeader('Set-Cookie', `token=${token}; HttpOnly; Secure; Path=/`);
-  res.redirect('/dashboard');
+  res.setHeader("Set-Cookie", `token=${token}; HttpOnly; Secure; Path=/`);
+  res.redirect("/dashboard");
 }
 ```
+
 </CodeGroup>

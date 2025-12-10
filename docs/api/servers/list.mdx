@@ -1,7 +1,8 @@
 ---
-title: 'List Servers'
-api: 'GET /servers'
-description: 'Retrieve a list of all available MCP servers with optional filtering and pagination'
+title: "List Servers"
+api: "GET /servers"
+description: "Retrieve a list of all available MCP servers with optional filtering and pagination"
+icon: "list"
 ---
 
 ## Endpoint
@@ -15,7 +16,6 @@ description: 'Retrieve a list of all available MCP servers with optional filteri
 <Tabs>
   <Tab title="Optional">
     This endpoint works with or without authentication.
-    
     <Info>
       Authenticated requests have higher rate limits (1000/hour vs 100/hour)
     </Info>
@@ -33,9 +33,8 @@ description: 'Retrieve a list of all available MCP servers with optional filteri
 </ParamField>
 
 <ParamField query="lang" type="string">
-  Filter by programming language
-  
-  **Allowed values:** `python`, `javascript`, `typescript`, `go`, `rust`
+  Filter by programming language **Allowed values:** `python`, `javascript`,
+  `typescript`, `go`, `rust`
 </ParamField>
 
 <ParamField query="author" type="string">
@@ -43,9 +42,7 @@ description: 'Retrieve a list of all available MCP servers with optional filteri
 </ParamField>
 
 <ParamField query="pricing" type="string">
-  Filter by pricing model
-  
-  **Allowed values:** `free`, `paid`
+  Filter by pricing model **Allowed values:** `free`, `paid`
 </ParamField>
 
 <ParamField query="search" type="string">
@@ -53,22 +50,14 @@ description: 'Retrieve a list of all available MCP servers with optional filteri
 </ParamField>
 
 <ParamField query="sort" type="string" default="created_at">
-  Sort field and order
-  
-  **Examples:**
-  - `name` - Sort by name (A-Z)
-  - `-name` - Sort by name (Z-A)
-  - `-downloads` - Most downloads first
-  - `-created_at` - Newest first
-  - `pricing.amount` - Lowest price first
+  Sort field and order **Examples:** - `name` - Sort by name (A-Z) - `-name` -
+  Sort by name (Z-A) - `-downloads` - Most downloads first - `-created_at` -
+  Newest first - `pricing.amount` - Lowest price first
 </ParamField>
 
 <ParamField query="security_passed" type="boolean">
-  Filter by security scan status
-  
-  **Values:**
-  - `true` - Only servers that passed security scans
-  - `false` - Servers with security issues
+  Filter by security scan status **Values:** - `true` - Only servers that passed
+  security scans - `false` - Servers with security issues
 </ParamField>
 
 ## Response
@@ -79,135 +68,130 @@ description: 'Retrieve a list of all available MCP servers with optional filteri
 
 <ResponseField name="data" type="array">
   Array of server objects
-  
   <Expandable title="Server Object">
     <ResponseField name="name" type="string" required>
       Unique server identifier (lowercase with hyphens)
     </ResponseField>
-    
+
     <ResponseField name="version" type="string" required>
       Semantic version (e.g., "1.0.0")
     </ResponseField>
-    
+
     <ResponseField name="description" type="string" required>
       Brief description of the server's functionality
     </ResponseField>
-    
+
     <ResponseField name="author" type="string" required>
       Server creator/maintainer name
     </ResponseField>
-    
+
     <ResponseField name="lang" type="string" required>
       Programming language
     </ResponseField>
-    
+
     <ResponseField name="license" type="string" required>
       Software license (e.g., "MIT", "Apache-2.0")
     </ResponseField>
-    
+
     <ResponseField name="entrypoint" type="string" required>
       Entry point file for server execution
     </ResponseField>
-    
+
     <ResponseField name="repository" type="object" required>
       Repository information
-      
       <Expandable title="properties">
         <ResponseField name="type" type="string">
           Repository type (e.g., "git")
         </ResponseField>
-        
+
         <ResponseField name="url" type="string">
           Repository URL
         </ResponseField>
       </Expandable>
     </ResponseField>
-    
+
     <ResponseField name="tools" type="object">
       Available tools information
-      
       <Expandable title="properties">
         <ResponseField name="count" type="integer">
           Number of tools provided by the server
         </ResponseField>
-        
+
         <ResponseField name="names" type="array">
           Array of tool names
         </ResponseField>
       </Expandable>
     </ResponseField>
-    
+
     <ResponseField name="pricing" type="object" required>
       Pricing information
-      
       <Expandable title="properties">
         <ResponseField name="currency" type="string">
           Currency code (e.g., "USD")
         </ResponseField>
-        
+
         <ResponseField name="amount" type="number">
           Price amount (0 for free servers)
         </ResponseField>
       </Expandable>
     </ResponseField>
-    
+
     <ResponseField name="security_report" type="object">
       Security scan summary
-      
       <Expandable title="properties">
         <ResponseField name="summary.scan_passed" type="boolean">
           Whether the server passed security scans
         </ResponseField>
-        
+
         <ResponseField name="summary.total_issues_all_scanners" type="integer">
           Total number of issues found
         </ResponseField>
-        
+
         <ResponseField name="summary.critical_issues" type="integer">
           Number of critical security issues
         </ResponseField>
       </Expandable>
     </ResponseField>
+
   </Expandable>
 </ResponseField>
 
 <ResponseField name="meta" type="object">
   Response metadata
-  
   <Expandable title="properties">
     <ResponseField name="pagination" type="object">
       Pagination information
-      
       <Expandable title="properties">
         <ResponseField name="page" type="integer">
           Current page number
         </ResponseField>
-        
+
         <ResponseField name="limit" type="integer">
           Items per page
         </ResponseField>
-        
+
         <ResponseField name="total" type="integer">
           Total number of servers
         </ResponseField>
-        
+
         <ResponseField name="totalPages" type="integer">
           Total number of pages
         </ResponseField>
-        
+
         <ResponseField name="hasNext" type="boolean">
           Whether there's a next page
         </ResponseField>
-        
+
         <ResponseField name="hasPrev" type="boolean">
           Whether there's a previous page
         </ResponseField>
       </Expandable>
     </ResponseField>
-    
+
     <ResponseField name="timestamp" type="string">
       ISO 8601 timestamp
     </ResponseField>
+
   </Expandable>
 </ResponseField>
 
@@ -220,22 +204,27 @@ curl -X GET "https://api.superbox.dev/api/v1/servers" \
   -H "Content-Type: application/json"
 
 # List Python servers only
+
 curl -X GET "https://api.superbox.dev/api/v1/servers?lang=python" \
-  -H "Content-Type: application/json"
+ -H "Content-Type: application/json"
 
 # List free servers with security passed
+
 curl -X GET "https://api.superbox.dev/api/v1/servers?pricing=free&security_passed=true" \
-  -H "Content-Type: application/json"
+ -H "Content-Type: application/json"
 
 # Search and sort
+
 curl -X GET "https://api.superbox.dev/api/v1/servers?search=weather&sort=-downloads" \
-  -H "Content-Type: application/json"
+ -H "Content-Type: application/json"
 
 # With authentication
+
 curl -X GET "https://api.superbox.dev/api/v1/servers?page=2&limit=50" \
-  -H "Authorization: Bearer $SUPERBOX_API_TOKEN" \
-  -H "Content-Type: application/json"
-```
+ -H "Authorization: Bearer $SUPERBOX_API_TOKEN" \
+ -H "Content-Type: application/json"
+
+````
 
 ```javascript JavaScript
 // Basic request
@@ -269,7 +258,7 @@ const response = await fetch('https://api.superbox.dev/api/v1/servers', {
 data.data.forEach(server => {
   console.log(`${server.name} v${server.version} - ${server.description}`);
 });
-```
+````
 
 ```python Python
 import requests
@@ -324,21 +313,21 @@ func main() {
     params.Add("pricing", "free")
     params.Add("page", "1")
     params.Add("limit", "20")
-    
+
     fullURL := fmt.Sprintf("%s?%s", baseURL, params.Encode())
-    
+
     // Create request
     req, err := http.NewRequest("GET", fullURL, nil)
     if err != nil {
         panic(err)
     }
-    
+
     // Add authentication (optional)
     token := os.Getenv("SUPERBOX_API_TOKEN")
     if token != "" {
         req.Header.Set("Authorization", "Bearer "+token)
     }
-    
+
     // Make request
     client := &http.Client{}
     resp, err := client.Do(req)
@@ -346,14 +335,15 @@ func main() {
         panic(err)
     }
     defer resp.Body.Close()
-    
+
     // Parse response
     var result map[string]interface{}
     json.NewDecoder(resp.Body).Decode(&result)
-    
+
     fmt.Printf("Found %v servers\n", len(result["data"].([]interface{})))
 }
 ```
+
 </CodeGroup>
 
 ## Response Examples
@@ -475,6 +465,7 @@ func main() {
   }
 }
 ```
+
 </ResponseExample>
 
 ## Use Cases
@@ -557,22 +548,24 @@ func main() {
   <Card title="Use Pagination" icon="page">
     Always implement pagination for large result sets to improve performance
   </Card>
-  
-  <Card title="Cache Results" icon="database">
-    Cache server lists on the client side with appropriate TTL (5-10 minutes)
-  </Card>
-  
-  <Card title="Filter Server-Side" icon="filter">
-    Use query parameters instead of filtering on the client to reduce data transfer
-  </Card>
-  
+
+<Card title="Cache Results" icon="database">
+  Cache server lists on the client side with appropriate TTL (5-10 minutes)
+</Card>
+
+<Card title="Filter Server-Side" icon="filter">
+  Use query parameters instead of filtering on the client to reduce data
+  transfer
+</Card>
+
   <Card title="Handle Rate Limits" icon="gauge">
     Implement exponential backoff when rate limits are hit
   </Card>
 </CardGroup>
 
 <Tip>
-  For better performance, use authenticated requests which have higher rate limits and may return cached results faster.
+  For better performance, use authenticated requests which have higher rate
+  limits and may return cached results faster.
 </Tip>
 
 ## Related Endpoints
@@ -581,7 +574,7 @@ func main() {
   <Card title="Get Server Details" icon="file" href="/api/servers/get">
     Retrieve detailed information about a specific server
   </Card>
-  
+
   <Card title="Create Server" icon="plus" href="/api/servers/create">
     Deploy a new MCP server
   </Card>

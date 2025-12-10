@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import Header from "@/components/header";
-import { User, Mail, Lock, Edit2, Trash2, LogOut, Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useToast } from "@/components/toast-provider";
+import { Edit2, Loader2, Lock, LogOut, Mail, Trash2, User } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 interface UserProfile {
   localId: string;
@@ -40,7 +40,8 @@ export default function ProfilePage() {
         return;
       }
 
-      const firebaseApiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "AIzaSyDemoKey";
+      const firebaseApiKey =
+        process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "AIzaSyDemoKey";
       const response = await fetch(
         `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${firebaseApiKey}`,
         {
@@ -49,7 +50,7 @@ export default function ProfilePage() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ idToken: token }),
-        }
+        },
       );
 
       if (!response.ok) {
@@ -92,7 +93,7 @@ export default function ProfilePage() {
         idToken: token,
         returnSecureToken: true,
       };
-      
+
       if (displayName && displayName !== profile?.displayName) {
         updateData.displayName = displayName;
       }
@@ -100,7 +101,8 @@ export default function ProfilePage() {
         updateData.password = newPassword;
       }
 
-      const firebaseApiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "AIzaSyDemoKey";
+      const firebaseApiKey =
+        process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "AIzaSyDemoKey";
       const response = await fetch(
         `https://identitytoolkit.googleapis.com/v1/accounts:update?key=${firebaseApiKey}`,
         {
@@ -109,7 +111,7 @@ export default function ProfilePage() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify(updateData),
-        }
+        },
       );
 
       if (!response.ok) {
@@ -125,11 +127,11 @@ export default function ProfilePage() {
       }
       setIsEditing(false);
       setNewPassword("");
-      
+
       if (data.idToken) {
         localStorage.setItem("idToken", data.idToken);
       }
-      
+
       addToast({
         title: "Success",
         description: "Profile updated successfully",
@@ -151,7 +153,8 @@ export default function ProfilePage() {
 
     try {
       const token = localStorage.getItem("idToken");
-      const firebaseApiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "AIzaSyDemoKey";
+      const firebaseApiKey =
+        process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "AIzaSyDemoKey";
       const response = await fetch(
         `https://identitytoolkit.googleapis.com/v1/accounts:delete?key=${firebaseApiKey}`,
         {
@@ -160,7 +163,7 @@ export default function ProfilePage() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ idToken: token }),
-        }
+        },
       );
 
       if (!response.ok) {
@@ -214,7 +217,7 @@ export default function ProfilePage() {
       <div className="min-h-screen bg-black text-white pt-20 px-4 relative overflow-hidden">
         {/* Red Misty Background */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-[#ff5252]/20 rounded-full blur-[120px]" />
-        
+
         <div className="max-w-2xl mx-auto relative z-10 py-12">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-[#ff5252] to-[#ffbaba] bg-clip-text text-transparent mb-8">
             My Profile
@@ -255,11 +258,13 @@ export default function ProfilePage() {
                     <span>{profile?.displayName || "No display name set"}</span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <div className={`px-3 py-1 rounded-full text-sm ${
-                      profile?.emailVerified 
-                        ? "bg-green-500/20 text-green-400 border border-green-500/30" 
-                        : "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30"
-                    }`}>
+                    <div
+                      className={`px-3 py-1 rounded-full text-sm ${
+                        profile?.emailVerified
+                          ? "bg-green-500/20 text-green-400 border border-green-500/30"
+                          : "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30"
+                      }`}
+                    >
                       {profile?.emailVerified ? "Verified" : "Not Verified"}
                     </div>
                   </div>
@@ -354,7 +359,8 @@ export default function ProfilePage() {
                 Delete Account?
               </h3>
               <p className="text-gray-400 mb-6">
-                This action cannot be undone. All your data will be permanently deleted.
+                This action cannot be undone. All your data will be permanently
+                deleted.
               </p>
               <div className="flex gap-3">
                 <button

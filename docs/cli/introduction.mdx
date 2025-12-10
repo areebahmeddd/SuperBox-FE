@@ -1,7 +1,7 @@
 ---
-title: 'CLI Introduction'
-description: 'SuperBox CLI - Powerful command-line interface for MCP server management'
-icon: 'terminal'
+title: "CLI Introduction"
+description: "SuperBox CLI - Powerful command-line interface for MCP server management"
+icon: "terminal"
 ---
 
 ## Overview
@@ -32,17 +32,9 @@ The **SuperBox CLI** is a Python-based command-line tool that enables developers
     ```
   </Step>
 
-  <Step title="Authenticate">
-    ```bash
-    superbox auth
-    ```
-  </Step>
+<Step title="Authenticate">```bash superbox auth ```</Step>
 
-  <Step title="Initialize Project">
-    ```bash
-    superbox init my-mcp-server
-    ```
-  </Step>
+<Step title="Initialize Project">```bash superbox init my-mcp-server ```</Step>
 
   <Step title="Push to SuperBox">
     ```bash
@@ -65,65 +57,35 @@ The **SuperBox CLI** is a Python-based command-line tool that enables developers
     Creates project structure with templates
   </Accordion>
 
-  <Accordion title="superbox auth" icon="key">
-    Authenticate with SuperBox
-    
-    ```bash
-    superbox auth [OPTIONS]
-    ```
-    
-    Device flow or token authentication
-  </Accordion>
+<Accordion title="superbox auth" icon="key">
+  Authenticate with SuperBox ```bash superbox auth [OPTIONS] ``` Device flow or
+  token authentication
+</Accordion>
 
-  <Accordion title="superbox push" icon="upload">
-    Publish server to SuperBox
-    
-    ```bash
-    superbox push [OPTIONS]
-    ```
-    
-    Runs security scan and uploads
-  </Accordion>
+<Accordion title="superbox push" icon="upload">
+  Publish server to SuperBox ```bash superbox push [OPTIONS] ``` Runs security
+  scan and uploads
+</Accordion>
 
-  <Accordion title="superbox pull" icon="download">
-    Download server configuration
-    
-    ```bash
-    superbox pull [SERVER_ID] [OPTIONS]
-    ```
-    
-    Get client configuration for MCP server
-  </Accordion>
+<Accordion title="superbox pull" icon="download">
+  Download server configuration ```bash superbox pull [SERVER_ID] [OPTIONS] ```
+  Get client configuration for MCP server
+</Accordion>
 
-  <Accordion title="superbox run" icon="play">
-    Test MCP server locally
-    
-    ```bash
-    superbox run [OPTIONS]
-    ```
-    
-    Interactive testing environment
-  </Accordion>
+<Accordion title="superbox run" icon="play">
+  Test MCP server locally ```bash superbox run [OPTIONS] ``` Interactive testing
+  environment
+</Accordion>
 
-  <Accordion title="superbox search" icon="magnifying-glass">
-    Search for MCP servers
-    
-    ```bash
-    superbox search [QUERY] [OPTIONS]
-    ```
-    
-    Find servers in marketplace
-  </Accordion>
+<Accordion title="superbox search" icon="magnifying-glass">
+  Search for MCP servers ```bash superbox search [QUERY] [OPTIONS] ``` Find
+  servers in marketplace
+</Accordion>
 
-  <Accordion title="superbox inspect" icon="eye">
-    Inspect server details
-    
-    ```bash
-    superbox inspect [SERVER_ID] [OPTIONS]
-    ```
-    
-    View server information and tools
-  </Accordion>
+<Accordion title="superbox inspect" icon="eye">
+  Inspect server details ```bash superbox inspect [SERVER_ID] [OPTIONS] ``` View
+  server information and tools
+</Accordion>
 
   <Accordion title="superbox test" icon="vial">
     Run server tests
@@ -147,10 +109,11 @@ SuperBox CLI uses [Rich](https://rich.readthedocs.io/) for beautiful terminal ou
 from rich.progress import Progress
 
 with Progress() as progress:
-    task = progress.add_task("Uploading...", total=100)
-    for i in range(100):
-        progress.update(task, advance=1)
-```
+task = progress.add_task("Uploading...", total=100)
+for i in range(100):
+progress.update(task, advance=1)
+
+````
 
 ```python Tables
 from rich.table import Table
@@ -160,7 +123,7 @@ table.add_column("Name", style="cyan")
 table.add_column("Downloads", justify="right", style="magenta")
 table.add_row("Weather MCP", "1,234")
 console.print(table)
-```
+````
 
 ```python Syntax Highlighting
 from rich.syntax import Syntax
@@ -168,6 +131,7 @@ from rich.syntax import Syntax
 code = Syntax(python_code, "python", theme="monokai")
 console.print(code)
 ```
+
 </CodeGroup>
 
 ### Configuration Management
@@ -208,52 +172,30 @@ defaults:
 All commands support these global options:
 
 <ParamField path="--verbose" type="boolean" default={false}>
-  Enable verbose output with debug information
-  
-  ```bash
-  superbox push --verbose
+  Enable verbose output with debug information ```bash superbox push --verbose
   ```
 </ParamField>
 
 <ParamField path="--quiet" type="boolean" default={false}>
-  Suppress all output except errors
-  
-  ```bash
-  superbox push --quiet
-  ```
+  Suppress all output except errors ```bash superbox push --quiet ```
 </ParamField>
 
 <ParamField path="--config" type="string" default="~/.superbox/config.yaml">
-  Path to configuration file
-  
-  ```bash
-  superbox push --config ./custom-config.yaml
+  Path to configuration file ```bash superbox push --config ./custom-config.yaml
   ```
 </ParamField>
 
 <ParamField path="--api-url" type="string" default="https://api.superbox.com">
-  Override API base URL
-  
-  ```bash
-  superbox push --api-url http://localhost:8080
+  Override API base URL ```bash superbox push --api-url http://localhost:8080
   ```
 </ParamField>
 
 <ParamField path="--no-color" type="boolean" default={false}>
-  Disable colored output
-  
-  ```bash
-  superbox search "weather" --no-color
-  ```
+  Disable colored output ```bash superbox search "weather" --no-color ```
 </ParamField>
 
 <ParamField path="--help" type="boolean">
-  Show help message
-  
-  ```bash
-  superbox --help
-  superbox push --help
-  ```
+  Show help message ```bash superbox --help superbox push --help ```
 </ParamField>
 
 ## Environment Variables
@@ -285,17 +227,22 @@ export SUPERBOX_DEBUG=1
 superbox init weather-mcp --template python
 
 # Navigate to project
+
 cd weather-mcp
 
 # Test locally
+
 superbox run
 
 # Authenticate
+
 superbox auth
 
 # Push to SuperBox
+
 superbox push
-```
+
+````
 
 ```bash Search and Inspect
 # Search for servers
@@ -306,7 +253,7 @@ superbox inspect weather-mcp-123
 
 # Pull configuration
 superbox pull weather-mcp-123 --output client_config.json
-```
+````
 
 ```bash Advanced Options
 # Push with custom settings
@@ -322,6 +269,7 @@ superbox run --port 8080 --debug
 # Test with coverage
 superbox test --coverage --verbose
 ```
+
 </CodeGroup>
 
 ## Troubleshooting
@@ -343,29 +291,15 @@ superbox test --coverage --verbose
     ```
   </Accordion>
 
-  <Accordion title="Authentication errors" icon="key">
-    Re-authenticate with SuperBox:
-    
-    ```bash
-    # Clear existing auth
-    rm ~/.superbox/token.json
-    
-    # Authenticate again
-    superbox auth
-    ```
-  </Accordion>
+<Accordion title="Authentication errors" icon="key">
+  Re-authenticate with SuperBox: ```bash # Clear existing auth rm
+  ~/.superbox/token.json # Authenticate again superbox auth ```
+</Accordion>
 
-  <Accordion title="Security scan failures" icon="shield">
-    Review scan results:
-    
-    ```bash
-    # Run with verbose output
-    superbox push --verbose
-    
-    # Check security reports
-    ls -la security-reports/
-    ```
-  </Accordion>
+<Accordion title="Security scan failures" icon="shield">
+  Review scan results: ```bash # Run with verbose output superbox push --verbose
+  # Check security reports ls -la security-reports/ ```
+</Accordion>
 
   <Accordion title="Connection errors" icon="wifi">
     Check network and API status:

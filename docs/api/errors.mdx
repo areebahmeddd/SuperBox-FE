@@ -1,6 +1,7 @@
 ---
-title: 'Error Handling'
-description: 'Comprehensive guide to SuperBox API error codes and handling'
+title: "Error Handling"
+description: "Comprehensive guide to SuperBox API error codes and handling"
+icon: "triangle-exclamation"
 ---
 
 ## Error Response Format
@@ -52,51 +53,40 @@ All error responses from the SuperBox API follow a consistent structure:
 <AccordionGroup>
   <Accordion title="4xx Client Errors" icon="user-xmark">
     Errors caused by invalid client requests
-    
     <ResponseField name="400 Bad Request" type="error">
       Invalid request parameters, body, or format
     </ResponseField>
-    
     <ResponseField name="401 Unauthorized" type="error">
       Missing, invalid, or expired authentication token
     </ResponseField>
-    
     <ResponseField name="403 Forbidden" type="error">
       Valid authentication but insufficient permissions
     </ResponseField>
-    
     <ResponseField name="404 Not Found" type="error">
       Requested resource does not exist
     </ResponseField>
-    
     <ResponseField name="409 Conflict" type="error">
       Resource already exists or conflicting state
     </ResponseField>
-    
     <ResponseField name="422 Unprocessable Entity" type="error">
       Valid request format but semantic errors
     </ResponseField>
-    
     <ResponseField name="429 Too Many Requests" type="error">
       Rate limit exceeded
     </ResponseField>
   </Accordion>
-  
+
   <Accordion title="5xx Server Errors" icon="server">
     Errors caused by server-side issues
-    
     <ResponseField name="500 Internal Server Error" type="error">
       Unexpected server error
     </ResponseField>
-    
     <ResponseField name="502 Bad Gateway" type="error">
       Upstream service error
     </ResponseField>
-    
     <ResponseField name="503 Service Unavailable" type="error">
       Service temporarily unavailable (maintenance)
     </ResponseField>
-    
     <ResponseField name="504 Gateway Timeout" type="error">
       Upstream service timeout
     </ResponseField>
@@ -447,13 +437,14 @@ All error responses from the SuperBox API follow a consistent structure:
 const response = await fetch('https://api.superbox.dev/api/v1/servers');
 
 if (!response.ok) {
-  const error = await response.json();
-  console.error(`Error ${response.status}:`, error.error.message);
-  // Handle error based on status code
+const error = await response.json();
+console.error(`Error ${response.status}:`, error.error.message);
+// Handle error based on status code
 }
 
 const data = await response.json();
-```
+
+````
 
 ```python Python
 response = requests.get('https://api.superbox.dev/api/v1/servers')
@@ -464,7 +455,7 @@ if not response.ok:
     # Handle error based on status code
 else:
     data = response.json()
-```
+````
 
 ```go Go
 resp, err := http.Get("https://api.superbox.dev/api/v1/servers")
@@ -480,6 +471,7 @@ if resp.StatusCode != http.StatusOK {
     // Handle error based on status code
 }
 ```
+
 </CodeGroup>
 
 ### 2. Implement Retry Logic
@@ -533,6 +525,7 @@ def create_session_with_retry():
 session = create_session_with_retry()
 response = session.get('https://api.superbox.dev/api/v1/servers')
 ```
+
 </CodeGroup>
 
 ### 3. Handle Rate Limiting
@@ -562,18 +555,19 @@ import time
 
 def request_with_rate_limit(url, headers):
     response = requests.get(url, headers=headers)
-    
+
     if response.status_code == 429:
         reset_time = int(response.headers.get('X-RateLimit-Reset', 0))
         wait_time = reset_time - int(time.time())
-        
+
         if wait_time > 0:
             print(f"Rate limited. Waiting {wait_time}s...")
             time.sleep(wait_time)
             return request_with_rate_limit(url, headers)
-    
+
     return response
 ```
+
 </CodeGroup>
 
 ### 4. Validate Input Before Sending
@@ -619,21 +613,21 @@ import re
 
 def validate_server_data(data):
     errors = []
-    
+
     # Name validation
     if not re.match(r'^[a-z0-9-]+$', data['name']):
         errors.append({
             'field': 'name',
             'message': 'Name must be lowercase with hyphens only'
         })
-    
+
     # Version validation
     if not re.match(r'^\d+\.\d+\.\d+$', data['version']):
         errors.append({
             'field': 'version',
             'message': 'Version must follow semver format (x.y.z)'
         })
-    
+
     # Repository URL validation
     url_pattern = r'^https://github\.com/[\w-]+/[\w-]+$'
     if not re.match(url_pattern, data.get('repository', {}).get('url', '')):
@@ -641,10 +635,11 @@ def validate_server_data(data):
             'field': 'repository.url',
             'message': 'Must be a valid GitHub repository URL'
         })
-    
+
     if errors:
         raise ValidationError('Validation failed', errors)
 ```
+
 </CodeGroup>
 
 ### 5. Log Errors for Debugging
@@ -690,10 +685,10 @@ logger = logging.getLogger(__name__)
 def make_request(url, **kwargs):
     try:
         response = requests.request(url=url, **kwargs)
-        
+
         if not response.ok:
             error = response.json()
-            
+
             # Log detailed error information
             logger.error({
                 'timestamp': datetime.utcnow().isoformat(),
@@ -705,14 +700,15 @@ def make_request(url, **kwargs):
                 'message': error.get('error', {}).get('message'),
                 'details': error.get('error', {}).get('details')
             })
-            
+
             raise APIError(error)
-        
+
         return response.json()
     except Exception as e:
         logger.exception('Request failed')
         raise
 ```
+
 </CodeGroup>
 
 ## Common Error Scenarios
@@ -828,17 +824,17 @@ from superbox import SuperBoxClient, APIError, RateLimitError
 client = SuperBoxClient(token=os.getenv('SUPERBOX_API_TOKEN'))
 
 try:
-    server = client.servers.create({
-        'name': 'my-server',
-        'version': '1.0.0',
-        # ...
-    })
+server = client.servers.create({
+'name': 'my-server',
+'version': '1.0.0', # ...
+})
 except RateLimitError as e:
-    print(f"Rate limited. Retry after {e.retry_after}s")
+print(f"Rate limited. Retry after {e.retry_after}s")
 except APIError as e:
-    print(f"API Error [{e.code}]: {e.message}")
-    print(f"Details: {e.details}")
-```
+print(f"API Error [{e.code}]: {e.message}")
+print(f"Details: {e.details}")
+
+````
 
 ```javascript Node.js SDK
 import { SuperBoxClient, APIError, RateLimitError } from '@superbox/sdk';
@@ -859,7 +855,8 @@ try {
     console.log(`Details:`, error.details);
   }
 }
-```
+````
+
 </CodeGroup>
 
 ## Support
@@ -867,19 +864,31 @@ try {
 If you encounter an error you can't resolve:
 
 <CardGroup cols={2}>
-  <Card title="Check API Status" icon="signal" href="https://status.superbox.dev">
+  <Card
+    title="Check API Status"
+    icon="signal"
+    href="https://status.superbox.dev"
+  >
     Verify API availability and known issues
   </Card>
-  
-  <Card title="Contact Support" icon="envelope" href="mailto:hi@areeb.dev">
-    Include your `requestId` for faster resolution
-  </Card>
-  
-  <Card title="Community Discord" icon="discord" href="https://discord.gg/superbox">
-    Get help from the community
-  </Card>
-  
-  <Card title="GitHub Issues" icon="github" href="https://github.com/areebahmeddd/SuperBox-FE/issues">
+
+<Card title="Contact Support" icon="envelope" href="mailto:hi@areeb.dev">
+  Include your `requestId` for faster resolution
+</Card>
+
+<Card
+  title="Community Discord"
+  icon="discord"
+  href="https://discord.gg/superbox"
+>
+  Get help from the community
+</Card>
+
+  <Card
+    title="GitHub Issues"
+    icon="github"
+    href="https://github.com/areebahmeddd/SuperBox-FE/issues"
+  >
     Report bugs or request features
   </Card>
 </CardGroup>

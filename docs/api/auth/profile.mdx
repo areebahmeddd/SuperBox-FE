@@ -1,7 +1,8 @@
 ---
-title: 'Profile Management'
-description: 'Manage user profile and account settings'
-api: 'GET https://api.superbox.com/v1/auth/profile'
+title: "Profile Management"
+description: "Manage user profile and account settings"
+api: "GET https://api.superbox.com/v1/auth/profile"
+icon: "user"
 ---
 
 ## Get Profile
@@ -15,10 +16,7 @@ GET /auth/profile
 ### Headers
 
 <ParamField header="Authorization" type="string" required>
-  Bearer token
-  
-  ```
-  Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+  Bearer token ``` Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
   ```
 </ParamField>
 
@@ -31,9 +29,9 @@ curl https://api.superbox.com/v1/auth/profile \
 ```
 
 ```javascript JavaScript
-const response = await fetch('https://api.superbox.com/v1/auth/profile', {
+const response = await fetch("https://api.superbox.com/v1/auth/profile", {
   headers: {
-    'Authorization': `Bearer ${token}`,
+    Authorization: `Bearer ${token}`,
   },
 });
 
@@ -50,6 +48,7 @@ response = requests.get(
 
 profile = response.json()
 ```
+
 </CodeGroup>
 
 ### Response (200)
@@ -126,16 +125,16 @@ curl -X PATCH https://api.superbox.com/v1/auth/profile \
 ```
 
 ```javascript JavaScript
-const response = await fetch('https://api.superbox.com/v1/auth/profile', {
-  method: 'PATCH',
+const response = await fetch("https://api.superbox.com/v1/auth/profile", {
+  method: "PATCH",
   headers: {
-    'Authorization': `Bearer ${token}`,
-    'Content-Type': 'application/json',
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json",
   },
   body: JSON.stringify({
-    bio: 'Building MCP servers for AI',
-    website: 'https://johndoe.dev',
-    location: 'San Francisco',
+    bio: "Building MCP servers for AI",
+    website: "https://johndoe.dev",
+    location: "San Francisco",
   }),
 });
 ```
@@ -151,6 +150,7 @@ response = requests.patch(
     }
 )
 ```
+
 </CodeGroup>
 
 ### Response (200)
@@ -207,6 +207,7 @@ response = requests.post(
     }
 )
 ```
+
 </CodeGroup>
 
 ### Response (200)
@@ -256,5 +257,6 @@ curl -X DELETE https://api.superbox.com/v1/auth/profile \
 ```
 
 <Warning>
-  Account deletion is permanent and cannot be undone. All servers and data will be deleted.
+  Account deletion is permanent and cannot be undone. All servers and data will
+  be deleted.
 </Warning>

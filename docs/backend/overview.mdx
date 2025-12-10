@@ -1,7 +1,7 @@
 ---
-title: 'Backend Overview'
-description: 'High-performance Go API and Python CLI for SuperBox MCP server marketplace'
-icon: 'server'
+title: "Backend Overview"
+description: "High-performance Go API and Python CLI for SuperBox MCP server marketplace"
+icon: "server"
 ---
 
 ## Architecture
@@ -37,14 +37,11 @@ SuperBox backend combines Go's performance with Python's ecosystem for a robust,
     - **Auth:** JWT + OAuth 2.0
   </Tab>
 
-  <Tab title="AWS Services">
-    - **Compute:** AWS Lambda
-    - **Storage:** S3
-    - **Database:** RDS PostgreSQL
-    - **Cache:** ElastiCache Redis
-    - **CDN:** CloudFront
-    - **Secrets:** Secrets Manager
-  </Tab>
+<Tab title="AWS Services">
+  - **Compute:** AWS Lambda - **Storage:** S3 - **Database:** RDS PostgreSQL -
+  **Cache:** ElastiCache Redis - **CDN:** CloudFront - **Secrets:** Secrets
+  Manager
+</Tab>
 
   <Tab title="Security Tools">
     - **SAST:** SonarQube
@@ -88,55 +85,55 @@ graph TB
         FE[Next.js Frontend]
         CLI[Python CLI]
     end
-    
+
     subgraph "API Gateway"
         ALB[AWS Application Load Balancer]
     end
-    
+
     subgraph "Application Layer"
         API1[Go API Server 1]
         API2[Go API Server 2]
         API3[Go API Server N]
     end
-    
+
     subgraph "Data Layer"
         PG[(PostgreSQL RDS)]
         RD[(Redis ElastiCache)]
         S3[S3 Storage]
     end
-    
+
     subgraph "Execution Layer"
         LB1[Lambda: MCP Executor 1]
         LB2[Lambda: MCP Executor 2]
         LB3[Lambda: MCP Executor N]
     end
-    
+
     subgraph "Security Pipeline"
         SQ[SonarQube]
         BD[Bandit]
         GG[GitGuardian]
         SM[Semgrep]
     end
-    
+
     FE -->|HTTPS| ALB
     CLI -->|HTTPS| ALB
     ALB --> API1
     ALB --> API2
     ALB --> API3
-    
+
     API1 --> PG
     API2 --> PG
     API3 --> PG
-    
+
     API1 --> RD
     API2 --> RD
     API3 --> RD
-    
+
     API1 --> S3
     API1 --> LB1
     API2 --> LB2
     API3 --> LB3
-    
+
     CLI --> SQ
     CLI --> BD
     CLI --> GG
@@ -273,24 +270,16 @@ graph TB
     ```
   </Step>
 
-  <Step title="Authentication">
-    `superbox auth` performs device flow:
-    
-    1. Generates device code
-    2. Opens browser for authorization
-    3. Polls for token
-    4. Stores credentials securely
-  </Step>
+<Step title="Authentication">
+  `superbox auth` performs device flow: 1. Generates device code 2. Opens
+  browser for authorization 3. Polls for token 4. Stores credentials securely
+</Step>
 
-  <Step title="Security Scan">
-    `superbox push` runs 5-step pipeline:
-    
-    1. SonarQube code quality
-    2. Bandit security issues
-    3. GitGuardian secrets
-    4. Semgrep vulnerabilities
-    5. OWASP dependencies
-  </Step>
+<Step title="Security Scan">
+  `superbox push` runs 5-step pipeline: 1. SonarQube code quality 2. Bandit
+  security issues 3. GitGuardian secrets 4. Semgrep vulnerabilities 5. OWASP
+  dependencies
+</Step>
 
   <Step title="Publish">
     Uploads server to SuperBox:
@@ -307,30 +296,23 @@ graph TB
 
 <CardGroup cols={2}>
   <Card title="Authentication" icon="key" href="/api/auth/register">
-    - POST /auth/register
-    - POST /auth/login
-    - GET /auth/oauth/:provider
-    - POST /auth/device-flow
+    - POST /auth/register - POST /auth/login - GET /auth/oauth/:provider - POST
+    /auth/device-flow
   </Card>
-  
-  <Card title="Servers" icon="server" href="/api/servers/list">
-    - GET /servers
-    - GET /servers/:id
-    - POST /servers
-    - PUT /servers/:id
-    - DELETE /servers/:id
-  </Card>
-  
-  <Card title="Execution" icon="play" href="/backend/architecture">
-    - POST /execute/:serverId
-    - GET /execution/:id/logs
-    - GET /execution/:id/status
-  </Card>
-  
+
+<Card title="Servers" icon="server" href="/api/servers/list">
+  - GET /servers - GET /servers/:id - POST /servers - PUT /servers/:id - DELETE
+  /servers/:id
+</Card>
+
+<Card title="Execution" icon="play" href="/backend/architecture">
+  - POST /execute/:serverId - GET /execution/:id/logs - GET
+  /execution/:id/status
+</Card>
+
   <Card title="Payment" icon="credit-card" href="/api/payment/create-order">
-    - POST /payment/create-order
-    - POST /payment/verify-payment
-    - GET /payment/payment-status/:id
+    - POST /payment/create-order - POST /payment/verify-payment - GET
+    /payment/payment-status/:id
   </Card>
 </CardGroup>
 
@@ -382,23 +364,16 @@ graph TB
     - Health checks every 30 seconds
   </Accordion>
 
-  <Accordion title="Database Scaling" icon="database">
-    PostgreSQL RDS with read replicas:
-    
-    - Primary instance for writes
-    - 2 read replicas for queries
-    - Automatic failover
-    - Daily backups with 7-day retention
-  </Accordion>
+<Accordion title="Database Scaling" icon="database">
+  PostgreSQL RDS with read replicas: - Primary instance for writes - 2 read
+  replicas for queries - Automatic failover - Daily backups with 7-day retention
+</Accordion>
 
-  <Accordion title="Cache Strategy" icon="bolt">
-    Redis ElastiCache for performance:
-    
-    - Server metadata cached for 1 hour
-    - User sessions cached for 7 days
-    - Search results cached for 15 minutes
-    - Cache invalidation on updates
-  </Accordion>
+<Accordion title="Cache Strategy" icon="bolt">
+  Redis ElastiCache for performance: - Server metadata cached for 1 hour - User
+  sessions cached for 7 days - Search results cached for 15 minutes - Cache
+  invalidation on updates
+</Accordion>
 
   <Accordion title="Lambda Concurrency" icon="layer-group">
     AWS Lambda auto-scales execution:
@@ -412,32 +387,33 @@ graph TB
 
 ## Security Features
 
-<Check>**End-to-End Encryption** - All data encrypted in transit (TLS 1.3) and at rest (AES-256)</Check>
+<Check>
+  **End-to-End Encryption** - All data encrypted in transit (TLS 1.3) and at
+  rest (AES-256)
+</Check>
 <Check>**WAF Protection** - AWS WAF rules for DDoS and common attacks</Check>
 <Check>**Rate Limiting** - Redis-based rate limiting per user and IP</Check>
-<Check>**Input Validation** - Strict validation and sanitization of all inputs</Check>
-<Check>**Sandbox Isolation** - Lambda functions run in isolated containers</Check>
+<Check>
+  **Input Validation** - Strict validation and sanitization of all inputs
+</Check>
+<Check>
+  **Sandbox Isolation** - Lambda functions run in isolated containers
+</Check>
 <Check>**Secrets Management** - AWS Secrets Manager for sensitive data</Check>
 
 ## Monitoring & Observability
 
 <CardGroup cols={3}>
   <Card title="Logs" icon="file-lines">
-    CloudWatch Logs
-    
-    Centralized logging with structured JSON format
+    CloudWatch Logs Centralized logging with structured JSON format
   </Card>
-  
-  <Card title="Metrics" icon="chart-line">
-    CloudWatch Metrics
-    
-    Custom metrics for API, Lambda, and database
-  </Card>
-  
+
+<Card title="Metrics" icon="chart-line">
+  CloudWatch Metrics Custom metrics for API, Lambda, and database
+</Card>
+
   <Card title="Traces" icon="diagram-project">
-    X-Ray Tracing
-    
-    Distributed tracing across services
+    X-Ray Tracing Distributed tracing across services
   </Card>
 </CardGroup>
 
@@ -451,7 +427,11 @@ graph TB
   <Card title="Backend Setup" icon="wrench" href="/backend/setup">
     Set up local development environment
   </Card>
-  <Card title="Architecture Deep Dive" icon="sitemap" href="/backend/architecture">
+  <Card
+    title="Architecture Deep Dive"
+    icon="sitemap"
+    href="/backend/architecture"
+  >
     Detailed architecture documentation
   </Card>
   <Card title="Deploy to AWS" icon="aws" href="/backend/deployment">

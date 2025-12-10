@@ -1,11 +1,10 @@
 ---
-title: 'Quickstart'
-description: 'Get started with SuperBox in under 5 minutes'
+title: "Quickstart"
+description: "Get started with SuperBox in under 5 minutes"
+icon: "rocket"
 ---
 
-## Welcome to SuperBox! 🚀
-
-This guide will help you get up and running with SuperBox quickly. You'll learn how to browse servers, authenticate, and deploy your first MCP server.
+Get up and running with SuperBox in 5 minutes. This guide covers authentication, browsing servers, and making your first API call.
 
 <Steps>
   <Step title="Create an Account">
@@ -20,18 +19,16 @@ This guide will help you get up and running with SuperBox quickly. You'll learn 
     </Note>
   </Step>
 
-  <Step title="Get Your API Token">
-    Once authenticated, navigate to your [Profile Settings](https://superbox-fe.vercel.app/settings) to generate your API token.
-    
-    ```bash
-    # Set your API token as an environment variable
-    export SUPERBOX_API_TOKEN="your_api_token_here"
-    ```
-    
-    <Warning>
-      Keep your API token secure! Never commit it to version control or share it publicly.
-    </Warning>
-  </Step>
+<Step title="Get Your API Token">
+  Once authenticated, navigate to your [Profile
+  Settings](https://superbox-fe.vercel.app/settings) to generate your API token.
+  ```bash # Set your API token as an environment variable export
+  SUPERBOX_API_TOKEN="your_api_token_here" ```
+  <Warning>
+    Keep your API token secure! Never commit it to version control or share it
+    publicly.
+  </Warning>
+</Step>
 
   <Step title="Make Your First API Call">
     Let's list all available servers:
@@ -203,111 +200,25 @@ This guide will help you get up and running with SuperBox quickly. You'll learn 
   </Step>
 </Steps>
 
-## What's Next?
-
-<CardGroup cols={2}>
-  <Card
-    title="Explore the API"
-    icon="code"
-    href="/api/introduction"
-  >
-    Dive deeper into the SuperBox API with our comprehensive documentation
-  </Card>
-  <Card
-    title="Architecture Overview"
-    icon="diagram-project"
-    href="/architecture"
-  >
-    Learn how SuperBox works under the hood
-  </Card>
-  <Card
-    title="Authentication Guide"
-    icon="key"
-    href="/api/authentication"
-  >
-    Understand the authentication flow and best practices
-  </Card>
-  <Card
-    title="Error Handling"
-    icon="circle-exclamation"
-    href="/api/errors"
-  >
-    Learn how to handle errors gracefully in your applications
-  </Card>
-</CardGroup>
-
-## Need Help?
+## Next Steps
 
 <CardGroup cols={3}>
-  <Card
-    title="Discord Community"
-    icon="discord"
-    href="https://discord.gg/superbox"
-  >
-    Join our Discord for real-time support
+  <Card title="API Reference" icon="book" href="/api/introduction">
+    Explore all endpoints
   </Card>
-  <Card
-    title="GitHub Issues"
-    icon="github"
-    href="https://github.com/areebahmeddd/SuperBox-FE/issues"
-  >
-    Report bugs or request features
+  <Card title="CLI Tools" icon="terminal" href="/cli/introduction">
+    Learn CLI commands
   </Card>
-  <Card
-    title="Email Support"
-    icon="envelope"
-    href="mailto:hi@areeb.dev"
-  >
-    Contact our team directly
+  <Card title="Authentication" icon="key" href="/api/authentication">
+    Auth flow details
+  </Card>
+  <Card title="Error Handling" icon="triangle-exclamation" href="/api/errors">
+    Handle API errors
+  </Card>
+  <Card title="Architecture" icon="sitemap" href="/architecture">
+    System design
+  </Card>
+  <Card title="Security" icon="shield" href="/concepts/security">
+    Security pipeline
   </Card>
 </CardGroup>
-
-## Example Projects
-
-Check out these example projects to see SuperBox in action:
-
-<Accordion title="Python MCP Server">
-  ```python
-  # example_server.py
-  from mcp import MCPServer, Tool
-  
-  server = MCPServer(name="example-server")
-  
-  @server.tool()
-  def greet(name: str) -> str:
-      """Greet a user by name"""
-      return f"Hello, {name}! Welcome to SuperBox!"
-  
-  if __name__ == "__main__":
-      server.run()
-  ```
-</Accordion>
-
-<Accordion title="TypeScript MCP Server">
-  ```typescript
-  // server.ts
-  import { MCPServer, Tool } from '@modelcontextprotocol/sdk';
-  
-  const server = new MCPServer({
-    name: 'example-server',
-    version: '1.0.0'
-  });
-  
-  server.addTool({
-    name: 'greet',
-    description: 'Greet a user by name',
-    parameters: {
-      name: { type: 'string', required: true }
-    },
-    handler: async ({ name }) => {
-      return `Hello, ${name}! Welcome to SuperBox!`;
-    }
-  });
-  
-  server.start();
-  ```
-</Accordion>
-
-<Info>
-  Ready to build something amazing? Let's get started! 🎉
-</Info>

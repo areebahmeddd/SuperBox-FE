@@ -1,11 +1,10 @@
 ---
-title: 'Architecture'
-description: 'Deep dive into SuperBox system architecture and design'
+title: "Architecture"
+description: "Deep dive into SuperBox system architecture and design"
+icon: "sitemap"
 ---
 
-## System Overview
-
-SuperBox is built on a modern, cloud-native architecture that combines the power of Next.js, Go, AWS Lambda, and S3 to deliver a fast, secure, and scalable platform for MCP server management.
+SuperBox is a cloud-native platform combining Next.js, Go, AWS Lambda, and S3 for scalable MCP server management.
 
 ```mermaid
 graph TB
@@ -14,36 +13,36 @@ graph TB
         B[React 19 UI]
         C[Framer Motion]
     end
-    
+
     subgraph "Authentication"
         D[Firebase Auth]
     end
-    
+
     subgraph "API Layer"
         E[Go/Gin API Server]
         F[REST Endpoints]
     end
-    
+
     subgraph "Storage Layer"
         G[S3 Registry]
         H[Metadata Store]
     end
-    
+
     subgraph "Execution Layer"
         I[AWS Lambda]
         J[Container Runtime]
     end
-    
+
     subgraph "Security Layer"
         K[SonarCloud]
         L[GitGuardian]
         M[Bandit Scanner]
     end
-    
+
     subgraph "Payment Layer"
         N[Razorpay]
     end
-    
+
     A --> D
     A --> E
     E --> F
@@ -55,7 +54,7 @@ graph TB
     E --> L
     E --> M
     A --> N
-    
+
     style A fill:#ef4444
     style E fill:#00ADD8
     style I fill:#FF9900
@@ -77,26 +76,14 @@ The frontend is built with Next.js 16 and React 19, providing a modern, performa
     - **Framer Motion**: Smooth animations and transitions
   </Accordion>
 
-  <Accordion icon="folder-tree" title="Directory Structure">
-    ```
-    src/
-    ├── app/                    # Next.js App Router
-    │   ├── layout.tsx         # Root layout
-    │   ├── page.tsx           # Landing page
-    │   ├── explore/           # Browse servers
-    │   ├── server/[id]/       # Server details
-    │   ├── playground/        # Test environment
-    │   ├── my-servers/        # User's servers
-    │   └── profile/           # User profile
-    ├── components/            # Reusable components
-    │   ├── auth-modal.tsx
-    │   ├── server-card.tsx
-    │   ├── server-detail.tsx
-    │   └── ...
-    └── lib/                   # Utilities
-        └── types.ts           # TypeScript definitions
-    ```
-  </Accordion>
+<Accordion icon="folder-tree" title="Directory Structure">
+  ``` src/ ├── app/ # Next.js App Router │ ├── layout.tsx # Root layout │ ├──
+  page.tsx # Landing page │ ├── explore/ # Browse servers │ ├── server/[id]/ #
+  Server details │ ├── playground/ # Test environment │ ├── my-servers/ # User's
+  servers │ └── profile/ # User profile ├── components/ # Reusable components │
+  ├── auth-modal.tsx │ ├── server-card.tsx │ ├── server-detail.tsx │ └── ... └──
+  lib/ # Utilities └── types.ts # TypeScript definitions ```
+</Accordion>
 
   <Accordion icon="puzzle-piece" title="Key Components">
     - **ServerCard**: Displays server information in grid/list views
@@ -142,14 +129,12 @@ The backend API is built with Go and the Gin web framework, providing high-perfo
     ```
   </Accordion>
 
-  <Accordion icon="layer-group" title="Middleware Stack">
-    1. **CORS**: Cross-origin resource sharing
-    2. **Logger**: Request/response logging
-    3. **Recovery**: Panic recovery
-    4. **Auth**: Firebase token validation
-    5. **Rate Limiter**: API rate limiting
-    6. **Compression**: Response compression
-  </Accordion>
+<Accordion icon="layer-group" title="Middleware Stack">
+  1. **CORS**: Cross-origin resource sharing 2. **Logger**: Request/response
+  logging 3. **Recovery**: Panic recovery 4. **Auth**: Firebase token validation
+  5. **Rate Limiter**: API rate limiting 6. **Compression**: Response
+  compression
+</Accordion>
 
   <Accordion icon="database" title="Data Flow">
     ```mermaid
@@ -247,25 +232,19 @@ SuperBox implements a comprehensive security pipeline with multiple scanning too
 
 <Steps>
   <Step title="SonarCloud Analysis">
-    - Code quality metrics
-    - Bug detection
-    - Vulnerability scanning
-    - Code smell identification
-    - Maintainability rating
+    - Code quality metrics - Bug detection - Vulnerability scanning - Code smell
+    identification - Maintainability rating
   </Step>
-  
-  <Step title="GitGuardian Secrets Detection">
-    - API key detection
-    - Password scanning
-    - Token identification
-    - Certificate detection
-  </Step>
-  
+
+<Step title="GitGuardian Secrets Detection">
+  - API key detection - Password scanning - Token identification - Certificate
+  detection
+</Step>
+
   <Step title="Bandit Security Audit (Python)">
-    - Python-specific vulnerability detection
-    - CWE (Common Weakness Enumeration) mapping
-    - Severity and confidence ratings
-    - Detailed issue reports
+    - Python-specific vulnerability detection - CWE (Common Weakness
+    Enumeration) mapping - Severity and confidence ratings - Detailed issue
+    reports
   </Step>
 </Steps>
 
@@ -282,7 +261,7 @@ sequenceDiagram
     participant SC as Security Scanners
     participant S as S3
     participant L as Lambda
-    
+
     U->>F: Create Server Request
     F->>A: POST /api/v1/servers
     A->>G: Clone Repository
@@ -305,7 +284,7 @@ sequenceDiagram
     participant A as API
     participant L as Lambda
     participant S as S3
-    
+
     U->>F: Test Server
     F->>A: POST /api/v1/execute/:name
     A->>S: Fetch Server Bundle
@@ -328,7 +307,7 @@ sequenceDiagram
     participant FB as Firebase Auth
     participant A as API
     participant S as Service
-    
+
     U->>F: Login Request
     F->>FB: Authenticate
     FB-->>F: JWT Token
@@ -348,20 +327,15 @@ Razorpay handles all payment processing for paid MCP servers.
 
 <AccordionGroup>
   <Accordion icon="credit-card" title="Payment Flow">
-    1. User selects a paid server
-    2. Frontend creates Razorpay order
-    3. User completes payment
-    4. Webhook validates payment
-    5. Server access is granted
+    1. User selects a paid server 2. Frontend creates Razorpay order 3. User
+    completes payment 4. Webhook validates payment 5. Server access is granted
     6. Transaction recorded in database
   </Accordion>
-  
+
   <Accordion icon="shield" title="Security Measures">
-    - PCI-DSS compliant payment processing
-    - Webhook signature verification
-    - Idempotency keys for duplicate prevention
-    - Encrypted payment data
-    - Secure refund handling
+    - PCI-DSS compliant payment processing - Webhook signature verification -
+    Idempotency keys for duplicate prevention - Encrypted payment data - Secure
+    refund handling
   </Accordion>
 </AccordionGroup>
 
@@ -369,35 +343,24 @@ Razorpay handles all payment processing for paid MCP servers.
 
 <CardGroup cols={2}>
   <Card title="Frontend Optimization" icon="gauge-high">
-    - Next.js ISR (Incremental Static Regeneration)
-    - Image optimization with next/image
-    - Code splitting and lazy loading
-    - CDN distribution via Vercel
-    - Aggressive caching strategies
+    - Next.js ISR (Incremental Static Regeneration) - Image optimization with
+    next/image - Code splitting and lazy loading - CDN distribution via Vercel -
+    Aggressive caching strategies
   </Card>
-  
-  <Card title="Backend Optimization" icon="bolt">
-    - Go's concurrent processing
-    - Connection pooling
-    - Response caching
-    - Gzip compression
-    - Efficient JSON serialization
-  </Card>
-  
-  <Card title="Storage Optimization" icon="database">
-    - S3 intelligent tiering
-    - CloudFront CDN
-    - Transfer acceleration
-    - Multipart uploads
-    - Lifecycle policies
-  </Card>
-  
+
+<Card title="Backend Optimization" icon="bolt">
+  - Go's concurrent processing - Connection pooling - Response caching - Gzip
+  compression - Efficient JSON serialization
+</Card>
+
+<Card title="Storage Optimization" icon="database">
+  - S3 intelligent tiering - CloudFront CDN - Transfer acceleration - Multipart
+  uploads - Lifecycle policies
+</Card>
+
   <Card title="Execution Optimization" icon="server">
-    - Lambda provisioned concurrency
-    - Container image caching
-    - Warm start optimization
-    - Auto-scaling policies
-    - Cost optimization
+    - Lambda provisioned concurrency - Container image caching - Warm start
+    optimization - Auto-scaling policies - Cost optimization
   </Card>
 </CardGroup>
 
@@ -405,24 +368,21 @@ Razorpay handles all payment processing for paid MCP servers.
 
 <Tabs>
   <Tab title="Logging">
-    - **CloudWatch Logs**: Lambda execution logs
-    - **API Logs**: Request/response logging
-    - **Error Tracking**: Centralized error monitoring
+    - **CloudWatch Logs**: Lambda execution logs - **API Logs**:
+    Request/response logging - **Error Tracking**: Centralized error monitoring
     - **Audit Logs**: Security and compliance tracking
   </Tab>
-  
-  <Tab title="Metrics">
-    - **CloudWatch Metrics**: System health metrics
-    - **Custom Metrics**: Business KPIs
-    - **Performance Metrics**: Response times, throughput
-    - **Cost Metrics**: Resource usage tracking
-  </Tab>
-  
+
+<Tab title="Metrics">
+  - **CloudWatch Metrics**: System health metrics - **Custom Metrics**: Business
+  KPIs - **Performance Metrics**: Response times, throughput - **Cost Metrics**:
+  Resource usage tracking
+</Tab>
+
   <Tab title="Alerting">
-    - **SNS Notifications**: Critical alerts
-    - **Email Alerts**: Warning notifications
-    - **Slack Integration**: Team notifications
-    - **PagerDuty**: Incident management
+    - **SNS Notifications**: Critical alerts - **Email Alerts**: Warning
+    notifications - **Slack Integration**: Team notifications - **PagerDuty**:
+    Incident management
   </Tab>
 </Tabs>
 
@@ -432,7 +392,7 @@ SuperBox infrastructure is managed with Infrastructure as Code principles.
 
 ```yaml
 # Example AWS SAM template (simplified)
-AWSTemplateFormatVersion: '2010-09-09'
+AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
 
 Resources:
@@ -442,7 +402,7 @@ Resources:
       BucketName: superbox-registry
       VersioningConfiguration:
         Status: Enabled
-  
+
   MCPExecutionFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -458,34 +418,28 @@ Resources:
 
 <Steps>
   <Step title="Development">
-    Local development with hot reload
-    - Frontend: `npm run dev`
-    - Backend: `go run main.go`
+    Local development with hot reload - Frontend: `npm run dev` - Backend: `go
+    run main.go`
   </Step>
-  
-  <Step title="Testing">
-    Automated testing and validation
-    - Unit tests
-    - Integration tests
-    - E2E tests with Playwright
-  </Step>
-  
-  <Step title="Staging">
-    Deploy to staging environment
-    - Preview deployments on Vercel
-    - Backend staging on AWS
-    - Smoke tests
-  </Step>
-  
+
+<Step title="Testing">
+  Automated testing and validation - Unit tests - Integration tests - E2E tests
+  with Playwright
+</Step>
+
+<Step title="Staging">
+  Deploy to staging environment - Preview deployments on Vercel - Backend
+  staging on AWS - Smoke tests
+</Step>
+
   <Step title="Production">
-    Production deployment
-    - Blue-green deployment
-    - Canary releases
-    - Rollback capability
-    - Health checks
+    Production deployment - Blue-green deployment - Canary releases - Rollback
+    capability - Health checks
   </Step>
 </Steps>
 
 <Info>
-  This architecture is designed for high availability, security, and scalability, ensuring SuperBox can handle thousands of concurrent users and server executions.
+  This architecture is designed for high availability, security, and
+  scalability, ensuring SuperBox can handle thousands of concurrent users and
+  server executions.
 </Info>

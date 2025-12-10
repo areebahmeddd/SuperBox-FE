@@ -1,7 +1,7 @@
 ---
-title: 'Frontend Setup'
-description: 'Set up your local development environment for SuperBox frontend'
-icon: 'wrench'
+title: "Frontend Setup"
+description: "Set up your local development environment for SuperBox frontend"
+icon: "wrench"
 ---
 
 ## Prerequisites
@@ -34,6 +34,7 @@ Before you begin, ensure you have the following installed:
     git clone https://github.com/areebahmeddd/SuperBox-FE.git
     cd SuperBox-FE
     ```
+
   </Step>
 
   <Step title="Install Dependencies">
@@ -56,6 +57,7 @@ Before you begin, ensure you have the following installed:
     <Info>
       This will install Next.js 16, React 19, Tailwind CSS 4.1, Framer Motion, and all other dependencies.
     </Info>
+
   </Step>
 
   <Step title="Configure Environment Variables">
@@ -87,6 +89,7 @@ Before you begin, ensure you have the following installed:
     <Warning>
       Never commit `.env.local` to version control. It contains sensitive credentials.
     </Warning>
+
   </Step>
 
   <Step title="Start Development Server">
@@ -100,6 +103,7 @@ Before you begin, ensure you have the following installed:
     <Card>
       🌐 **http://localhost:3000**
     </Card>
+
   </Step>
 </Steps>
 
@@ -116,35 +120,20 @@ Before you begin, ensure you have the following installed:
     Server runs on **http://localhost:3000**
   </Accordion>
 
-  <Accordion title="npm run build" icon="hammer">
-    Creates an optimized production build
-    
-    ```bash
-    npm run build
-    ```
-    
-    Output is generated in the `.next` directory
-  </Accordion>
+<Accordion title="npm run build" icon="hammer">
+  Creates an optimized production build ```bash npm run build ``` Output is
+  generated in the `.next` directory
+</Accordion>
 
-  <Accordion title="npm run start" icon="rocket">
-    Starts the production server (requires build first)
-    
-    ```bash
-    npm run build && npm run start
-    ```
-    
-    Serves the optimized production build
-  </Accordion>
+<Accordion title="npm run start" icon="rocket">
+  Starts the production server (requires build first) ```bash npm run build &&
+  npm run start ``` Serves the optimized production build
+</Accordion>
 
-  <Accordion title="npm run lint" icon="circle-check">
-    Runs ESLint to check code quality
-    
-    ```bash
-    npm run lint
-    ```
-    
-    Identifies and fixes linting issues
-  </Accordion>
+<Accordion title="npm run lint" icon="circle-check">
+  Runs ESLint to check code quality ```bash npm run lint ``` Identifies and
+  fixes linting issues
+</Accordion>
 
   <Accordion title="npm run type-check" icon="shield-check">
     Runs TypeScript type checking
@@ -220,11 +209,13 @@ Install recommended extensions for the best development experience:
   ]
 }
 ```
+
 </CodeGroup>
 
 ### WebStorm / IntelliJ IDEA
 
 Enable these features:
+
 - TypeScript Language Service
 - ESLint integration
 - Prettier integration
@@ -252,31 +243,20 @@ Enable these features:
     ```
   </Accordion>
 
-  <Accordion title="Module not found errors" icon="circle-exclamation">
-    Clear node_modules and reinstall:
-    
-    ```bash
-    rm -rf node_modules package-lock.json
-    npm install
-    ```
-  </Accordion>
+<Accordion title="Module not found errors" icon="circle-exclamation">
+  Clear node_modules and reinstall: ```bash rm -rf node_modules
+  package-lock.json npm install ```
+</Accordion>
 
-  <Accordion title="TypeScript errors" icon="code">
-    Restart the TypeScript server in VS Code:
-    
-    1. Press `Cmd/Ctrl + Shift + P`
-    2. Type "TypeScript: Restart TS Server"
-    3. Press Enter
-  </Accordion>
+<Accordion title="TypeScript errors" icon="code">
+  Restart the TypeScript server in VS Code: 1. Press `Cmd/Ctrl + Shift + P` 2.
+  Type "TypeScript: Restart TS Server" 3. Press Enter
+</Accordion>
 
-  <Accordion title="Tailwind styles not working" icon="paintbrush">
-    Ensure Tailwind is properly configured and rebuild:
-    
-    ```bash
-    npm run build
-    npm run dev
-    ```
-  </Accordion>
+<Accordion title="Tailwind styles not working" icon="paintbrush">
+  Ensure Tailwind is properly configured and rebuild: ```bash npm run build npm
+  run dev ```
+</Accordion>
 
   <Accordion title="API connection errors" icon="plug">
     Verify your backend is running and environment variables are correct:
@@ -309,7 +289,11 @@ Enable these features:
 ## Next Steps
 
 <CardGroup cols={2}>
-  <Card title="Component Library" icon="layer-group" href="/frontend/components">
+  <Card
+    title="Component Library"
+    icon="layer-group"
+    href="/frontend/components"
+  >
     Explore reusable components
   </Card>
   <Card title="Backend Setup" icon="server" href="/backend/setup">

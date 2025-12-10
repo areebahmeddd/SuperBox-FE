@@ -1,7 +1,7 @@
 ---
-title: 'superbox init'
-description: 'Initialize a new MCP server project'
-icon: 'plus'
+title: "superbox init"
+description: "Initialize a new MCP server project"
+icon: "sparkles"
 ---
 
 ## Usage
@@ -17,37 +17,24 @@ Creates a new MCP server project with boilerplate code, configuration files, and
 ## Arguments
 
 <ParamField path="NAME" type="string" required>
-  Project name (lowercase, alphanumeric, hyphens)
-  
-  ```bash
-  superbox init weather-mcp
-  ```
+  Project name (lowercase, alphanumeric, hyphens) ```bash superbox init
+  weather-mcp ```
 </ParamField>
 
 ## Options
 
 <ParamField path="--template" type="string" default="python">
-  Project template: `python`, `typescript`, `go`
-  
-  ```bash
-  superbox init my-server --template typescript
-  ```
+  Project template: `python`, `typescript`, `go` ```bash superbox init my-server
+  --template typescript ```
 </ParamField>
 
 <ParamField path="--category" type="string">
-  Server category: `data`, `api`, `automation`, `ml`, `other`
-  
-  ```bash
-  superbox init my-server --category data
-  ```
+  Server category: `data`, `api`, `automation`, `ml`, `other` ```bash superbox
+  init my-server --category data ```
 </ParamField>
 
 <ParamField path="--path" type="string" default=".">
-  Target directory
-  
-  ```bash
-  superbox init my-server --path ~/projects
-  ```
+  Target directory ```bash superbox init my-server --path ~/projects ```
 </ParamField>
 
 ## Examples
@@ -64,6 +51,7 @@ superbox init database-mcp --template typescript --category api
 ```bash Go Server
 superbox init file-mcp --template go --category automation
 ```
+
 </CodeGroup>
 
 ## Project Structure

@@ -56,7 +56,8 @@ export default function AuthModal({
 
     try {
       // Firebase Authentication directly
-      const firebaseApiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "AIzaSyDemoKey";
+      const firebaseApiKey =
+        process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "AIzaSyDemoKey";
       const response = await fetch(
         `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${firebaseApiKey}`,
         {
@@ -69,7 +70,7 @@ export default function AuthModal({
             password: password,
             returnSecureToken: true,
           }),
-        }
+        },
       );
 
       if (!response.ok) {
@@ -78,15 +79,18 @@ export default function AuthModal({
       }
 
       const data = await response.json();
-      
+
       localStorage.setItem("idToken", data.idToken);
       localStorage.setItem("refreshToken", data.refreshToken);
       localStorage.setItem("isAuthenticated", "true");
-      localStorage.setItem("userData", JSON.stringify({
-        email: data.email,
-        localId: data.localId,
-        displayName: data.displayName || email.split("@")[0],
-      }));
+      localStorage.setItem(
+        "userData",
+        JSON.stringify({
+          email: data.email,
+          localId: data.localId,
+          displayName: data.displayName || email.split("@")[0],
+        }),
+      );
 
       addToast({
         title: "Welcome back!",
@@ -109,7 +113,7 @@ export default function AuthModal({
 
   const handleSignUpSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (password !== confirmPassword) {
       addToast({
         title: "Passwords don't match",
@@ -123,7 +127,8 @@ export default function AuthModal({
 
     try {
       // Firebase Authentication directly
-      const firebaseApiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "AIzaSyDemoKey";
+      const firebaseApiKey =
+        process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "AIzaSyDemoKey";
       const response = await fetch(
         `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${firebaseApiKey}`,
         {
@@ -137,7 +142,7 @@ export default function AuthModal({
             displayName: username,
             returnSecureToken: true,
           }),
-        }
+        },
       );
 
       if (!response.ok) {
@@ -146,15 +151,18 @@ export default function AuthModal({
       }
 
       const data = await response.json();
-      
+
       localStorage.setItem("idToken", data.idToken);
       localStorage.setItem("refreshToken", data.refreshToken);
       localStorage.setItem("isAuthenticated", "true");
-      localStorage.setItem("userData", JSON.stringify({
-        email: data.email,
-        localId: data.localId,
-        displayName: username,
-      }));
+      localStorage.setItem(
+        "userData",
+        JSON.stringify({
+          email: data.email,
+          localId: data.localId,
+          displayName: username,
+        }),
+      );
 
       addToast({
         title: "Account created!",
@@ -416,13 +424,30 @@ export default function AuthModal({
                     >
                       {isLoading ? (
                         <>
-                          <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                          <svg
+                            className="animate-spin h-4 w-4"
+                            viewBox="0 0 24 24"
+                          >
+                            <circle
+                              className="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                              fill="none"
+                            />
+                            <path
+                              className="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                            />
                           </svg>
                           Signing in...
                         </>
-                      ) : "Sign In"}
+                      ) : (
+                        "Sign In"
+                      )}
                     </motion.button>
 
                     <motion.p
@@ -579,13 +604,30 @@ export default function AuthModal({
                     >
                       {isLoading ? (
                         <>
-                          <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                          <svg
+                            className="animate-spin h-4 w-4"
+                            viewBox="0 0 24 24"
+                          >
+                            <circle
+                              className="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                              fill="none"
+                            />
+                            <path
+                              className="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                            />
                           </svg>
                           Creating account...
                         </>
-                      ) : "Create Account"}
+                      ) : (
+                        "Create Account"
+                      )}
                     </motion.button>
 
                     <motion.p

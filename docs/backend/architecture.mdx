@@ -1,7 +1,7 @@
 ---
-title: 'Backend Architecture'
-description: 'Deep dive into SuperBox backend architecture, design patterns, and data flow'
-icon: 'sitemap'
+title: "Backend Architecture"
+description: "Deep dive into SuperBox backend architecture, design patterns, and data flow"
+icon: "sitemap"
 ---
 
 ## System Overview
@@ -9,9 +9,9 @@ icon: 'sitemap'
 SuperBox backend implements a microservices-inspired architecture with clear separation of concerns, enabling scalability, maintainability, and fault tolerance.
 
 <Frame>
-  <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-6 rounded-lg text-white">
-    <h3 className="text-2xl font-bold mb-2">Architecture Highlights</h3>
-    <ul className="list-disc list-inside space-y-1">
+  <div className="rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 p-6 text-white">
+    <h3 className="mb-2 text-2xl font-bold">Architecture Highlights</h3>
+    <ul className="list-inside list-disc space-y-1">
       <li>RESTful API with Go Gin framework</li>
       <li>PostgreSQL for persistent data storage</li>
       <li>Redis for caching and session management</li>
@@ -635,38 +635,39 @@ func (s *ExecutionService) ExecuteTool(ctx context.Context, req ExecutionRequest
     if err != nil {
         return nil, err
     }
-    
+
     // Invoke Lambda
     result, err := s.lambdaClient.Invoke(ctx, &lambda.InvokeInput{
         FunctionName: aws.String(s.functionName),
         Payload:      payload,
         LogType:      types.LogTypeTail,
     })
-    
+
     if err != nil {
         return nil, fmt.Errorf("lambda invocation failed: %w", err)
     }
-    
+
     // Check for function errors
     if result.FunctionError != nil {
         return nil, fmt.Errorf("function error: %s", *result.FunctionError)
     }
-    
+
     // Parse response
     var response ExecutionResponse
     if err := json.Unmarshal(result.Payload, &response); err != nil {
         return nil, err
     }
-    
+
     // Decode logs
     if result.LogResult != nil {
         logs, _ := base64.StdEncoding.DecodeString(*result.LogResult)
         response.Logs = strings.Split(string(logs), "\n")
     }
-    
+
     return &response, nil
 }
 ```
+
 </Accordion>
 
 ## Security Architecture
@@ -688,7 +689,9 @@ func (s *ExecutionService) ExecuteTool(ctx context.Context, req ExecutionRequest
 
 ## Performance Optimizations
 
-<Check>**Connection Pooling** - Database connection pool (min: 10, max: 100)</Check>
+<Check>
+  **Connection Pooling** - Database connection pool (min: 10, max: 100)
+</Check>
 <Check>**Query Optimization** - Indexed columns, selective loading</Check>
 <Check>**Caching Strategy** - Redis cache with TTL-based invalidation</Check>
 <Check>**Async Processing** - Background jobs for heavy operations</Check>

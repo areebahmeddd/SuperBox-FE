@@ -1,7 +1,7 @@
 ---
-title: 'superbox search'
-description: 'Search SuperBox marketplace for MCP servers'
-icon: 'magnifying-glass'
+title: "superbox search"
+description: "Search SuperBox marketplace for MCP servers"
+icon: "magnifying-glass"
 ---
 
 ## Usage
@@ -17,29 +17,18 @@ Search for MCP servers in the SuperBox marketplace.
 ## Arguments
 
 <ParamField path="QUERY" type="string">
-  Search query (searches name and description)
-  
-  ```bash
-  superbox search "weather"
+  Search query (searches name and description) ```bash superbox search "weather"
   ```
 </ParamField>
 
 ## Options
 
 <ParamField path="--category" type="string">
-  Filter by category
-  
-  ```bash
-  superbox search weather --category data
-  ```
+  Filter by category ```bash superbox search weather --category data ```
 </ParamField>
 
 <ParamField path="--tags" type="array">
-  Filter by tags
-  
-  ```bash
-  superbox search --tags api,realtime
-  ```
+  Filter by tags ```bash superbox search --tags api,realtime ```
 </ParamField>
 
 <ParamField path="--limit" type="number" default={20}>
@@ -64,6 +53,7 @@ superbox search "api" --category data --tags realtime
 ```bash Sort by Rating
 superbox search --sort rating --limit 10
 ```
+
 </CodeGroup>
 
 ## Output

@@ -2,11 +2,11 @@
   "$schema": "https://mintlify.com/schema.json",
   "name": "SuperBox",
   "logo": {
-    "dark": "/logo/dark.svg",
-    "light": "/logo/light.svg",
+    "dark": "/logo.svg",
+    "light": "/logo.svg",
     "href": "https://superbox-fe.vercel.app"
   },
-  "favicon": "/favicon.svg",
+  "favicon": "/favicon.ico",
   "colors": {
     "primary": "#ef4444",
     "light": "#f87171",
@@ -23,10 +23,17 @@
   "topbar": {
     "style": "gradient"
   },
+  "sidebar": {
+    "items": "border"
+  },
   "topbarLinks": [
     {
       "name": "GitHub",
       "url": "https://github.com/areebahmeddd/superbox.ai"
+    },
+    {
+      "name": "Support",
+      "url": "mailto:hi@areeb.dev"
     }
   ],
   "topbarCtaButton": {
@@ -50,27 +57,20 @@
       "url": "https://github.com/areebahmeddd/superbox.ai"
     },
     {
-      "name": "Community",
-      "icon": "discord",
-      "url": "#"
-    },
-    {
       "name": "Support",
-      "icon": "envelope",
+      "icon": "circle-dollar",
       "url": "mailto:hi@areeb.dev"
     }
   ],
   "navigation": [
     {
       "group": "Getting Started",
-      "pages": [
-        "introduction",
-        "quickstart",
-        "architecture"
-      ]
+      "icon": "rocket",
+      "pages": ["introduction", "quickstart", "architecture"]
     },
     {
       "group": "Frontend",
+      "icon": "browser",
       "pages": [
         "frontend/overview",
         "frontend/setup",
@@ -80,6 +80,7 @@
     },
     {
       "group": "Backend",
+      "icon": "server",
       "pages": [
         "backend/overview",
         "backend/setup",
@@ -89,6 +90,7 @@
     },
     {
       "group": "Core Concepts",
+      "icon": "lightbulb",
       "pages": [
         "concepts/mcp-servers",
         "concepts/sandboxes",
@@ -96,15 +98,23 @@
       ]
     },
     {
-      "group": "REST API",
+      "group": "Infrastructure",
+      "icon": "cloud",
       "pages": [
-        "api/introduction",
-        "api/authentication",
-        "api/errors"
+        "infrastructure/overview",
+        "infrastructure/setup",
+        "infrastructure/monitoring",
+        "infrastructure/troubleshooting"
       ]
     },
     {
+      "group": "REST API",
+      "icon": "plug",
+      "pages": ["api/introduction", "api/authentication", "api/errors"]
+    },
+    {
       "group": "Servers",
+      "icon": "database",
       "pages": [
         "api/servers/list",
         "api/servers/get",
@@ -115,6 +125,7 @@
     },
     {
       "group": "Authentication",
+      "icon": "lock",
       "pages": [
         "api/auth/register",
         "api/auth/login",
@@ -125,6 +136,7 @@
     },
     {
       "group": "Payment",
+      "icon": "credit-card",
       "pages": [
         "api/payment/create-order",
         "api/payment/verify",
@@ -133,13 +145,12 @@
     },
     {
       "group": "CLI Commands",
-      "pages": [
-        "cli/introduction",
-        "cli/installation"
-      ]
+      "icon": "terminal",
+      "pages": ["cli/introduction", "cli/installation"]
     },
     {
       "group": "Commands",
+      "icon": "wrench",
       "pages": [
         "cli/init",
         "cli/auth",
@@ -161,5 +172,8 @@
     "auth": {
       "method": "bearer"
     }
+  },
+  "styles": {
+    "styles": "/styles.css"
   }
 }

@@ -1,7 +1,8 @@
 ---
-title: 'User Login'
-description: 'POST /auth/login - Authenticate user credentials'
-api: 'POST https://api.superbox.com/v1/auth/login'
+title: "User Login"
+description: "POST /auth/login - Authenticate user credentials"
+api: "POST https://api.superbox.com/v1/auth/login"
+icon: "right-to-bracket"
 ---
 
 ## Endpoint
@@ -38,14 +39,14 @@ curl -X POST https://api.superbox.com/v1/auth/login \
 ```
 
 ```javascript JavaScript
-const response = await fetch('https://api.superbox.com/v1/auth/login', {
-  method: 'POST',
+const response = await fetch("https://api.superbox.com/v1/auth/login", {
+  method: "POST",
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
   body: JSON.stringify({
-    email: 'john@example.com',
-    password: 'SecurePass123!',
+    email: "john@example.com",
+    password: "SecurePass123!",
     remember_me: true,
   }),
 });
@@ -67,6 +68,7 @@ response = requests.post(
 
 data = response.json()
 ```
+
 </CodeGroup>
 
 ## Response
@@ -119,6 +121,7 @@ data = response.json()
   "message": "Too many login attempts. Try again in 15 minutes."
 }
 ```
+
 </CodeGroup>
 
 ## Using the Token
