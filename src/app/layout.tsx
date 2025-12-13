@@ -16,12 +16,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" className="dark" data-scroll-behavior="smooth">
       <body className={`font-sans antialiased`}>
         <PageTransition>{children}</PageTransition>
         <Toaster
           position="top-right"
           toastOptions={{
+            duration: 4000,
             style: {
               background: "rgba(0, 0, 0, 0.95)",
               backdropFilter: "blur(24px)",
@@ -29,14 +30,17 @@ export default function RootLayout({
               color: "#fff",
               borderRadius: "16px",
               padding: "16px",
+              fontSize: "14px",
             },
             success: {
+              duration: 3000,
               iconTheme: {
                 primary: "#ff5252",
                 secondary: "#000",
               },
             },
             error: {
+              duration: 5000,
               iconTheme: {
                 primary: "#ff5252",
                 secondary: "#000",

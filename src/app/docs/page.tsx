@@ -6,12 +6,7 @@ import { useEffect } from "react";
 
 export default function DocsPage() {
   useEffect(() => {
-    const docsUrl =
-      process.env.NODE_ENV === "production"
-        ? "https://docs.superbox-fe.vercel.app"
-        : "http://localhost:3001";
-
-    window.location.href = docsUrl;
+    window.location.href = "https://acm-aa28ebf6.mintlify.app";
   }, []);
 
   return (
@@ -30,7 +25,7 @@ export default function DocsPage() {
           <p className="text-lg text-gray-400">
             If you are not redirected automatically,{" "}
             <a
-              href="http://localhost:3001"
+              href="https://acm-aa28ebf6.mintlify.app"
               className="text-[var(--brand-red)] hover:underline transition-colors"
             >
               click here

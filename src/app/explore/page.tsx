@@ -21,12 +21,13 @@ function ExploreContent() {
 
   useEffect(() => {
     const loadServers = async () => {
+      setLoading(true);
       try {
         const API_URL = process.env.NEXT_PUBLIC_API_URL!;
         const res = await fetch(`${API_URL}/servers`);
         if (!res.ok) throw new Error("Failed to fetch servers");
         const json = await res.json();
-        const servers: ServerResponse[] = json?.servers || [];
+        const servers: ServerResponse[] = json?.data || json?.servers || [];
         const list: ServerListItem[] = servers.map((s) => ({
           name: s.name,
           author: s.author,
@@ -37,9 +38,7 @@ function ExploreContent() {
         }));
         setAllTools(list);
       } catch (error) {
-        showToast.error("Failed to load servers", {
-          description: "Please retry in a moment.",
-        });
+        showToast.error("Failed to load servers. Please retry in a moment.");
       } finally {
         setLoading(false);
       }
@@ -153,7 +152,7 @@ function ExploreContent() {
             <button
               onClick={toggleMic}
               aria-label="Voice search"
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white lift"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
             >
               <Mic
                 className={`w-5 h-5 ${isListening ? "text-[var(--brand-red)]" : ""}`}

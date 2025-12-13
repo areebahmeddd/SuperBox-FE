@@ -1,7 +1,12 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { auth, githubProvider, googleProvider } from "@/lib/firebase";
@@ -138,21 +143,23 @@ export default function AuthModal({
   const handleGoogleLogin = async () => {
     setIsLoading(true);
     try {
-      await signInWithPopup(auth, googleProvider);
-
+      const result = await signInWithPopup(auth, googleProvider);
       if (onSuccess) onSuccess();
       handleClose();
     } catch (error: any) {
-      console.error("Google login error:", error);
-      if (error.code === "auth/popup-closed-by-user") {
-        // User cancelled - silently reset, no error toast
-      } else if (error.code === "auth/cancelled-popup-request") {
-        // Popup cancelled - silently reset
-      } else if (error.code === "auth/popup-blocked") {
+      if (
+        error.code === "auth/popup-closed-by-user" ||
+        error.code === "auth/cancelled-popup-request"
+      ) {
+        return;
+      }
+
+      if (error.code === "auth/popup-blocked") {
         showToast.error("Pop-up blocked. Please allow pop-ups and try again.");
       } else {
         showToast.error("Google sign-in failed. Please try again.");
       }
+    } finally {
       setIsLoading(false);
     }
   };
@@ -160,17 +167,18 @@ export default function AuthModal({
   const handleGithubLogin = async () => {
     setIsLoading(true);
     try {
-      await signInWithPopup(auth, githubProvider);
-
+      const result = await signInWithPopup(auth, githubProvider);
       if (onSuccess) onSuccess();
       handleClose();
     } catch (error: any) {
-      console.error("GitHub login error:", error);
-      if (error.code === "auth/popup-closed-by-user") {
-        // User cancelled - silently reset, no error toast
-      } else if (error.code === "auth/cancelled-popup-request") {
-        // Popup cancelled - silently reset
-      } else if (error.code === "auth/popup-blocked") {
+      if (
+        error.code === "auth/popup-closed-by-user" ||
+        error.code === "auth/cancelled-popup-request"
+      ) {
+        return;
+      }
+
+      if (error.code === "auth/popup-blocked") {
         showToast.error("Pop-up blocked. Please allow pop-ups and try again.");
       } else if (
         error.code === "auth/account-exists-with-different-credential"
@@ -181,6 +189,7 @@ export default function AuthModal({
       } else {
         showToast.error("GitHub sign-in failed. Please try again.");
       }
+    } finally {
       setIsLoading(false);
     }
   };
@@ -188,6 +197,10 @@ export default function AuthModal({
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
       <DialogContent className="sm:max-w-md">
+        <DialogTitle className="sr-only">Authentication</DialogTitle>
+        <DialogDescription className="sr-only">
+          Sign in, sign up, or recover your account.
+        </DialogDescription>
         {authStep !== "select" && (
           <button
             onClick={() => setAuthStep("select")}

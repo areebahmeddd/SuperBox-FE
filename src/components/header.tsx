@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { auth } from "@/lib/firebase";
+import { showToast } from "@/lib/toast-utils";
 import type { User } from "firebase/auth";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { AnimatePresence, motion } from "framer-motion";
@@ -80,7 +81,7 @@ export default function Header() {
       await signOut(auth);
       router.push("/");
     } catch (error) {
-      console.error("Sign out error:", error);
+      showToast.error("Sign out failed. Please try again");
     }
   };
 
@@ -172,7 +173,13 @@ export default function Header() {
             whileTap={{ scale: 0.95 }}
             className="px-4 py-2 pl-2 text-sm text-white hover:text-[var(--brand-red)] transition-colors"
           >
-            <Link href="/docs">Docs</Link>
+            <a
+              href="https://acm-aa28ebf6.mintlify.app"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Docs
+            </a>
           </motion.div>
 
           {user ? (
@@ -279,13 +286,15 @@ export default function Header() {
                     <span>Playground</span>
                   </Link>
 
-                  <Link
-                    href="/docs"
+                  <a
+                    href="https://acm-aa28ebf6.mintlify.app"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     onClick={() => setMobileMenuOpen(false)}
                     className="flex items-center gap-3 px-4 py-2.5 text-sm text-white hover:bg-white/5 transition-all"
                   >
                     <span>Docs</span>
-                  </Link>
+                  </a>
 
                   {user ? (
                     <>

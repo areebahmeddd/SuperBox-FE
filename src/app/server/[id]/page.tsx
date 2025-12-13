@@ -27,9 +27,7 @@ export default function ServerPage() {
         const found = servers.find((s) => s.name === serverName) || null;
         setServer(found);
       } catch {
-        showToast.error("Failed to load server", {
-          description: "Please try again.",
-        });
+        showToast.error("Failed to load server. Please try again.");
         setServer(null);
       } finally {
         setLoading(false);

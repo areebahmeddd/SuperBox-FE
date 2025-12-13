@@ -2,13 +2,14 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { AlertCircle, Check, Github, Globe, Upload, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CustomDropdown from "./custom-dropdown";
 
 interface PublishServerModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (data: ServerFormData) => void;
+  editingServer?: any | null;
 }
 
 export interface ServerFormData {
@@ -37,6 +38,7 @@ export default function PublishServerModal({
   isOpen,
   onClose,
   onSubmit,
+  editingServer,
 }: PublishServerModalProps) {
   const [isFree, setIsFree] = useState(true);
   const [formData, setFormData] = useState<ServerFormData>({
@@ -61,10 +63,59 @@ export default function PublishServerModal({
     },
   });
 
+  useEffect(() => {
+    if (editingServer) {
+      setFormData({
+        name: editingServer.name || "",
+        version: editingServer.version || "",
+        description: editingServer.description || "",
+        author: editingServer.author || "",
+        lang: editingServer.lang || "",
+        license: editingServer.license || "",
+        entrypoint: editingServer.entrypoint || "",
+        repository: {
+          type: editingServer.repository?.type || "git",
+          url: editingServer.repository?.url || "",
+        },
+        pricing: {
+          currency: editingServer.pricing?.currency || "",
+          amount: editingServer.pricing?.amount || 0,
+        },
+        metadata: {
+          tags: editingServer.metadata?.tags || [],
+          homepage: editingServer.metadata?.homepage || "",
+        },
+      });
+      setIsFree(editingServer.pricing?.amount === 0);
+    } else {
+      setFormData({
+        name: "",
+        version: "",
+        description: "",
+        author: "",
+        lang: "",
+        license: "",
+        entrypoint: "",
+        repository: {
+          type: "git",
+          url: "",
+        },
+        pricing: {
+          currency: "",
+          amount: 0,
+        },
+        metadata: {
+          tags: [],
+          homepage: "",
+        },
+      });
+      setIsFree(true);
+    }
+  }, [editingServer]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(formData);
-    onClose();
   };
 
   return (
@@ -97,10 +148,12 @@ export default function PublishServerModal({
               <div className="flex items-center gap-3">
                 <div>
                   <h2 className="text-lg font-bold text-white">
-                    Publish Server
+                    {editingServer ? "Edit Server" : "Publish Server"}
                   </h2>
                   <p className="text-xs text-gray-400">
-                    Share your MCP server with the community
+                    {editingServer
+                      ? "Update your server's information"
+                      : "Share your MCP server with the community"}
                   </p>
                 </div>
               </div>
@@ -534,7 +587,7 @@ export default function PublishServerModal({
                   className="px-5 py-2 rounded-full bg-[var(--brand-red)] hover:bg-[var(--brand-red)]/90 text-black text-sm font-semibold transition-all duration-200 flex items-center gap-2"
                 >
                   <Upload className="w-4 h-4" />
-                  Publish Server
+                  {editingServer ? "Update Server" : "Publish Server"}
                 </button>
               </div>
             </div>

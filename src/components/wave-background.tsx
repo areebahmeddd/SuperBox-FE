@@ -18,22 +18,19 @@ export default function WaveBackground() {
             <stop offset="100%" stopColor="#ff5252" stopOpacity="0.2" />
           </linearGradient>
         </defs>
-        <motion.path
+        <path
           fill="url(#wave1)"
           d="M0,400 Q240,280 480,380 T960,400 Q1200,420 1440,360 L1440,800 L0,800 Z"
-          animate={{
-            d: [
-              "M0,400 Q240,280 480,380 T960,400 Q1200,420 1440,360 L1440,800 L0,800 Z",
-              "M0,360 Q240,420 480,340 T960,380 Q1200,300 1440,400 L1440,800 L0,800 Z",
-              "M0,400 Q240,280 480,380 T960,400 Q1200,420 1440,360 L1440,800 L0,800 Z",
-            ],
-          }}
-          transition={{
-            duration: 4,
-            repeat: Infinity,
-            ease: [0.45, 0.05, 0.55, 0.95],
-          }}
-        />
+        >
+          <animate
+            attributeName="d"
+            dur="4s"
+            repeatCount="indefinite"
+            values="M0,400 Q240,280 480,380 T960,400 Q1200,420 1440,360 L1440,800 L0,800 Z;
+                    M0,360 Q240,420 480,340 T960,380 Q1200,300 1440,400 L1440,800 L0,800 Z;
+                    M0,400 Q240,280 480,380 T960,400 Q1200,420 1440,360 L1440,800 L0,800 Z"
+          />
+        </path>
       </svg>
 
       <svg
@@ -49,22 +46,19 @@ export default function WaveBackground() {
             <stop offset="100%" stopColor="#ff5252" stopOpacity="0.3" />
           </linearGradient>
         </defs>
-        <motion.path
+        <path
           fill="url(#wave2)"
           d="M0,520 Q360,440 720,500 T1440,480 L1440,800 L0,800 Z"
-          animate={{
-            d: [
-              "M0,520 Q360,440 720,500 T1440,480 L1440,800 L0,800 Z",
-              "M0,480 Q360,560 720,460 T1440,520 L1440,800 L0,800 Z",
-              "M0,520 Q360,440 720,500 T1440,480 L1440,800 L0,800 Z",
-            ],
-          }}
-          transition={{
-            duration: 3,
-            repeat: Infinity,
-            ease: [0.4, 0.0, 0.6, 1.0],
-          }}
-        />
+        >
+          <animate
+            attributeName="d"
+            dur="3s"
+            repeatCount="indefinite"
+            values="M0,520 Q360,440 720,500 T1440,480 L1440,800 L0,800 Z;
+                    M0,480 Q360,560 720,460 T1440,520 L1440,800 L0,800 Z;
+                    M0,520 Q360,440 720,500 T1440,480 L1440,800 L0,800 Z"
+          />
+        </path>
       </svg>
 
       <svg
@@ -80,22 +74,19 @@ export default function WaveBackground() {
             <stop offset="100%" stopColor="#ff5252" stopOpacity="0.4" />
           </linearGradient>
         </defs>
-        <motion.path
+        <path
           fill="url(#wave3)"
           d="M0,320 Q180,240 360,300 T720,320 Q900,340 1080,300 T1440,280 L1440,800 L0,800 Z"
-          animate={{
-            d: [
-              "M0,320 Q180,240 360,300 T720,320 Q900,340 1080,300 T1440,280 L1440,800 L0,800 Z",
-              "M0,280 Q180,360 360,260 T720,300 Q900,240 1080,340 T1440,320 L1440,800 L0,800 Z",
-              "M0,320 Q180,240 360,300 T720,320 Q900,340 1080,300 T1440,280 L1440,800 L0,800 Z",
-            ],
-          }}
-          transition={{
-            duration: 4.5,
-            repeat: Infinity,
-            ease: [0.65, 0.0, 0.35, 1.0],
-          }}
-        />
+        >
+          <animate
+            attributeName="d"
+            dur="4.5s"
+            repeatCount="indefinite"
+            values="M0,320 Q180,240 360,300 T720,320 Q900,340 1080,300 T1440,280 L1440,800 L0,800 Z;
+                    M0,280 Q180,360 360,260 T720,300 Q900,240 1080,340 T1440,320 L1440,800 L0,800 Z;
+                    M0,320 Q180,240 360,300 T720,320 Q900,340 1080,300 T1440,280 L1440,800 L0,800 Z"
+          />
+        </path>
       </svg>
 
       <motion.div

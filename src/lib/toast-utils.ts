@@ -1,29 +1,31 @@
 import toast from "react-hot-toast";
 
-/**
- * Toast utility to prevent duplicate toasts
- * Uses unique IDs to ensure only one instance of each toast message is displayed
- */
-
 export const showToast = {
-  success: (message: string, options?: { description?: string }) => {
+  success: (message: string) => {
     toast.success(message, {
       id: `success-${message}`,
-      ...options,
     });
   },
 
-  error: (message: string, options?: { description?: string }) => {
+  error: (message: string) => {
     toast.error(message, {
       id: `error-${message}`,
-      ...options,
     });
   },
 
-  info: (message: string, options?: { description?: string }) => {
+  info: (message: string) => {
     toast(message, {
       id: `info-${message}`,
-      ...options,
     });
+  },
+
+  loading: (message: string) => {
+    return toast.loading(message, {
+      id: `loading-${message}`,
+    });
+  },
+
+  dismiss: (toastId?: string) => {
+    toast.dismiss(toastId);
   },
 };

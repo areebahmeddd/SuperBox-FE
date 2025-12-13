@@ -19,8 +19,6 @@ export default function MyServersPage() {
   const [user, setUser] = useState<User | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [userServers, setUserServers] = useState<any[]>([]);
   const [showEmptyState, setShowEmptyState] = useState(false);
   const [editingServer, setEditingServer] = useState<any | null>(null);
@@ -56,35 +54,157 @@ export default function MyServersPage() {
     setIsModalOpen(true);
   };
 
+  useEffect(() => {
+    const fetchUserServers = async () => {
+      if (!user) return;
+
+      try {
+        const token = await user.getIdToken();
+        const API_URL = process.env.NEXT_PUBLIC_API_URL!;
+        const response = await fetch(
+          `${API_URL}/servers?author=${encodeURIComponent(user.displayName || user.email || "")}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          },
+        );
+
+        if (response.ok) {
+          const result = await response.json();
+          setUserServers(result.data || []);
+          setShowEmptyState(result.data?.length === 0);
+        } else {
+          setShowEmptyState(true);
+        }
+      } catch (error) {
+        setShowEmptyState(true);
+      }
+    };
+
+    fetchUserServers();
+  }, [user]);
+
   const handlePublishServer = async (data: ServerFormData) => {
-    setIsSubmitting(true);
-    setError(null);
+    if (!user) {
+      showToast.error("Please sign in to publish servers");
+      return;
+    }
 
     try {
+      const token = await user.getIdToken();
       const API_URL = process.env.NEXT_PUBLIC_API_URL!;
-      const response = await fetch(`${API_URL}/servers`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+
+      const isEditing = !!editingServer;
+      const endpoint = isEditing
+        ? `${API_URL}/servers/${editingServer.name}`
+        : `${API_URL}/servers`;
+      const method = isEditing ? "PUT" : "POST";
+
+      const response = await fetch(endpoint, {
+        method,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify(data),
       });
+
       const result = await response.json();
+
       if (!response.ok) {
         throw new Error(
-          result?.detail || result?.message || "Failed to create server",
+          result?.detail ||
+            result?.message ||
+            `Failed to ${isEditing ? "update" : "create"} server`,
         );
       }
-      showToast.success("Server published", {
-        description: `"${data.name}" is now live.`,
-      });
+
+      showToast.success(
+        `"${data.name}" has been ${isEditing ? "updated" : "published"} successfully`,
+      );
+
+      const listResponse = await fetch(
+        `${API_URL}/servers?author=${encodeURIComponent(user.displayName || user.email || "")}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        },
+      );
+
+      if (listResponse.ok) {
+        const listResult = await listResponse.json();
+        setUserServers(listResult.data || []);
+        setShowEmptyState(listResult.data?.length === 0);
+      }
+
+      setIsModalOpen(false);
+      setEditingServer(null);
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Failed to publish server";
-      setError(errorMessage);
-      showToast.error("Publish failed", {
-        description: errorMessage,
-      });
-    } finally {
-      setIsSubmitting(false);
+      showToast.error(errorMessage);
+    }
+  };
+
+  const handleDeleteServer = async (serverName: string) => {
+    if (!user) {
+      showToast.error("Please sign in to delete servers");
+      return;
+    }
+
+    const confirmed = window.confirm(
+      `Are you sure you want to delete "${serverName}"? This action cannot be undone.`,
+    );
+
+    if (!confirmed) return;
+
+    try {
+      const token = await user.getIdToken();
+      const API_URL = process.env.NEXT_PUBLIC_API_URL!;
+
+      const response = await fetch(
+        `${API_URL}/servers/${serverName}?confirm=true`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          result?.detail || result?.message || "Failed to delete server",
+        );
+      }
+
+      showToast.success(`"${serverName}" has been removed successfully`);
+
+      const listResponse = await fetch(
+        `${API_URL}/servers?author=${encodeURIComponent(user.displayName || user.email || "")}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        },
+      );
+
+      if (listResponse.ok) {
+        const listResult = await listResponse.json();
+        setUserServers(listResult.data || []);
+        setShowEmptyState(listResult.data?.length === 0);
+      }
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to delete server";
+      showToast.error(errorMessage);
     }
   };
 
@@ -103,8 +223,12 @@ export default function MyServersPage() {
       />
       <PublishServerModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={() => {
+          setIsModalOpen(false);
+          setEditingServer(null);
+        }}
         onSubmit={handlePublishServer}
+        editingServer={editingServer}
       />
       <main className="pt-28 px-6 pb-20">
         <motion.div
@@ -263,6 +387,7 @@ export default function MyServersPage() {
                                   onClick={(e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
+                                    handleDeleteServer(server.name);
                                   }}
                                   className="p-1.5 text-gray-400 hover:text-[var(--brand-red)] transition-colors group/delete"
                                   aria-label="Delete server"

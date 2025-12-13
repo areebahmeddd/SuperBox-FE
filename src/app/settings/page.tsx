@@ -2,7 +2,12 @@
 
 import Header from "@/components/header";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { auth } from "@/lib/firebase";
@@ -317,15 +322,14 @@ export default function SettingsPage() {
       {/* Delete Account Dialog */}
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <DialogContent className="bg-zinc-900 border-red-500/30 text-white">
+          <DialogTitle className="text-xl font-semibold">
+            Delete Account
+          </DialogTitle>
+          <DialogDescription className="text-gray-400 text-sm mt-1">
+            This action cannot be undone. All your data will be permanently
+            deleted.
+          </DialogDescription>
           <div className="space-y-4">
-            <div>
-              <h2 className="text-xl font-semibold">Delete Account</h2>
-              <p className="text-gray-400 text-sm mt-1">
-                This action cannot be undone. All your data will be permanently
-                deleted.
-              </p>
-            </div>
-
             <div>
               <Label>Confirm Password</Label>
               <Input

@@ -27,43 +27,38 @@ export default function PlaygroundPage() {
   const [showMcpSearch, setShowMcpSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [mcpServers, setMcpServers] = useState<MCPServer[]>([]);
+  const [loadingServers, setLoadingServers] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
-  const mockMcpServers: MCPServer[] = [
-    {
-      name: "weather-api",
-      description: "Get real-time weather information for any location",
-      author: "SuperBox",
-      lang: "Python",
-    },
-    {
-      name: "file-manager",
-      description: "Manage files and directories with advanced operations",
-      author: "SuperBox",
-      lang: "Node.js",
-    },
-    {
-      name: "database-query",
-      description: "Query and manage databases with SQL support",
-      author: "SuperBox",
-      lang: "Go",
-    },
-    {
-      name: "image-processor",
-      description: "Process and transform images with AI",
-      author: "SuperBox",
-      lang: "Python",
-    },
-    {
-      name: "text-analyzer",
-      description: "Analyze and process text with NLP capabilities",
-      author: "SuperBox",
-      lang: "Python",
-    },
-  ];
+  useEffect(() => {
+    const fetchServers = async () => {
+      setLoadingServers(true);
+      try {
+        const API_URL = process.env.NEXT_PUBLIC_API_URL!;
+        const response = await fetch(`${API_URL}/servers`);
+        if (response.ok) {
+          const result = await response.json();
+          const servers = result?.data || result?.servers || [];
+          setMcpServers(
+            servers.map((s: any) => ({
+              name: s.name,
+              description: s.description,
+              author: s.author,
+              lang: s.lang,
+            })),
+          );
+        }
+      } catch (error) {
+      } finally {
+        setLoadingServers(false);
+      }
+    };
+    fetchServers();
+  }, []);
 
-  const filteredMcpServers = mockMcpServers.filter(
+  const filteredMcpServers = mcpServers.filter(
     (server) =>
       server.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       server.description.toLowerCase().includes(searchQuery.toLowerCase()),
@@ -313,7 +308,14 @@ export default function PlaygroundPage() {
                         />
                       </div>
                       <div className="space-y-3">
-                        {filteredMcpServers.length > 0 ? (
+                        {loadingServers ? (
+                          <div className="text-center py-12">
+                            <Loader2 className="w-6 h-6 animate-spin text-[var(--brand-red)] mx-auto" />
+                            <p className="text-gray-400 mt-2">
+                              Loading servers...
+                            </p>
+                          </div>
+                        ) : filteredMcpServers.length > 0 ? (
                           filteredMcpServers.map((server) => (
                             <button
                               key={server.name}
@@ -346,7 +348,9 @@ export default function PlaygroundPage() {
                           ))
                         ) : (
                           <div className="text-center py-12 text-gray-400">
-                            No MCP servers found matching "{searchQuery}"
+                            {searchQuery
+                              ? `No servers found matching "${searchQuery}"`
+                              : "No servers available"}
                           </div>
                         )}
                       </div>
