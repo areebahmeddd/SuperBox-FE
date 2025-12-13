@@ -1,18 +1,26 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "name": "superbox.ai",
-  "theme": "prism",
+  "theme": "mint",
   "favicon": "/favicon.ico",
   "colors": {
     "primary": "#ef4444",
     "light": "#f87171",
     "dark": "#dc2626"
   },
-  "navigation": [
-    {
-      "group": "Getting Started",
-      "pages": ["introduction", "quickstart", "architecture"]
-    },
+  "navbar": {
+    "primary": {
+      "type": "button",
+      "label": "Website",
+      "href": "https://superbox-fe.vercel.app"
+    }
+  },
+  "navigation": {
+    "groups": [
+      {
+        "group": "Getting Started",
+        "pages": ["introduction", "quickstart", "architecture"]
+      },
     {
       "group": "Core Concepts",
       "pages": [
@@ -90,5 +98,6 @@
         "cli/test"
       ]
     }
-  ]
+    ]
+  }
 }

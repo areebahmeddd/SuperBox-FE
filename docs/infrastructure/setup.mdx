@@ -28,10 +28,14 @@ Deploy the complete SuperBox AWS infrastructure using OpenTofu or Terraform. Thi
 </Accordion>
 
   <Accordion title="AWS CLI (Optional)" icon="terminal">
-    For verification and testing: ```bash
-# Install AWS CLI pip install awscli #
-    Configure credentials aws configure
-```
+    For verification and testing:
+    
+    ```bash
+    # Install AWS CLI 
+    pip install awscli
+    # Configure credentials 
+    aws configure
+    ```
   </Accordion>
 </AccordionGroup>
 
@@ -327,13 +331,16 @@ To modify infrastructure after initial deployment:
 
 <Step title="Plan Changes">
   ```bash
-tofu plan -out=tfplan
-``` Review what will change
+  tofu plan -out=tfplan
+  ```
+  Review what will change
 </Step>
 
-  <Step title="Apply Updates">```bash
-tofu apply tfplan
-```</Step>
+  <Step title="Apply Updates">
+    ```bash
+    tofu apply tfplan
+    ```
+  </Step>
 </Steps>
 
 ## Destroying Infrastructure
