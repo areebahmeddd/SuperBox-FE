@@ -1,8 +1,8 @@
 "use client";
 
 import Header from "@/components/header";
-import { useToast } from "@/components/toast-provider";
 import ToolCard from "@/components/tool-card";
+import { showToast } from "@/lib/toast-utils";
 import type { ServerListItem, ServerResponse } from "@/lib/types";
 import { motion } from "framer-motion";
 import { Mic, Search } from "lucide-react";
@@ -11,7 +11,6 @@ import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 
 function ExploreContent() {
   const searchParams = useSearchParams();
-  const { addToast } = useToast();
   const [allTools, setAllTools] = useState<ServerListItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState(
@@ -38,10 +37,8 @@ function ExploreContent() {
         }));
         setAllTools(list);
       } catch (error) {
-        addToast({
-          title: "Failed to load servers",
+        showToast.error("Failed to load servers", {
           description: "Please retry in a moment.",
-          variant: "error",
         });
       } finally {
         setLoading(false);

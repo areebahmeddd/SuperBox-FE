@@ -76,28 +76,6 @@ export interface ServerResponse {
   };
 }
 
-export interface CreateServerRequest {
-  name: string;
-  version: string;
-  description: string;
-  author: string;
-  lang: string;
-  license: string;
-  entrypoint: string;
-  repository: {
-    type: string;
-    url: string;
-  };
-  pricing: {
-    currency: string;
-    amount: number;
-  };
-  metadata?: {
-    tags?: string[];
-    homepage?: string;
-  };
-}
-
 export type ServerListItem = Pick<
   ServerResponse,
   "name" | "author" | "description" | "lang" | "license" | "pricing"

@@ -1,394 +1,234 @@
 "use client";
 
 import Header from "@/components/header";
-import { useToast } from "@/components/toast-provider";
-import { Edit2, Loader2, Lock, LogOut, Mail, Trash2, User } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { auth } from "@/lib/firebase";
+import { showToast } from "@/lib/toast-utils";
+import type { User } from "firebase/auth";
+import { onAuthStateChanged, updateProfile } from "firebase/auth";
+import { motion } from "framer-motion";
+import { Edit2, Github, Loader2, Mail } from "lucide-react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-interface UserProfile {
-  localId: string;
-  email: string;
-  displayName?: string;
-  photoUrl?: string;
-  emailVerified: boolean;
-  createdAt?: string;
-  lastLoginAt?: string;
-}
-
 export default function ProfilePage() {
   const router = useRouter();
-  const { addToast } = useToast();
-  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [displayName, setDisplayName] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
-    loadProfile();
-  }, []);
-
-  const loadProfile = async () => {
-    try {
-      const token = localStorage.getItem("idToken");
-      if (!token) {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      if (!currentUser) {
         router.push("/");
         return;
       }
-
-      const firebaseApiKey =
-        process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "AIzaSyDemoKey";
-      const response = await fetch(
-        `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${firebaseApiKey}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ idToken: token }),
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to load profile");
-      }
-
-      const data = await response.json();
-      if (data.users && data.users.length > 0) {
-        const user = data.users[0];
-        setProfile({
-          localId: user.localId,
-          email: user.email,
-          displayName: user.displayName,
-          photoUrl: user.photoUrl,
-          emailVerified: user.emailVerified,
-          createdAt: user.createdAt,
-          lastLoginAt: user.lastLoginAt,
-        });
-        setDisplayName(user.displayName || "");
-      }
-    } catch (error) {
-      addToast({
-        title: "Error",
-        description: "Failed to load profile",
-        variant: "error",
-      });
-      router.push("/");
-    } finally {
+      setUser(currentUser);
+      setDisplayName(currentUser.displayName || "");
       setLoading(false);
-    }
-  };
+    });
 
-  const handleUpdate = async (e: React.FormEvent) => {
+    return () => unsubscribe();
+  }, [router]);
+
+  const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user) return;
+
     setIsUpdating(true);
 
     try {
-      const token = localStorage.getItem("idToken");
-      const updateData: any = {
-        idToken: token,
-        returnSecureToken: true,
-      };
-
-      if (displayName && displayName !== profile?.displayName) {
-        updateData.displayName = displayName;
-      }
-      if (newPassword) {
-        updateData.password = newPassword;
+      if (displayName && displayName !== user.displayName) {
+        await updateProfile(user, { displayName });
+        showToast.success("Profile updated successfully");
       }
 
-      const firebaseApiKey =
-        process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "AIzaSyDemoKey";
-      const response = await fetch(
-        `https://identitytoolkit.googleapis.com/v1/accounts:update?key=${firebaseApiKey}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(updateData),
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to update profile");
-      }
-
-      const data = await response.json();
-      if (profile) {
-        setProfile({
-          ...profile,
-          displayName: data.displayName || displayName,
-        });
-      }
       setIsEditing(false);
-      setNewPassword("");
-
-      if (data.idToken) {
-        localStorage.setItem("idToken", data.idToken);
-      }
-
-      addToast({
-        title: "Success",
-        description: "Profile updated successfully",
-        variant: "success",
-      });
-    } catch (error) {
-      addToast({
-        title: "Error",
-        description: "Failed to update profile",
-        variant: "error",
-      });
+    } catch (error: any) {
+      showToast.error("Failed to update profile");
     } finally {
       setIsUpdating(false);
     }
   };
 
-  const handleDelete = async () => {
-    setIsDeleting(true);
-
-    try {
-      const token = localStorage.getItem("idToken");
-      const firebaseApiKey =
-        process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "AIzaSyDemoKey";
-      const response = await fetch(
-        `https://identitytoolkit.googleapis.com/v1/accounts:delete?key=${firebaseApiKey}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ idToken: token }),
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to delete account");
-      }
-
-      localStorage.removeItem("idToken");
-      localStorage.removeItem("refreshToken");
-      localStorage.removeItem("isAuthenticated");
-      localStorage.removeItem("userData");
-
-      addToast({
-        title: "Account Deleted",
-        description: "Your account has been deleted successfully",
-        variant: "success",
-      });
-
-      router.push("/");
-    } catch (error) {
-      addToast({
-        title: "Error",
-        description: "Failed to delete account",
-        variant: "error",
-      });
-      setIsDeleting(false);
-    }
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem("idToken");
-    localStorage.removeItem("refreshToken");
-    localStorage.removeItem("isAuthenticated");
-    localStorage.removeItem("userData");
-    router.push("/");
-  };
-
   if (loading) {
     return (
-      <>
+      <div className="min-h-screen bg-black">
         <Header />
-        <div className="min-h-screen bg-black text-white flex items-center justify-center">
-          <Loader2 className="w-8 h-8 animate-spin text-[#ff5252]" />
+        <div className="min-h-screen flex items-center justify-center">
+          <Loader2 className="w-8 h-8 animate-spin text-white" />
         </div>
-      </>
+      </div>
     );
   }
 
+  if (!user) return null;
+
   return (
-    <>
+    <div className="min-h-screen bg-black">
       <Header />
-      <div className="min-h-screen bg-black text-white pt-20 px-4 relative overflow-hidden">
-        {/* Red Misty Background */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-[#ff5252]/20 rounded-full blur-[120px]" />
 
-        <div className="max-w-2xl mx-auto relative z-10 py-12">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-[#ff5252] to-[#ffbaba] bg-clip-text text-transparent mb-8">
-            My Profile
-          </h1>
+      <main className="pt-32 pb-20 px-4">
+        <div className="max-w-4xl mx-auto">
+          {/* Page Header */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="mb-8 text-center"
+          >
+            <h1 className="text-4xl font-bold text-white mb-2">Profile</h1>
+            <p className="text-gray-400 text-sm">
+              Manage your account settings and preferences
+            </p>
+          </motion.div>
 
-          <div className="bg-gradient-to-br from-white/5 to-white/[0.02] rounded-2xl border border-white/10 backdrop-blur-sm p-6 space-y-6">
-            {/* Profile Header */}
-            <div className="flex items-center gap-4 pb-6 border-b border-white/10">
-              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#ff5252]/20 to-[#ffbaba]/20 flex items-center justify-center border border-[#ff5252]/30">
-                <User className="w-10 h-10 text-[#ff5252]" />
-              </div>
-              <div className="flex-1">
-                <h2 className="text-2xl font-semibold text-white">
-                  {profile?.displayName || "User"}
-                </h2>
-                <p className="text-gray-400">{profile?.email}</p>
-              </div>
-              {!isEditing && (
-                <button
-                  onClick={() => setIsEditing(true)}
-                  className="p-2 rounded-lg hover:bg-[#ff5252]/20 transition-colors"
-                >
-                  <Edit2 className="w-5 h-5 text-[#ff5252]" />
-                </button>
-              )}
-            </div>
-
-            {!isEditing ? (
-              <>
-                {/* Profile Info */}
-                <div className="space-y-4">
-                  <div className="flex items-center gap-3 text-gray-300">
-                    <Mail className="w-5 h-5 text-[#ff5252]" />
-                    <span>{profile?.email}</span>
-                  </div>
-                  <div className="flex items-center gap-3 text-gray-300">
-                    <User className="w-5 h-5 text-[#ff5252]" />
-                    <span>{profile?.displayName || "No display name set"}</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div
-                      className={`px-3 py-1 rounded-full text-sm ${
-                        profile?.emailVerified
-                          ? "bg-green-500/20 text-green-400 border border-green-500/30"
-                          : "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30"
-                      }`}
-                    >
-                      {profile?.emailVerified ? "Verified" : "Not Verified"}
+          <div className="space-y-6">
+            {/* Profile Card */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: 0.1 }}
+              className="bg-white/[0.02] rounded-2xl border border-white/10 p-8"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  {user.photoURL ? (
+                    <img
+                      src={user.photoURL}
+                      alt={user.displayName || "Profile"}
+                      className="w-20 h-20 rounded-full border-2 border-white/10"
+                    />
+                  ) : (
+                    <div className="w-20 h-20 rounded-full bg-white/5 border-2 border-white/10 flex items-center justify-center text-white text-3xl font-bold">
+                      {(user.displayName || user.email || "U")[0].toUpperCase()}
                     </div>
+                  )}
+                  <div>
+                    <h2 className="text-2xl font-bold text-white">
+                      {user.displayName || "User"}
+                    </h2>
+                    <p className="text-gray-400/70 text-sm flex items-center gap-2">
+                      <Mail className="w-4 h-4" />
+                      {user.email}
+                    </p>
                   </div>
                 </div>
 
-                {/* Action Buttons */}
-                <div className="pt-6 space-y-3">
-                  <button
-                    onClick={handleLogout}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 transition-colors"
-                  >
-                    <LogOut className="w-5 h-5" />
-                    <span>Log Out</span>
-                  </button>
-                  <button
-                    onClick={() => setShowDeleteConfirm(true)}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-400 transition-colors"
-                  >
-                    <Trash2 className="w-5 h-5" />
-                    <span>Delete Account</span>
-                  </button>
+                {/* Sign-in Method Badge */}
+                <div className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-full border border-white/10">
+                  {user.providerData[0]?.providerId === "google.com" ? (
+                    <Image
+                      src="https://www.google.com/favicon.ico"
+                      alt="Google"
+                      width={16}
+                      height={16}
+                      className="w-4 h-4"
+                    />
+                  ) : user.providerData[0]?.providerId === "github.com" ? (
+                    <Github className="w-4 h-4 text-white" />
+                  ) : (
+                    <Mail className="w-4 h-4 text-white" />
+                  )}
+                  <span className="text-sm font-medium text-white">
+                    {user.providerData[0]?.providerId === "google.com"
+                      ? "Google"
+                      : user.providerData[0]?.providerId === "github.com"
+                        ? "GitHub"
+                        : "Email"}
+                  </span>
                 </div>
-              </>
-            ) : (
-              <form onSubmit={handleUpdate} className="space-y-4">
+              </div>
+            </motion.div>
+
+            {/* Account Information */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: 0.2 }}
+              className="bg-white/[0.02] rounded-2xl border border-white/10 p-8"
+            >
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-semibold text-white">
+                  Account Information
+                </h3>
+                {!isEditing && (
+                  <Button onClick={() => setIsEditing(true)} variant="ghost">
+                    <Edit2 className="w-4 h-4" />
+                    Edit
+                  </Button>
+                )}
+              </div>
+
+              <form onSubmit={handleUpdateProfile} className="space-y-6">
                 <div>
-                  <label className="block text-sm text-gray-400 mb-2">
-                    Display Name
-                  </label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                    <input
+                  <Label className={isEditing ? "" : "text-gray-400/70"}>
+                    Full Name
+                  </Label>
+                  {!isEditing ? (
+                    <div className="mt-2 bg-white/5 text-white px-4 py-3 rounded-xl border border-white/10 h-[42px] flex items-center">
+                      {user.displayName || "Not set"}
+                    </div>
+                  ) : (
+                    <Input
                       type="text"
                       value={displayName}
                       onChange={(e) => setDisplayName(e.target.value)}
-                      className="w-full bg-white/5 text-white pl-10 pr-4 py-3 rounded-lg border border-white/10 focus:outline-none focus:border-[#ff5252]/50"
-                      placeholder="Enter display name"
+                      placeholder="Enter your name"
+                      className="mt-2"
                     />
-                  </div>
+                  )}
                 </div>
 
                 <div>
-                  <label className="block text-sm text-gray-400 mb-2">
-                    New Password (optional)
-                  </label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                    <input
-                      type="password"
-                      value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
-                      className="w-full bg-white/5 text-white pl-10 pr-4 py-3 rounded-lg border border-white/10 focus:outline-none focus:border-[#ff5252]/50"
-                      placeholder="Enter new password"
+                  <Label className={isEditing ? "" : "text-gray-400/70"}>
+                    Email Address
+                  </Label>
+                  {!isEditing ? (
+                    <div className="mt-2 bg-white/5 text-white px-4 py-3 rounded-xl border border-white/10 h-[42px] flex items-center">
+                      {user.email}
+                    </div>
+                  ) : (
+                    <Input
+                      type="email"
+                      value={user.email || ""}
+                      disabled
+                      className="mt-2 opacity-50 cursor-not-allowed"
                     />
-                  </div>
+                  )}
                 </div>
 
-                <div className="flex gap-3 pt-4">
-                  <button
-                    type="submit"
-                    disabled={isUpdating}
-                    className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-gradient-to-r from-[#ff5252] to-[#ff5252]/80 hover:from-[#ffbaba] hover:to-[#ff5252] disabled:opacity-50 transition-all"
-                  >
-                    {isUpdating ? (
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                    ) : (
-                      "Save Changes"
-                    )}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsEditing(false);
-                      setDisplayName(profile?.displayName || "");
-                      setNewPassword("");
-                    }}
-                    className="px-6 py-3 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 transition-colors"
-                  >
-                    Cancel
-                  </button>
-                </div>
+                {isEditing && (
+                  <div className="flex gap-3 pt-4 justify-end">
+                    <Button
+                      type="button"
+                      onClick={() => {
+                        setIsEditing(false);
+                        setDisplayName(user.displayName || "");
+                      }}
+                      variant="outline"
+                    >
+                      Cancel
+                    </Button>
+                    <Button type="submit" disabled={isUpdating}>
+                      {isUpdating ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        "Save Changes"
+                      )}
+                    </Button>
+                  </div>
+                )}
               </form>
-            )}
+            </motion.div>
           </div>
         </div>
-
-        {/* Delete Confirmation Modal */}
-        {showDeleteConfirm && (
-          <div className="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4">
-            <div className="bg-gradient-to-br from-zinc-900 to-black rounded-2xl border border-red-500/30 p-6 max-w-md w-full">
-              <h3 className="text-xl font-bold text-white mb-2">
-                Delete Account?
-              </h3>
-              <p className="text-gray-400 mb-6">
-                This action cannot be undone. All your data will be permanently
-                deleted.
-              </p>
-              <div className="flex gap-3">
-                <button
-                  onClick={handleDelete}
-                  disabled={isDeleting}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-red-500 hover:bg-red-600 disabled:opacity-50 transition-colors"
-                >
-                  {isDeleting ? (
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                  ) : (
-                    <>
-                      <Trash2 className="w-5 h-5" />
-                      <span>Delete</span>
-                    </>
-                  )}
-                </button>
-                <button
-                  onClick={() => setShowDeleteConfirm(false)}
-                  disabled={isDeleting}
-                  className="px-6 py-3 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 transition-colors"
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-    </>
+      </main>
+    </div>
   );
 }

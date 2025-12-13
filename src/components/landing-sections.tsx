@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { Compass, Upload } from "lucide-react";
 import Link from "next/link";
@@ -145,12 +146,14 @@ export default function LandingSections() {
           transition={{ duration: 0.6, delay: 0.9 }}
           className="flex items-center justify-center gap-3"
         >
-          <Link href="/explore" className="btn btn-primary">
-            <Compass className="w-4 h-4" /> Start exploring
-          </Link>
-          <button onClick={handlePublishClick} className="btn btn-ghost">
+          <Button asChild>
+            <Link href="/explore">
+              <Compass className="w-4 h-4" /> Start exploring
+            </Link>
+          </Button>
+          <Button variant="ghost" onClick={handlePublishClick}>
             <Upload className="w-4 h-4" /> Publish a server
-          </button>
+          </Button>
         </motion.div>
       </div>
       <AuthModal

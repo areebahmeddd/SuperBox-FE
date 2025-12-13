@@ -2,16 +2,16 @@
 
 import Header from "@/components/header";
 import ServerDetail from "@/components/server-detail";
-import { useToast } from "@/components/toast-provider";
+import { showToast } from "@/lib/toast-utils";
 import type { ServerResponse } from "@/lib/types";
 import { motion } from "framer-motion";
+import { Box } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function ServerPage() {
   const params = useParams();
   const router = useRouter();
-  const { addToast } = useToast();
   const serverName = decodeURIComponent(params.id as string);
   const [server, setServer] = useState<ServerResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -27,10 +27,8 @@ export default function ServerPage() {
         const found = servers.find((s) => s.name === serverName) || null;
         setServer(found);
       } catch {
-        addToast({
-          title: "Failed to load server",
+        showToast.error("Failed to load server", {
           description: "Please try again.",
-          variant: "error",
         });
         setServer(null);
       } finally {
@@ -39,7 +37,7 @@ export default function ServerPage() {
     };
 
     loadServer();
-  }, [serverName, addToast]);
+  }, [serverName]);
 
   if (loading) {
     return (
@@ -78,7 +76,7 @@ export default function ServerPage() {
                 transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
                 className="w-20 h-20 mx-auto mb-6 rounded-full bg-white/5 border border-white/10 flex items-center justify-center"
               >
-                <span className="text-4xl">📦</span>
+                <Box className="w-10 h-10 text-gray-400" />
               </motion.div>
               <motion.h1
                 initial={{ opacity: 0, y: 10 }}
@@ -121,7 +119,7 @@ export default function ServerPage() {
     name: server.name,
     handle: server.author,
     lastDeployed: "Recently",
-    icon: "📦",
+    icon: "",
     about: server.description,
     downloads: undefined,
     rating: undefined,

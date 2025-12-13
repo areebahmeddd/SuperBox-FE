@@ -1,5 +1,17 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { auth } from "@/lib/firebase";
+import type { User } from "firebase/auth";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   HelpCircle,
@@ -7,26 +19,29 @@ import {
   Menu,
   Server,
   Settings,
-  User,
+  User as UserIcon,
   X,
 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import AuthModal from "./auth-modal";
 
 export default function Header() {
+  const router = useRouter();
+  const [user, setUser] = useState<User | null>(null);
   const [stars, setStars] = useState<number | null>(null);
   const [scrolled, setScrolled] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [profileOpen, setProfileOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [userData, setUserData] = useState<{
-    username: string;
-    email: string;
-  } | null>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -37,47 +52,7 @@ export default function Header() {
   }, []);
 
   useEffect(() => {
-    const authStatus = localStorage.getItem("isAuthenticated") === "true";
-    setIsAuthenticated(authStatus);
-
-    if (authStatus) {
-      const storedUser = localStorage.getItem("userData");
-      if (storedUser) {
-        setUserData(JSON.parse(storedUser));
-      }
-    }
-
-    const handleStorageChange = () => {
-      const newAuthStatus = localStorage.getItem("isAuthenticated") === "true";
-      setIsAuthenticated(newAuthStatus);
-
-      if (newAuthStatus) {
-        const storedUser = localStorage.getItem("userData");
-        if (storedUser) {
-          setUserData(JSON.parse(storedUser));
-        }
-      } else {
-        setUserData(null);
-      }
-    };
-
-    window.addEventListener("storage", handleStorageChange);
-    const interval = setInterval(handleStorageChange, 500);
-
-    return () => {
-      window.removeEventListener("storage", handleStorageChange);
-      clearInterval(interval);
-    };
-  }, []);
-
-  useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setProfileOpen(false);
-      }
       if (
         mobileMenuRef.current &&
         !mobileMenuRef.current.contains(event.target as Node)
@@ -100,18 +75,18 @@ export default function Header() {
       .catch(() => {});
   }, []);
 
-  const handleSignOut = () => {
-    localStorage.removeItem("isAuthenticated");
-    localStorage.removeItem("userData");
-    setIsAuthenticated(false);
-    setUserData(null);
-    setProfileOpen(false);
-    window.location.href = "/";
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth);
+      router.push("/");
+    } catch (error) {
+      console.error("Sign out error:", error);
+    }
   };
 
   const menuItems = [
     { label: "My Servers", icon: Server, href: "/my-servers" },
-    { label: "Profile", icon: User, href: "/profile" },
+    { label: "Profile", icon: UserIcon, href: "/profile" },
     { label: "Settings", icon: Settings, href: "/settings" },
     { label: "Help & Support", icon: HelpCircle, href: "/faq" },
   ];
@@ -200,71 +175,53 @@ export default function Header() {
             <Link href="/docs">Docs</Link>
           </motion.div>
 
-          {isAuthenticated ? (
-            <div ref={dropdownRef} className="relative">
-              <motion.button
-                onClick={() => setProfileOpen(!profileOpen)}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="flex items-center justify-center w-9 h-9 rounded-full border border-white/20 hover:border-white/30 hover:bg-white/5 transition-all duration-200"
-              >
-                <User className="w-4 h-4 text-white" />
-              </motion.button>
-
-              <AnimatePresence>
-                {profileOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.15 }}
-                    className="absolute right-0 mt-2 w-56 bg-black/95 border border-white/10 rounded-xl backdrop-blur-xl shadow-2xl overflow-hidden"
-                  >
-                    <div className="px-4 py-3 border-b border-white/10">
-                      <p className="text-sm font-medium text-white">
-                        {userData?.username || "User"}
-                      </p>
-                      <p className="text-xs text-gray-400 mt-0.5">
-                        {userData?.email || ""}
-                      </p>
-                    </div>
-
-                    <div className="py-1">
-                      {menuItems.map((item) => (
-                        <Link
-                          key={item.label}
-                          href={item.href}
-                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-all duration-150"
-                          onClick={() => setProfileOpen(false)}
-                        >
-                          <item.icon className="w-4 h-4" />
-                          {item.label}
-                        </Link>
-                      ))}
-                    </div>
-
-                    <div className="border-t border-white/10">
-                      <button
-                        onClick={handleSignOut}
-                        className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-[var(--brand-red)] hover:bg-white/5 transition-all duration-150"
-                      >
-                        <LogOut className="w-4 h-4" />
-                        Sign Out
-                      </button>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
+          {user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="rounded-full border border-white/20 hover:border-white/30 w-9 h-9 p-0"
+                >
+                  <div className="w-full h-full rounded-full bg-white/10 flex items-center justify-center text-white text-sm font-bold">
+                    {(user.displayName || user.email || "U")[0].toUpperCase()}
+                  </div>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel>
+                  <div>
+                    <p className="text-sm font-medium">
+                      {user.displayName || "User"}
+                    </p>
+                    <p className="text-xs text-gray-400 font-normal">
+                      {user.email || ""}
+                    </p>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {menuItems.map((item) => (
+                  <DropdownMenuItem key={item.label} asChild>
+                    <Link href={item.href}>
+                      <item.icon className="w-4 h-4" />
+                      {item.label}
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={handleSignOut}
+                  className="text-[var(--brand-red)] focus:text-[var(--brand-red)]"
+                >
+                  <LogOut className="w-4 h-4" />
+                  Sign Out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           ) : (
-            <motion.button
-              onClick={() => setAuthOpen(true)}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="btn btn-primary text-sm"
-            >
+            <Button onClick={() => setAuthOpen(true)} size="sm">
               Get started
-            </motion.button>
+            </Button>
           )}
         </motion.nav>
 
@@ -330,15 +287,41 @@ export default function Header() {
                     <span>Docs</span>
                   </Link>
 
-                  <button
-                    onClick={() => {
-                      setMobileMenuOpen(false);
-                      setAuthOpen(true);
-                    }}
-                    className="w-full px-4 py-2.5 text-sm font-semibold text-black bg-[var(--brand-red)] hover:bg-[var(--brand-red)]/90 transition-all"
-                  >
-                    Get started
-                  </button>
+                  {user ? (
+                    <>
+                      {menuItems.map((item) => (
+                        <Link
+                          key={item.label}
+                          href={item.href}
+                          onClick={() => setMobileMenuOpen(false)}
+                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-white hover:bg-white/5 transition-all"
+                        >
+                          <item.icon className="w-4 h-4" />
+                          <span>{item.label}</span>
+                        </Link>
+                      ))}
+                      <button
+                        onClick={() => {
+                          setMobileMenuOpen(false);
+                          handleSignOut();
+                        }}
+                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--brand-red)] hover:bg-white/5 transition-all"
+                      >
+                        <LogOut className="w-4 h-4" />
+                        <span>Sign Out</span>
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        setMobileMenuOpen(false);
+                        setAuthOpen(true);
+                      }}
+                      className="w-full px-4 py-2.5 text-sm font-semibold text-black bg-[var(--brand-red)] hover:bg-[var(--brand-red)]/90 transition-all"
+                    >
+                      Get started
+                    </button>
+                  )}
                 </div>
               </motion.div>
             )}

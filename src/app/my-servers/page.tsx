@@ -3,17 +3,22 @@
 import AuthModal from "@/components/auth-modal";
 import Header from "@/components/header";
 import PublishServerModal, { ServerFormData } from "@/components/publish-modal";
-import { useToast } from "@/components/toast-provider";
+import { Button } from "@/components/ui/button";
+import { auth } from "@/lib/firebase";
+import { showToast } from "@/lib/toast-utils";
+import type { User } from "firebase/auth";
+import { onAuthStateChanged } from "firebase/auth";
 import { motion } from "framer-motion";
 import { Edit, Package, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function MyServersPage() {
-  const { addToast } = useToast();
+  const router = useRouter();
+  const [user, setUser] = useState<User | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [userServers, setUserServers] = useState<any[]>([]);
@@ -21,16 +26,19 @@ export default function MyServersPage() {
   const [editingServer, setEditingServer] = useState<any | null>(null);
 
   useEffect(() => {
-    const authStatus = localStorage.getItem("isAuthenticated") === "true";
-    setIsAuthenticated(authStatus);
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      if (!currentUser) {
+        router.push("/");
+        return;
+      }
+      setUser(currentUser);
+    });
 
-    if (!authStatus) {
-      window.location.href = "/";
-    }
-  }, []);
+    return () => unsubscribe();
+  }, [router]);
 
   const handlePublishClick = () => {
-    if (!isAuthenticated) {
+    if (!user) {
       setIsAuthModalOpen(true);
     } else {
       setEditingServer(null);
@@ -44,8 +52,6 @@ export default function MyServersPage() {
   };
 
   const handleAuthSuccess = () => {
-    setIsAuthenticated(true);
-    localStorage.setItem("isAuthenticated", "true");
     setIsAuthModalOpen(false);
     setIsModalOpen(true);
   };
@@ -67,19 +73,15 @@ export default function MyServersPage() {
           result?.detail || result?.message || "Failed to create server",
         );
       }
-      addToast({
-        title: "Server published",
+      showToast.success("Server published", {
         description: `"${data.name}" is now live.`,
-        variant: "success",
       });
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Failed to publish server";
       setError(errorMessage);
-      addToast({
-        title: "Publish failed",
+      showToast.error("Publish failed", {
         description: errorMessage,
-        variant: "error",
       });
     } finally {
       setIsSubmitting(false);
@@ -173,17 +175,15 @@ export default function MyServersPage() {
                   Publish your first MCP server to make it available to your
                   agents.
                 </motion.p>
-                <motion.button
+                <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.8 }}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={handlePublishClick}
-                  className="btn btn-primary"
                 >
-                  Publish Your First Server
-                </motion.button>
+                  <Button onClick={handlePublishClick}>
+                    Publish Your First Server
+                  </Button>
+                </motion.div>
               </motion.div>
             </motion.div>
           ) : (
@@ -198,15 +198,10 @@ export default function MyServersPage() {
                   {userServers.length}{" "}
                   {userServers.length === 1 ? "server" : "servers"}
                 </p>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={handlePublishClick}
-                  className="btn btn-primary flex items-center gap-2"
-                >
+                <Button onClick={handlePublishClick}>
                   <Plus className="w-4 h-4" />
                   Publish New Server
-                </motion.button>
+                </Button>
               </motion.div>
 
               <div className="grid grid-cols-1 gap-5">
