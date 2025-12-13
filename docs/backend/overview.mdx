@@ -1,203 +1,142 @@
 ---
 title: "Backend Overview"
-description: "High-performance Go API and Python CLI for SuperBox MCP server marketplace"
+description: "Go API server, Python CLI, and AWS Lambda execution"
 icon: "server"
 ---
 
 ## Architecture
 
-SuperBox backend combines Go's performance with Python's ecosystem for a robust, scalable platform.
+SuperBox backend has three main components:
 
-<CardGroup cols={2}>
-  <Card title="Go API Server" icon="golang" color="#00ADD8">
-    RESTful API with Gin framework, PostgreSQL, Redis caching
+<CardGroup cols={3}>
+  <Card title="Go API Server" icon="server" color="#00ADD8">
+    RESTful API with Gin framework
   </Card>
-  <Card title="Python CLI" icon="python" color="#3776AB">
-    Command-line interface for developers with rich terminal UI
+  <Card title="Python CLI" icon="terminal" color="#3776AB">
+    Command-line tool for developers
   </Card>
-  <Card title="AWS Lambda" icon="aws" color="#FF9900">
-    Sandboxed MCP server execution in isolated environments
-  </Card>
-  <Card title="Security Pipeline" icon="shield-halved" color="#10B981">
-    5-step scanning: SonarQube, Bandit, GitGuardian, Semgrep, OWASP
+  <Card title="AWS Lambda" icon="bolt" color="#FF9900">
+    Sandboxed MCP execution
   </Card>
 </CardGroup>
 
-## Technology Stack
+## Go API Server
 
-### Go API Server
+**Technology:**
 
-<Tabs>
-  <Tab title="Core Technologies">
-    - **Language:** Go 1.22+
-    - **Framework:** Gin Web Framework
-    - **Database:** PostgreSQL 16
-    - **Cache:** Redis 7
-    - **ORM:** GORM
-    - **Auth:** JWT + OAuth 2.0
-  </Tab>
+- Go 1.21+
+- Gin web framework
+- Firebase Auth (Google/GitHub OAuth)
+- S3 for storage via Python helper
 
-<Tab title="AWS Services">
-  - **Compute:** AWS Lambda - **Storage:** S3 - **Database:** RDS PostgreSQL -
-  **Cache:** ElastiCache Redis - **CDN:** CloudFront - **Secrets:** Secrets
-  Manager
-</Tab>
+**Endpoints:**
 
-  <Tab title="Security Tools">
-    - **SAST:** SonarQube
-    - **Python Security:** Bandit
-    - **Secrets Scanning:** GitGuardian
-    - **Static Analysis:** Semgrep
-    - **Vulnerability Scanning:** OWASP Dependency-Check
-  </Tab>
-</Tabs>
+- `/api/v1/servers` - List, get, create, update, delete servers
+- `/api/v1/auth` - Register, login, OAuth, device flow, profile
 
-### Python CLI
+**Key Features:**
 
-<Tabs>
-  <Tab title="Core Libraries">
-    - **Framework:** Click 8.x
-    - **HTTP Client:** httpx
-    - **Terminal UI:** Rich
-    - **Config:** PyYAML
-    - **Auth:** OAuth2 Device Flow
-  </Tab>
+- Calls Python helper scripts for S3 operations
+- Device authorization flow for CLI
+- Multi-stage Docker build (Go binary + Python runtime)
+- CORS enabled for web clients
 
-  <Tab title="Features">
-    - Interactive command-line interface
-    - Device authorization flow
-    - Automatic security scanning
-    - Server initialization scaffolding
-    - Configuration management
-    - Real-time test execution
-  </Tab>
-</Tabs>
+## Python CLI
 
-## System Architecture
+**Technology:**
 
-<Frame>
-  <img src="/images/architecture-diagram.png" alt="SuperBox Architecture" />
-</Frame>
+- Python 3.11+
+- Click framework
+- boto3 for AWS S3
+- requests for HTTP calls
 
-```mermaid
-graph TB
-    subgraph "Client Layer"
-        FE[Next.js Frontend]
-        CLI[Python CLI]
-    end
+**Commands:**
 
-    subgraph "API Gateway"
-        ALB[AWS Application Load Balancer]
-    end
+- `init` - Create superbox.json config
+- `auth` - Device flow OAuth login
+- `push` - Security scan + upload to S3
+- `pull` - Configure AI clients (VSCode, Cursor, etc)
+- `run` - Interactive test session
+- `search` - Find servers in registry
+- `inspect` - View server details
+- `test` - Test servers locally
+- `logs` - View CloudWatch logs
 
-    subgraph "Application Layer"
-        API1[Go API Server 1]
-        API2[Go API Server 2]
-        API3[Go API Server N]
-    end
+**Security Scanners:**
 
-    subgraph "Data Layer"
-        PG[(PostgreSQL RDS)]
-        RD[(Redis ElastiCache)]
-        S3[S3 Storage]
-    end
+- SonarCloud - Code quality and security
+- Bandit - Python vulnerabilities
+- GitGuardian - Secret detection
+- Tool Discovery - Extract MCP tools from code
 
-    subgraph "Execution Layer"
-        LB1[Lambda: MCP Executor 1]
-        LB2[Lambda: MCP Executor 2]
-        LB3[Lambda: MCP Executor N]
-    end
+## AWS Lambda Executor
 
-    subgraph "Security Pipeline"
-        SQ[SonarQube]
-        BD[Bandit]
-        GG[GitGuardian]
-        SM[Semgrep]
-    end
+**Function:** `lambda.lambda_handler`
 
-    FE -->|HTTPS| ALB
-    CLI -->|HTTPS| ALB
-    ALB --> API1
-    ALB --> API2
-    ALB --> API3
+- **Runtime:** Python 3.11
+- **Memory:** 512 MB (configurable)
+- **Timeout:** 60 seconds
+- **Trigger:** Lambda Function URL (HTTPS)
 
-    API1 --> PG
-    API2 --> PG
-    API3 --> PG
+**Execution Flow:**
 
-    API1 --> RD
-    API2 --> RD
-    API3 --> RD
+1. Receive HTTP request with server name
+2. Fetch `{server}.json` metadata from S3
+3. Download GitHub repo as ZIP
+4. Extract to `/tmp`
+5. Install dependencies (pip/npm)
+6. Execute entrypoint with JSON-RPC request
+7. Return response
+8. Log to CloudWatch
 
-    API1 --> S3
-    API1 --> LB1
-    API2 --> LB2
-    API3 --> LB3
+**Test Mode:**
 
-    CLI --> SQ
-    CLI --> BD
-    CLI --> GG
-    CLI --> SM
+```bash
+POST https://lambda-url/test?test_mode=true&repo_url=https://github.com/user/repo&entrypoint=main.py
 ```
 
-## Core Components
+## Data Flow
 
-### API Server (Go)
+```mermaid
+graph LR
+    A["CLI: superbox push"] --> B["SonarCloud scan"]
+    B --> C["Bandit + GitGuardian"]
+    C --> D["Tool discovery"]
+    D --> E["Upload <server>.json to S3"]
+
+    F["User request"] --> G["Lambda URL /<server>"]
+    G --> H["Fetch metadata from S3"]
+    H --> I["Clone GitHub repo"]
+    I --> J["Install deps"]
+    J --> K["Execute MCP server"]
+    K --> L["Return JSON-RPC response"]
+```
+
+## Storage Structure
+
+**S3 Bucket (flat files):** `superbox-mcp-registry`
+
+Each MCP server is a single JSON object stored at the bucket root:
+
+- `<name>.json` (e.g., `weather-server.json`)
+
+Fields (from `superbox.cli.commands.push`):
+
+- `name`
+- `repository` `{ "type": "git", "url": "<repo-url>" }`
+- `description`
+- `entrypoint` (defaults to `main.py`)
+- `lang` (defaults to `python`)
+- `tools` (array of discovered tool names)
+- `tool_count`
+- `security_report` (SonarCloud, Bandit, GitGuardian results; may be null)
+- `meta.created_at`, `meta.updated_at` (timestamps added on upsert)
+
+## Core Services
 
 <AccordionGroup>
-  <Accordion title="Authentication Service" icon="lock">
-    Handles user authentication and authorization:
-    
-    - JWT token generation and validation
-    - OAuth 2.0 integration (Google, GitHub)
-    - Device authorization flow for CLI
-    - Session management with Redis
-    - Rate limiting per user
-    
-    ```go
-    type AuthService struct {
-        db          *gorm.DB
-        redis       *redis.Client
-        jwtSecret   string
-        oauthConfig map[string]*oauth2.Config
-    }
-    
-    func (s *AuthService) Login(email, password string) (*User, string, error)
-    func (s *AuthService) ValidateToken(token string) (*Claims, error)
-    func (s *AuthService) RefreshToken(refreshToken string) (string, error)
-    ```
-  </Accordion>
-
-  <Accordion title="Server Management Service" icon="box">
-    Manages MCP server lifecycle:
-    
-    - Server registration and publishing
-    - Version management
-    - Metadata and documentation
-    - Search and discovery
-    - Analytics and metrics
-    
-    ```go
-    type ServerService struct {
-        db     *gorm.DB
-        s3     *s3.Client
-        cache  *redis.Client
-    }
-    
-    func (s *ServerService) PublishServer(server *MCPServer) error
-    func (s *ServerService) SearchServers(query string, filters Filters) ([]MCPServer, error)
-    func (s *ServerService) GetServerDetails(id string) (*MCPServer, error)
-    ```
-  </Accordion>
-
-  <Accordion title="Execution Service" icon="play">
-    Executes MCP servers in sandboxed Lambda environments:
-    
-    - Lambda invocation management
-    - Request/response handling
-    - Timeout and error handling
-    - Execution logs and metrics
-    - Cold start optimization
+  <Accordion title="Execution Service" icon="server">
+    Coordinates Lambda execution pipeline.
     
     ```go
     type ExecutionService struct {
@@ -205,36 +144,17 @@ graph TB
         s3         *s3.Client
         maxTimeout time.Duration
     }
-    
+
     func (s *ExecutionService) ExecuteTool(serverID, toolName string, params map[string]interface{}) (interface{}, error)
     func (s *ExecutionService) GetExecutionLogs(executionID string) ([]LogEntry, error)
     ```
-  </Accordion>
 
-  <Accordion title="Payment Service" icon="credit-card">
-    Handles payment processing with Razorpay:
-    
-    - Order creation
-    - Payment verification
-    - Subscription management
-    - Webhook handling
-    - Refund processing
-    
-    ```go
-    type PaymentService struct {
-        razorpay   *razorpay.Client
-        db         *gorm.DB
-    }
-    
-    func (s *PaymentService) CreateOrder(amount int, currency string, userID string) (*Order, error)
-    func (s *PaymentService) VerifyPayment(orderID, paymentID, signature string) error
-    ```
   </Accordion>
 
   <Accordion title="Security Scanning Service" icon="shield-check">
     Orchestrates multi-tool security scanning:
     
-    - SonarQube integration for code quality
+    - SonarQube for code quality
     - Bandit for Python security issues
     - GitGuardian for secret detection
     - Semgrep for pattern matching
@@ -242,8 +162,8 @@ graph TB
     
     ```go
     type SecurityService struct {
-        sonarqube  *sonarqube.Client
-        bandit     *exec.Cmd
+        sonarqube   *sonarqube.Client
+        bandit      *exec.Cmd
         gitguardian *gitguardian.Client
     }
     
@@ -260,14 +180,14 @@ graph TB
     `superbox init` creates project structure:
     
     ```
-    my-mcp-server/
-    ├── mcp_server.py
-    ├── tools/
-    │   └── example_tool.py
-    ├── config.yaml
-    ├── requirements.txt
-    └── README.md
-    ```
+my-mcp-server/
+- mcp_server.py
+- tools/
+  - example_tool.py
+- config.yaml
+- requirements.txt
+- README.md
+```
   </Step>
 
 <Step title="Authentication">
@@ -305,14 +225,9 @@ graph TB
   /servers/:id
 </Card>
 
-<Card title="Execution" icon="play" href="/backend/architecture">
-  - POST /execute/:serverId - GET /execution/:id/logs - GET
-  /execution/:id/status
-</Card>
-
-  <Card title="Payment" icon="credit-card" href="/api/payment/create-order">
-    - POST /payment/create-order - POST /payment/verify-payment - GET
-    /payment/payment-status/:id
+  <Card title="Execution" icon="play" href="/backend/architecture">
+    - POST /execute/:serverId - GET /execution/:id/logs - GET
+    /execution/:id/status
   </Card>
 </CardGroup>
 
@@ -416,10 +331,6 @@ graph TB
     X-Ray Tracing Distributed tracing across services
   </Card>
 </CardGroup>
-
-<Tip>
-  All services emit structured logs and metrics for comprehensive observability.
-</Tip>
 
 ## Next Steps
 

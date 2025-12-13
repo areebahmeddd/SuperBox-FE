@@ -55,7 +55,6 @@ export default function AuthModal({
     setIsLoading(true);
 
     try {
-      // Firebase Authentication directly
       const firebaseApiKey =
         process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "AIzaSyDemoKey";
       const response = await fetch(
@@ -126,9 +125,7 @@ export default function AuthModal({
     setIsLoading(true);
 
     try {
-      // Firebase Authentication directly
-      const firebaseApiKey =
-        process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "AIzaSyDemoKey";
+      const firebaseApiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
       const response = await fetch(
         `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${firebaseApiKey}`,
         {

@@ -15,9 +15,9 @@ Create a comprehensive dashboard to visualize all metrics:
     AWS Console → **CloudWatch** → **Dashboards** → **Create dashboard**
   </Step>
 
-  <Step title="Add Widgets">
-    Create widgets for Lambda, S3, and application metrics
-  </Step>
+<Step title="Add Widgets">
+  Create widgets for Lambda, S3, and application metrics
+</Step>
 
   <Step title="Configure Refresh">
     Set auto-refresh to 1 minute for real-time monitoring
@@ -37,13 +37,13 @@ Create a comprehensive dashboard to visualize all metrics:
     Period: 1 minute - Chart type: Number
   </Tab>
 
-  <Tab title="S3 Metrics">
-    **Bucket Size** - Metric: `AWS/S3` → `BucketSizeBytes` - Statistic: Average
-    - Period: 1 day - Chart type: Number **GET Requests** - Metric: `AWS/S3` →
-    `GetRequests` - Statistic: Sum - Period: 5 minutes - Chart type: Line **PUT
-    Requests** - Metric: `AWS/S3` → `PutRequests` - Statistic: Sum - Period: 5
-    minutes - Chart type: Line
-  </Tab>
+<Tab title="S3 Metrics">
+  **Bucket Size** - Metric: `AWS/S3` → `BucketSizeBytes` - Statistic: Average -
+  Period: 1 day - Chart type: Number **GET Requests** - Metric: `AWS/S3` →
+  `GetRequests` - Statistic: Sum - Period: 5 minutes - Chart type: Line **PUT
+  Requests** - Metric: `AWS/S3` → `PutRequests` - Statistic: Sum - Period: 5
+  minutes - Chart type: Line
+</Tab>
 
   <Tab title="Application Metrics">
     **MCP Server Executions** - Custom metric from Lambda logs - Filter:
@@ -281,10 +281,10 @@ Track infrastructure costs:
     AWS Console → **Cost Management** → **Cost Explorer**
   </Step>
 
-  <Step title="Filter by Service">
-    - Service: AWS Lambda - Service: Amazon S3 - Service: CloudWatch - Tag:
-    `project:superbox`
-  </Step>
+<Step title="Filter by Service">
+  - Service: AWS Lambda - Service: Amazon S3 - Service: CloudWatch - Tag:
+  `project:superbox`
+</Step>
 
   <Step title="Create Budget Alert">
     Set budget alert at $50/month with email notification
@@ -335,13 +335,15 @@ For advanced visualization, integrate CloudWatch with Grafana:
 
 <Steps>
   <Step title="Install Grafana">
-    ```bash # Docker docker run -d -p 3000:3000 grafana/grafana ```
+    ```bash
+# Docker docker run -d -p 3000:3000 grafana/grafana
+```
   </Step>
 
-  <Step title="Add CloudWatch Data Source">
-    - Go to Configuration → Data Sources - Add AWS CloudWatch - Configure IAM
-    credentials
-  </Step>
+<Step title="Add CloudWatch Data Source">
+  - Go to Configuration → Data Sources - Add AWS CloudWatch - Configure IAM
+  credentials
+</Step>
 
   <Step title="Import Dashboard">
     Use pre-built Lambda monitoring dashboard from Grafana marketplace

@@ -1,163 +1,112 @@
 ---
 title: "Infrastructure Overview"
-description: "AWS infrastructure powering SuperBox with OpenTofu/Terraform IaC"
+description: "AWS infrastructure with Terraform/OpenTofu"
 icon: "cloud"
 ---
 
-SuperBox infrastructure is deployed on AWS using **Infrastructure as Code (IaC)** with OpenTofu/Terraform. The architecture provides scalable, secure, and cost-effective MCP server execution.
-
 ## Core Components
 
+SuperBox uses four AWS services:
+
 <CardGroup cols={2}>
-  <Card title="S3 Registry" icon="database" color="#569A31">
-    MCP server metadata storage with per-file JSON structure
+  <Card title="S3 Bucket" icon="database">
+    Registry storage - one JSON file per server
   </Card>
-  <Card title="Lambda Executor" icon="bolt" color="#FF9900">
-    Sandboxed MCP server execution with 15-min timeout
+  <Card title="Lambda Function" icon="bolt">
+    MCP executor with Python 3.11 runtime
   </Card>
-  <Card title="IAM Roles" icon="shield" color="#DD344C">
-    Least-privilege access with Lambda execution policies
+  <Card title="IAM Role" icon="shield">
+    Lambda execution permissions
   </Card>
-  <Card title="CloudWatch Logs" icon="chart-line" color="#FF4F8B">
-    Centralized logging with 7-day retention
+  <Card title="CloudWatch Logs" icon="chart-line">
+    7-day log retention
   </Card>
 </CardGroup>
 
-## Architecture Diagram
+## Architecture
 
 ```mermaid
 graph TB
-    subgraph "Client Layer"
-        A[CLI/Web Client]
-    end
+    CLI[CLI/Web] --> API[Go API Server]
+    CLI --> LAMBDA_URL[Lambda Function URL]
 
-    subgraph "API Layer"
-        B[Go API Server]
-    end
-
-    subgraph "AWS Infrastructure"
-        C[S3 Bucket<br/>superbox-mcp-registry]
-        D[Lambda Function<br/>superbox-mcp-executor]
-        E[Lambda Function URL<br/>Public HTTPS Endpoint]
-        F[IAM Role<br/>Lambda Execution]
-        G[CloudWatch Logs<br/>/aws/lambda/superbox]
-    end
-
-    A --> B
-    B --> C
-    A --> E
-    E --> D
-    D --> F
-    D --> C
-    D --> G
-
-    style C fill:#569A31
-    style D fill:#FF9900
-    style F fill:#DD344C
-    style G fill:#FF4F8B
+    API --> S3[S3: superbox-mcp-registry]
+    LAMBDA_URL --> LAMBDA[Lambda Function]
+    LAMBDA --> S3
+    LAMBDA --> LOGS[CloudWatch Logs]
+    LAMBDA --> IAM[IAM Role]
 ```
 
-## Infrastructure Modules
+## Infrastructure Details
 
-<Accordion title="S3 Module">
-**Purpose:** MCP server registry storage
+### S3 Bucket
 
-**Resources:**
+**Name:** `superbox-mcp-registry`
+**Region:** `ap-south-1`
 
-- S3 bucket with versioning enabled
-- Bucket policy for public read access
-- Server-side encryption (AES-256)
-- Lifecycle policies for cost optimization
-
-**File Structure:**
+**Structure:**
 
 ```
 superbox-mcp-registry/
-├── server-1.json
-├── server-2.json
-├── server-3.json
+├── weather-server.json
+├── file-server.json
 └── ...
 ```
 
-Each JSON file contains complete server metadata including repository URL, entrypoint, tools, security reports, and pricing information.
+Each JSON file contains:
 
-</Accordion>
+- Server metadata (name, version, description, author)
+- Repository URL
+- Entrypoint file
+- Tools list
+- Security report
+- Pricing
 
-<Accordion title="Lambda Module">
-**Purpose:** Sandboxed MCP server execution
+### Lambda Function
 
-**Configuration:**
+**Name:** `superbox-mcp-executor`
+**Runtime:** Python 3.11
+**Memory:** 512 MB (default, configurable)
+**Timeout:** 60 seconds (configurable up to 900)
+**Handler:** `lambda.lambda_handler`
 
-- **Runtime:** Python 3.11
-- **Memory:** 2048 MB (configurable up to 10GB)
-- **Timeout:** 900 seconds (15 minutes)
-- **Handler:** `lambda.lambda_handler`
-- **Environment:** S3 bucket name, AWS region
+**Function URL:** Public HTTPS endpoint
 
-**Features:**
+- CORS enabled for web clients
+- No authentication required
+- Format: `https://{url}/{server-name}`
 
-- Function URL for direct HTTPS invocation
-- CORS enabled for web client access
-- VPC isolation for enhanced security
-- Automatic scaling and load balancing
+**Environment Variables:**
 
-**Execution Flow:**
+- `AWS_REGION` - Deployment region
+- `S3_BUCKET` - Registry bucket name
 
-1. Receive HTTP request with MCP server name
-2. Fetch metadata from S3
-3. Download repository from GitHub as ZIP
-4. Install Python/npm dependencies
-5. Execute MCP server with request payload
-6. Return JSON response
-   </Accordion>
+**Execution:**
 
-<Accordion title="IAM Module">
-**Purpose:** Secure access control with least privilege
+1. Receive HTTP POST with server name
+2. Fetch `{name}.json` from S3
+3. Download GitHub repo as ZIP
+4. Extract to `/tmp`
+5. Install dependencies (`pip install`)
+6. Run entrypoint with request body
+7. Return JSON-RPC response
 
-**Lambda Execution Role Permissions:**
+### IAM Role
 
-- `s3:GetObject` - Read server metadata from S3
-- `s3:ListBucket` - List available servers
-- `logs:CreateLogGroup` - Create CloudWatch log groups
-- `logs:CreateLogStream` - Create log streams
-- `logs:PutLogEvents` - Write execution logs
+**Permissions:**
 
-**Trust Policy:**
+- `s3:GetObject` - Read from registry
+- `logs:CreateLogGroup` - CloudWatch setup
+- `logs:CreateLogStream` - Log streaming
+- `logs:PutLogEvents` - Write logs
 
-```json
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Principal": {
-        "Service": "lambda.amazonaws.com"
-      },
-      "Action": "sts:AssumeRole"
-    }
-  ]
-}
-```
+**Trust:** Lambda service
 
-</Accordion>
+### CloudWatch Logs
 
-<Accordion title="CloudWatch Logs">
-**Purpose:** Centralized logging and monitoring
-
-**Configuration:**
-
-- Log group: `/aws/lambda/superbox-mcp-executor`
-- Retention: 7 days (cost-optimized)
-- Log streams created per Lambda invocation
-
-**Logged Information:**
-
-- MCP server name and metadata
-- Repository clone operations
-- Dependency installation output
-- Server execution logs
-- Error traces and stack traces
-  </Accordion>
+**Log Group:** `/aws/lambda/superbox-mcp-executor`
+**Retention:** 7 days
+**Content:** Execution logs, errors, debug info
 
 ## Infrastructure as Code
 
@@ -237,24 +186,24 @@ Each JSON file contains complete server metadata including repository URL, entry
 ## Cost Optimization
 
 <CardGroup cols={2}>
-  <Card title="S3 Costs" icon="dollar">
-    - **Storage:** ~$0.023/GB/month - **Requests:** Minimal (read-heavy) -
-    **Transfer:** Free within AWS **Estimated:** $1-5/month
+  <Card title="S3 Costs" icon="indian-rupee-sign">
+    - **Storage:** ~₹2/GB/month - **Requests:** Minimal (read-heavy) -
+    **Transfer:** Free within AWS **Estimated:** ₹80-400/month
   </Card>
 
-  <Card title="Lambda Costs" icon="dollar">
-    - **Invocations:** First 1M free/month - **Duration:**
-    $0.0000166667/GB-second - **Requests:** $0.20 per 1M requests **Estimated:**
-    $10-50/month (based on traffic)
-  </Card>
+<Card title="Lambda Costs" icon="indian-rupee-sign">
+  - **Invocations:** First 1M free/month - **Duration:** ₹0.0014/GB-second -
+  **Requests:** ₹16 per 1M requests **Estimated:** ₹800-4000/month (based on
+  traffic)
+</Card>
 
-  <Card title="CloudWatch Costs" icon="dollar">
-    - **Ingestion:** First 5GB free/month - **Storage:** $0.50/GB/month -
-    **Retention:** 7 days (minimal storage) **Estimated:** $0-2/month
-  </Card>
+<Card title="CloudWatch Costs" icon="indian-rupee-sign">
+  - **Ingestion:** First 5GB free/month - **Storage:** ₹40/GB/month -
+  **Retention:** 7 days (minimal storage) **Estimated:** ₹0-160/month
+</Card>
 
-  <Card title="Total Monthly Cost" icon="dollar">
-    **Small Scale:** $11-57/month **Medium Scale:** $50-200/month **Enterprise
+  <Card title="Total Monthly Cost" icon="indian-rupee-sign">
+    **Small Scale:** ₹880-4560/month **Medium Scale:** ₹4000-16000/month **Enterprise
     Scale:** Custom pricing
   </Card>
 </CardGroup>
@@ -267,19 +216,19 @@ Each JSON file contains complete server metadata including repository URL, entry
     permissions. No write access to S3 or other AWS services.
   </Step>
 
-  <Step title="VPC Isolation">
-    Lambda functions can be deployed in VPC for network isolation. MCP servers
-    cannot access internal AWS resources.
-  </Step>
+<Step title="VPC Isolation">
+  Lambda functions can be deployed in VPC for network isolation. MCP servers
+  cannot access internal AWS resources.
+</Step>
 
-  <Step title="Encryption at Rest">
-    S3 bucket uses AES-256 server-side encryption. CloudWatch logs are encrypted
-    by default.
-  </Step>
+<Step title="Encryption at Rest">
+  S3 bucket uses AES-256 server-side encryption. CloudWatch logs are encrypted
+  by default.
+</Step>
 
-  <Step title="HTTPS Only">
-    Lambda Function URL enforces HTTPS. No plain HTTP traffic allowed.
-  </Step>
+<Step title="HTTPS Only">
+  Lambda Function URL enforces HTTPS. No plain HTTP traffic allowed.
+</Step>
 
   <Step title="CloudWatch Monitoring">
     All Lambda invocations logged. Failed executions trigger alerts. Anomaly

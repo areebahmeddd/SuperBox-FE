@@ -2,7 +2,7 @@
 title: "Create Server"
 api: "POST /servers"
 description: "Deploy a new MCP server to the SuperBox registry"
-icon: "plus-circle"
+icon: "plus"
 ---
 
 ## Endpoint
@@ -41,7 +41,7 @@ icon: "plus-circle"
 </ParamField>
 
 <ParamField body="author" type="string" required>
-  Your name or organization name **Example:** "John Doe", "Acme Corporation"
+  Your name or organization name **Example:** "Areeb Ahmed", "SuperBox Team"
 </ParamField>
 
 <ParamField body="lang" type="string" required>
@@ -143,7 +143,8 @@ icon: "plus-circle"
 ## Examples
 
 <CodeGroup>
-```bash cURL
+```bash
+cURL
 curl -X POST "https://api.superbox.dev/api/v1/servers" \
   -H "Authorization: Bearer $SUPERBOX_API_TOKEN" \
   -H "Content-Type: application/json" \
@@ -151,7 +152,7 @@ curl -X POST "https://api.superbox.dev/api/v1/servers" \
     "name": "weather-mcp",
     "version": "1.0.0",
     "description": "Get real-time weather information and forecasts for any location",
-    "author": "John Doe",
+    "author": "Amartya Anand",
     "lang": "python",
     "license": "MIT",
     "entrypoint": "main.py",
@@ -176,7 +177,7 @@ const serverData = {
   version: "1.0.0",
   description:
     "Get real-time weather information and forecasts for any location",
-  author: "John Doe",
+  author: "Avantika Kesarwani",
   lang: "python",
   license: "MIT",
   entrypoint: "main.py",
@@ -223,7 +224,7 @@ server_data = {
     "name": "weather-mcp",
     "version": "1.0.0",
     "description": "Get real-time weather information and forecasts for any location",
-    "author": "John Doe",
+    "author": "Arush Verma",
     "lang": "python",
     "license": "MIT",
     "entrypoint": "main.py",
@@ -307,7 +308,7 @@ func main() {
         Name:        "weather-mcp",
         Version:     "1.0.0",
         Description: "Get real-time weather information and forecasts",
-        Author:      "John Doe",
+        Author:      "Rishi Chirchi",
         Lang:        "python",
         License:     "MIT",
         Entrypoint:  "main.py",

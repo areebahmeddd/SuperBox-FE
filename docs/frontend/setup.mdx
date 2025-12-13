@@ -1,7 +1,7 @@
 ---
 title: "Frontend Setup"
 description: "Set up your local development environment for SuperBox frontend"
-icon: "wrench"
+icon: "code"
 ---
 
 ## Prerequisites
@@ -31,9 +31,9 @@ Before you begin, ensure you have the following installed:
     Clone the SuperBox frontend repository to your local machine:
 
     ```bash
-    git clone https://github.com/areebahmeddd/SuperBox-FE.git
+git clone https://github.com/areebahmeddd/SuperBox-FE.git
     cd SuperBox-FE
-    ```
+```
 
   </Step>
 
@@ -41,17 +41,20 @@ Before you begin, ensure you have the following installed:
     Install all required npm packages:
 
     <CodeGroup>
-    ```bash npm
+    ```bash
+npm
     npm install
-    ```
+```
 
-    ```bash pnpm
+    ```bash
+pnpm
     pnpm install
-    ```
+```
 
-    ```bash yarn
+    ```bash
+yarn
     yarn install
-    ```
+```
     </CodeGroup>
 
     <Info>
@@ -64,27 +67,24 @@ Before you begin, ensure you have the following installed:
     Create a `.env.local` file in the root directory:
 
     ```bash
-    cp .env.example .env.local
-    ```
+cp .env.example .env.local
+```
 
     Edit `.env.local` with your configuration:
 
     ```bash
-    # API Configuration
-    NEXT_PUBLIC_API_URL=http://localhost:8080
+# API Configuration
+    NEXT_PUBLIC_API_URL=https://api.superbox.ai
     NEXT_PUBLIC_API_VERSION=v1
 
-    # Authentication
-    NEXT_PUBLIC_GOOGLE_CLIENT_ID=your_google_client_id
-    NEXT_PUBLIC_GITHUB_CLIENT_ID=your_github_client_id
+    # Firebase Configuration
+    NEXT_PUBLIC_FIREBASE_API_KEY=your_firebase_api_key
+    NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project_id.firebaseapp.com
+    NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
 
-    # Payment Gateway
+    # Payment Gateway (Razorpay)
     NEXT_PUBLIC_RAZORPAY_KEY_ID=your_razorpay_key_id
-
-    # Feature Flags
-    NEXT_PUBLIC_ENABLE_ANALYTICS=false
-    NEXT_PUBLIC_ENABLE_SENTRY=false
-    ```
+```
 
     <Warning>
       Never commit `.env.local` to version control. It contains sensitive credentials.
@@ -96,8 +96,8 @@ Before you begin, ensure you have the following installed:
     Run the Next.js development server:
 
     ```bash
-    npm run dev
-    ```
+npm run dev
+```
 
     The application will be available at:
     <Card>
@@ -114,24 +114,30 @@ Before you begin, ensure you have the following installed:
     Starts the Next.js development server with hot module replacement (HMR)
     
     ```bash
-    npm run dev
-    ```
+npm run dev
+```
     
     Server runs on **http://localhost:3000**
   </Accordion>
 
 <Accordion title="npm run build" icon="hammer">
-  Creates an optimized production build ```bash npm run build ``` Output is
+  Creates an optimized production build ```bash
+npm run build
+``` Output is
   generated in the `.next` directory
 </Accordion>
 
 <Accordion title="npm run start" icon="rocket">
-  Starts the production server (requires build first) ```bash npm run build &&
-  npm run start ``` Serves the optimized production build
+  Starts the production server (requires build first) ```bash
+npm run build &&
+  npm run start
+``` Serves the optimized production build
 </Accordion>
 
 <Accordion title="npm run lint" icon="circle-check">
-  Runs ESLint to check code quality ```bash npm run lint ``` Identifies and
+  Runs ESLint to check code quality ```bash
+npm run lint
+``` Identifies and
   fixes linting issues
 </Accordion>
 
@@ -139,8 +145,8 @@ Before you begin, ensure you have the following installed:
     Runs TypeScript type checking
     
     ```bash
-    npm run type-check
-    ```
+npm run type-check
+```
     
     Validates TypeScript types without building
   </Accordion>
@@ -228,24 +234,26 @@ Enable these features:
     If port 3000 is occupied, specify a different port:
     
     ```bash
-    PORT=3001 npm run dev
-    ```
+PORT=3001 npm run dev
+```
     
     Or kill the process using port 3000:
     
     ```bash
-    # On Linux/macOS
+# On Linux/macOS
     lsof -ti:3000 | xargs kill -9
     
     # On Windows
     netstat -ano | findstr :3000
     taskkill /PID <PID> /F
-    ```
+```
   </Accordion>
 
 <Accordion title="Module not found errors" icon="circle-exclamation">
-  Clear node_modules and reinstall: ```bash rm -rf node_modules
-  package-lock.json npm install ```
+  Clear node_modules and reinstall: ```bash
+rm -rf node_modules
+  package-lock.json npm install
+```
 </Accordion>
 
 <Accordion title="TypeScript errors" icon="code">
@@ -254,20 +262,22 @@ Enable these features:
 </Accordion>
 
 <Accordion title="Tailwind styles not working" icon="paintbrush">
-  Ensure Tailwind is properly configured and rebuild: ```bash npm run build npm
-  run dev ```
+  Ensure Tailwind is properly configured and rebuild: ```bash
+npm run build npm
+  run dev
+```
 </Accordion>
 
   <Accordion title="API connection errors" icon="plug">
     Verify your backend is running and environment variables are correct:
     
     ```bash
-    # Check backend status
+# Check backend status
     curl http://localhost:8080/health
     
     # Verify .env.local
     cat .env.local | grep NEXT_PUBLIC_API_URL
-    ```
+```
   </Accordion>
 </AccordionGroup>
 

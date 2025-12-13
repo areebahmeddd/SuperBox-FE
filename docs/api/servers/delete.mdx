@@ -79,7 +79,8 @@ icon: "trash"
 ## Examples
 
 <CodeGroup>
-```bash cURL
+```bash
+cURL
 # Basic deletion (requires confirm=true)
 curl -X DELETE "https://api.superbox.dev/api/v1/servers/my-test-server?confirm=true" \
   -H "Authorization: Bearer $SUPERBOX_API_TOKEN"
@@ -88,7 +89,6 @@ curl -X DELETE "https://api.superbox.dev/api/v1/servers/my-test-server?confirm=t
 
 curl -X DELETE "https://api.superbox.dev/api/v1/servers/my-server?confirm=true&force=true" \
  -H "Authorization: Bearer $SUPERBOX_API_TOKEN"
-
 ````
 
 ```javascript JavaScript
@@ -510,11 +510,11 @@ When you delete a server, SuperBox performs these steps:
     **Scenario:** Deleting a test/development server
     
     ```bash
-    # Quick deletion (no active users expected)
+# Quick deletion (no active users expected)
     curl -X DELETE \
       "https://api.superbox.dev/api/v1/servers/test-server?confirm=true" \
       -H "Authorization: Bearer $TOKEN"
-    ```
+```
     
     <Check>
       Safe to delete immediately

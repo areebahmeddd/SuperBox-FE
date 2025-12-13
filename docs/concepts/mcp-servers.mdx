@@ -1,7 +1,7 @@
 ---
 title: "MCP Servers"
 description: "Understanding Model Context Protocol (MCP) servers and their architecture"
-icon: "server"
+icon: "cube"
 ---
 
 ## What is MCP?
@@ -13,9 +13,14 @@ The **Model Context Protocol (MCP)** is an open standard developed by Anthropic 
   various services, databases, and APIs through a unified interface.
 </Info>
 
-<Frame>
-  <img src="/images/mcp-diagram.png" alt="MCP Architecture" />
-</Frame>
+<Card
+  title="Learn More About MCP"
+  icon="book"
+  href="https://www.anthropic.com/news/model-context-protocol"
+>
+  Read Anthropic's official announcement and deep dive into the Model Context
+  Protocol architecture and use cases.
+</Card>
 
 ## MCP Architecture
 
@@ -552,13 +557,15 @@ SuperBox provides a complete platform for publishing, discovering, and running M
     Develop your MCP server using any supported language:
     
     ```bash
-    superbox init my-mcp-server --template python
-    ```
+superbox init my-mcp-server --template python
+```
   </Step>
 
 <Step title="Test Locally">
-  Test your server with the SuperBox playground: ```bash superbox run
-  my-mcp-server ```
+  Test your server with the SuperBox playground: ```bash
+superbox run
+  my-mcp-server
+```
 </Step>
 
 <Step title="Security Scan">
@@ -568,7 +575,9 @@ SuperBox provides a complete platform for publishing, discovering, and running M
 </Step>
 
 <Step title="Publish to SuperBox">
-  Deploy to SuperBox marketplace: ```bash superbox push ```
+  Deploy to SuperBox marketplace: ```bash
+superbox push
+```
 </Step>
 
   <Step title="Sandboxed Execution">

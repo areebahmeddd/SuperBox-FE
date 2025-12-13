@@ -1,7 +1,7 @@
 ---
 title: "Frontend Deployment"
 description: "Deploy SuperBox frontend to Vercel with automatic CI/CD"
-icon: "rocket"
+icon: "upload"
 ---
 
 ## Vercel Deployment
@@ -21,7 +21,9 @@ SuperBox frontend is optimized for deployment on Vercel, the platform built by t
   </Step>
 
 <Step title="Install Vercel CLI (Optional)">
-  For local testing and deployment: ```bash npm install -g vercel ```
+  For local testing and deployment: ```bash
+npm install -g vercel
+```
 </Step>
 
   <Step title="Prepare Environment Variables">
@@ -61,39 +63,55 @@ SuperBox frontend is optimized for deployment on Vercel, the platform built by t
 </Accordion>
 
 <Accordion title="Step 3: Add Environment Variables" icon="3">
-  Add all environment variables in the Vercel dashboard: ```bash # Required
-  Variables NEXT_PUBLIC_API_URL=https://api.superbox.com
-  NEXT_PUBLIC_API_VERSION=v1 # Authentication
-  NEXT_PUBLIC_GOOGLE_CLIENT_ID=your_google_client_id
-  NEXT_PUBLIC_GITHUB_CLIENT_ID=your_github_client_id
-  GOOGLE_CLIENT_SECRET=your_google_client_secret
-  GITHUB_CLIENT_SECRET=your_github_client_secret
-  NEXTAUTH_SECRET=your_nextauth_secret
-  NEXTAUTH_URL=https://your-domain.vercel.app # Payment Gateway
-  NEXT_PUBLIC_RAZORPAY_KEY_ID=your_razorpay_key_id
-  RAZORPAY_KEY_SECRET=your_razorpay_secret # Analytics (Optional)
-  NEXT_PUBLIC_GA_TRACKING_ID=your_ga_tracking_id SENTRY_DSN=your_sentry_dsn #
-  Feature Flags NEXT_PUBLIC_ENABLE_ANALYTICS=true NEXT_PUBLIC_ENABLE_SENTRY=true
-  ```
-  <Warning>
-    Environment variables prefixed with `NEXT_PUBLIC_` are exposed to the
-    browser. Never include secrets in public variables.
-  </Warning>
+  Add all environment variables in the Vercel dashboard:
+  ```bash
+# Required Variables
+  NEXT_PUBLIC_API_URL=https://api.superbox.com
+  NEXT_PUBLIC_API_VERSION=v1
+
+# Authentication
+
+NEXT_PUBLIC_GOOGLE_CLIENT_ID=your_google_client_id
+NEXT_PUBLIC_GITHUB_CLIENT_ID=your_github_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+GITHUB_CLIENT_SECRET=your_github_client_secret
+NEXTAUTH_SECRET=your_nextauth_secret
+NEXTAUTH_URL=https://your-domain.vercel.app
+
+# Payment Gateway
+
+NEXT_PUBLIC_RAZORPAY_KEY_ID=your_razorpay_key_id
+RAZORPAY_KEY_SECRET=your_razorpay_secret
+
+# Analytics (Optional)
+
+NEXT_PUBLIC_GA_TRACKING_ID=your_ga_tracking_id
+SENTRY_DSN=your_sentry_dsn
+
+# Feature Flags
+
+NEXT_PUBLIC_ENABLE_ANALYTICS=true
+NEXT_PUBLIC_ENABLE_SENTRY=true
+````
+<Warning>
+  Environment variables prefixed with `NEXT_PUBLIC_` are exposed to the
+  browser. Never include secrets in public variables.
+</Warning>
 </Accordion>
 
-  <Accordion title="Step 4: Deploy" icon="4">
-    Click **Deploy** button. Vercel will:
-    
-    1. Clone your repository
-    2. Install dependencies
-    3. Run the build process
-    4. Deploy to global CDN
-    5. Provide a production URL
-    
-    <Check>
-      **Deployment complete!** Your app is now live at `https://your-project.vercel.app`
-    </Check>
-  </Accordion>
+<Accordion title="Step 4: Deploy" icon="4">
+Click **Deploy** button. Vercel will:
+
+1. Clone your repository
+2. Install dependencies
+3. Run the build process
+4. Deploy to global CDN
+5. Provide a production URL
+
+<Check>
+  **Deployment complete!** Your app is now live at `https://your-project.vercel.app`
+</Check>
+</Accordion>
 </AccordionGroup>
 
 ### Method 2: Vercel CLI
@@ -101,7 +119,8 @@ SuperBox frontend is optimized for deployment on Vercel, the platform built by t
 Deploy directly from your terminal:
 
 <CodeGroup>
-```bash First Deployment
+```bash
+First Deployment
 # Login to Vercel
 vercel login
 
@@ -112,16 +131,16 @@ vercel
 # Deploy to production
 
 vercel --prod
-
 ````
 
-```bash Subsequent Deployments
+```bash
+Subsequent Deployments
 # Preview deployment
 vercel
 
 # Production deployment
 git push origin main  # Auto-deploys via GitHub integration
-````
+```
 
 </CodeGroup>
 
@@ -132,15 +151,17 @@ Upload your built application manually:
 <Steps>
   <Step title="Build Locally">
     ```bash
-    npm run build
-    ```
+npm run build
+```
   </Step>
 
-<Step title="Test Production Build">```bash npm run start ```</Step>
+<Step title="Test Production Build">```bash
+npm run start
+```</Step>
 
   <Step title="Deploy via Dashboard">
     1. Go to Vercel dashboard
-    2. Click **Add New** → **Project**
+    2. Click **Add New** > **Project**
     3. Upload the `.next` folder
     4. Configure settings
     5. Deploy
@@ -193,8 +214,8 @@ Upload your built application manually:
     Update `NEXTAUTH_URL` to your custom domain:
     
     ```bash
-    NEXTAUTH_URL=https://superbox.com
-    ```
+NEXTAUTH_URL=https://superbox.com
+```
   </Step>
 </Steps>
 
@@ -458,8 +479,8 @@ Monitor Core Web Vitals:
     Check Vercel build logs for errors:
     
     ```bash
-    vercel logs [deployment-url]
-    ```
+vercel logs [deployment-url]
+```
     
     Common issues:
     - Missing environment variables

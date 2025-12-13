@@ -1,7 +1,7 @@
 ---
 title: "Architecture"
 description: "Deep dive into SuperBox system architecture and design"
-icon: "sitemap"
+icon: "diagram-project"
 ---
 
 SuperBox is a cloud-native platform combining Next.js, Go, AWS Lambda, and S3 for scalable MCP server management.
@@ -75,15 +75,6 @@ The frontend is built with Next.js 16 and React 19, providing a modern, performa
     - **Tailwind CSS 4**: Utility-first styling with JIT compilation
     - **Framer Motion**: Smooth animations and transitions
   </Accordion>
-
-<Accordion icon="folder-tree" title="Directory Structure">
-  ``` src/ ├── app/ # Next.js App Router │ ├── layout.tsx # Root layout │ ├──
-  page.tsx # Landing page │ ├── explore/ # Browse servers │ ├── server/[id]/ #
-  Server details │ ├── playground/ # Test environment │ ├── my-servers/ # User's
-  servers │ └── profile/ # User profile ├── components/ # Reusable components │
-  ├── auth-modal.tsx │ ├── server-card.tsx │ ├── server-detail.tsx │ └── ... └──
-  lib/ # Utilities └── types.ts # TypeScript definitions ```
-</Accordion>
 
   <Accordion icon="puzzle-piece" title="Key Components">
     - **ServerCard**: Displays server information in grid/list views
@@ -164,16 +155,21 @@ Amazon S3 serves as the registry backend, storing server metadata, code bundles,
 <CardGroup cols={2}>
   <Card title="Registry Structure" icon="folder">
     ```
-    superbox-registry/
-    ├── servers/
-    │   ├── server-1.json
-    │   ├── server-2.json
+    superbox-mcp-registry/
+    ├── metadata/
+    │   ├── {server-name}/
+    │   │   ├── metadata.json
+    │   │   ├── security-report.json
+    │   │   └── tools.json
     │   └── ...
-    ├── bundles/
-    │   ├── server-1-v1.0.0.tar.gz
+    ├── source/
+    │   ├── {server-name}/
+    │   │   ├── {version}/
+    │   │   │   └── source.tar.gz
+    │   │   └── ...
     │   └── ...
-    └── reports/
-        ├── server-1-security.json
+    └── bundles/
+        ├── {server-name}-{version}.zip
         └── ...
     ```
   </Card>
@@ -185,11 +181,18 @@ Amazon S3 serves as the registry backend, storing server metadata, code bundles,
       "version": "1.0.0",
       "description": "...",
       "author": "...",
-      "lang": "python",
+      "language": "python",
       "entrypoint": "main.py",
-      "repository": {...},
-      "pricing": {...},
-      "security_report": {...}
+      "repository": {
+        "url": "...",
+        "branch": "main"
+      },
+      "pricing": {
+        "type": "free"
+      },
+      "security_report": {
+        "status": "passed"
+      }
     }
     ```
   </Card>
@@ -388,31 +391,53 @@ Razorpay handles all payment processing for paid MCP servers.
 
 ## Infrastructure as Code
 
-SuperBox infrastructure is managed with Infrastructure as Code principles.
+SuperBox infrastructure is managed with Terraform using a modular architecture.
 
-```yaml
-# Example AWS SAM template (simplified)
-AWSTemplateFormatVersion: "2010-09-09"
-Transform: AWS::Serverless-2016-10-31
+```hcl
+# Terraform configuration for SuperBox infrastructure
+terraform {
+  required_version = ">= 1.0"
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
+}
 
-Resources:
-  ServerRegistry:
-    Type: AWS::S3::Bucket
-    Properties:
-      BucketName: superbox-registry
-      VersioningConfiguration:
-        Status: Enabled
+# S3 bucket for MCP server registry
+module "s3" {
+  source = "./modules/s3"
 
-  MCPExecutionFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      PackageType: Image
-      MemorySize: 2048
-      Timeout: 900
-      Environment:
-        Variables:
-          REGISTRY_BUCKET: !Ref ServerRegistry
+  project_name = var.project_name
+  aws_region   = var.aws_region
+}
+
+# IAM roles and policies for Lambda
+module "iam" {
+  source = "./modules/iam"
+
+  project_name  = var.project_name
+  s3_bucket_arn = module.s3.bucket_arn
+}
+
+# Lambda function for MCP execution
+module "lambda" {
+  source = "./modules/lambda"
+
+  project_name       = var.project_name
+  aws_region         = var.aws_region
+  s3_bucket_name     = module.s3.bucket_name
+  execution_role_arn = module.iam.lambda_role_arn
+}
 ```
+
+**Key Infrastructure Components:**
+
+- **S3 Module**: Creates and configures the MCP registry bucket with versioning
+- **IAM Module**: Manages roles and policies for Lambda execution
+- **Lambda Module**: Provisions containerized Lambda functions for MCP server execution
+- **Region**: Deployed in ap-south-1 (Mumbai) by default
 
 ## Deployment Pipeline
 

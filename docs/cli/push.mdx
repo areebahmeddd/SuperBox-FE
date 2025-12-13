@@ -1,7 +1,7 @@
 ---
 title: "superbox push"
 description: "Publish MCP server to SuperBox marketplace with security scanning"
-icon: "upload"
+icon: "cloud-arrow-up"
 ---
 
 ## Usage
@@ -21,7 +21,9 @@ Publishes your MCP server to SuperBox marketplace. Runs 5-step security scan, up
 </ParamField>
 
 <ParamField path="--tags" type="array">
-  Comma-separated tags ```bash superbox push --tags weather,api,realtime ```
+  Comma-separated tags ```bash
+superbox push --tags weather,api,realtime
+```
 </ParamField>
 
 <ParamField path="--visibility" type="string" default="public">
@@ -53,18 +55,21 @@ Publishes your MCP server to SuperBox marketplace. Runs 5-step security scan, up
 ## Examples
 
 <CodeGroup>
-```bash Basic Push
+```bash
+Basic Push
 superbox push
 ```
 
-```bash With Metadata
+```bash
+With Metadata
 superbox push \
   --category data \
   --tags weather,forecast,api \
   --message "Added forecast tool"
 ```
 
-```bash Quick Push
+```bash
+Quick Push
 superbox push --skip-tests --quiet
 ```
 

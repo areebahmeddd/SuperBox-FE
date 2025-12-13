@@ -1,7 +1,7 @@
 ---
 title: "superbox inspect"
 description: "View detailed information about an MCP server"
-icon: "eye"
+icon: "file-magnifying-glass"
 ---
 
 ## Usage
@@ -17,7 +17,9 @@ Display comprehensive information about an MCP server including tools, metadata,
 ## Arguments
 
 <ParamField path="SERVER_ID" type="string" required>
-  Server ID to inspect ```bash superbox inspect weather-mcp-123 ```
+  Server ID to inspect ```bash
+superbox inspect weather-mcp-123
+```
 </ParamField>
 
 ## Options
@@ -33,15 +35,18 @@ Display comprehensive information about an MCP server including tools, metadata,
 ## Examples
 
 <CodeGroup>
-```bash Basic Inspect
+```bash
+Basic Inspect
 superbox inspect weather-mcp-123
 ```
 
-```bash Tools Only
+```bash
+Tools Only
 superbox inspect weather-mcp-123 --tools
 ```
 
-```bash JSON Output
+```bash
+JSON Output
 superbox inspect weather-mcp-123 --json > server.json
 ```
 

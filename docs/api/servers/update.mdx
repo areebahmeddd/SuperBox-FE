@@ -2,7 +2,7 @@
 title: "Update Server"
 api: "PUT /servers/:name"
 description: "Update metadata and configuration of an existing MCP server"
-icon: "pencil"
+icon: "pen-to-square"
 ---
 
 ## Endpoint
@@ -124,7 +124,8 @@ icon: "pencil"
 ## Examples
 
 <CodeGroup>
-```bash cURL
+```bash
+cURL
 # Update version and description
 curl -X PUT "https://api.superbox.dev/api/v1/servers/weather-mcp" \
   -H "Authorization: Bearer $SUPERBOX_API_TOKEN" \
@@ -159,7 +160,6 @@ curl -X PUT "https://api.superbox.dev/api/v1/servers/weather-mcp" \
 "homepage": "https://weather-mcp.dev"
 }
 }'
-
 ````
 
 ```javascript JavaScript

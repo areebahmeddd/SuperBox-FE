@@ -1,7 +1,7 @@
 ---
 title: "Infrastructure Setup"
 description: "Deploy SuperBox AWS infrastructure with OpenTofu/Terraform"
-icon: "wrench"
+icon: "screwdriver-wrench"
 ---
 
 Deploy the complete SuperBox AWS infrastructure using OpenTofu or Terraform. This guide walks through installation, configuration, and deployment.
@@ -15,17 +15,23 @@ Deploy the complete SuperBox AWS infrastructure using OpenTofu or Terraform. Thi
     resources - Recommended: Admin access or custom IAM policy
   </Accordion>
 
-  <Accordion title="OpenTofu/Terraform" icon="cube">
-    **OpenTofu (Recommended):** ```bash # Windows winget install OpenTofu.tofu #
-    macOS brew install opentofu # Linux curl -fsSL
-    https://get.opentofu.org/install-opentofu.sh | bash ``` **Terraform
-    (Alternative):** ```bash # Download from https://www.terraform.io/downloads
-    # Extract and add to PATH terraform version ```
-  </Accordion>
+<Accordion title="OpenTofu/Terraform" icon="cube">
+  **OpenTofu (Recommended):** ```bash
+# Windows winget install OpenTofu.tofu #
+  macOS brew install opentofu # Linux curl -fsSL
+  https://get.opentofu.org/install-opentofu.sh | bash
+``` **Terraform
+  (Alternative):** ```bash
+# Download from https://www.terraform.io/downloads #
+  Extract and add to PATH terraform version
+```
+</Accordion>
 
   <Accordion title="AWS CLI (Optional)" icon="terminal">
-    For verification and testing: ```bash # Install AWS CLI pip install awscli #
-    Configure credentials aws configure ```
+    For verification and testing: ```bash
+# Install AWS CLI pip install awscli #
+    Configure credentials aws configure
+```
   </Accordion>
 </AccordionGroup>
 
@@ -36,14 +42,17 @@ Deploy the complete SuperBox AWS infrastructure using OpenTofu or Terraform. Thi
     Navigate to AWS Console → **IAM** → **Users** → Select your user
   </Step>
 
-  <Step title="Create Access Key">
-    - Go to **Security Credentials** tab - Click **Create Access Key** - Choose
-    **CLI/SDK** as use case - Download or copy the credentials
-  </Step>
+<Step title="Create Access Key">
+  - Go to **Security Credentials** tab - Click **Create Access Key** - Choose
+  **CLI/SDK** as use case - Download or copy the credentials
+</Step>
 
   <Step title="Store Securely">
-    ```bash # Never commit these to git! AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
-    AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY ```
+    ```bash
+# Never commit these to git!
+    AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
+    AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+```
   </Step>
 </Steps>
 
@@ -58,16 +67,32 @@ The Lambda function (`lambda.py`) must be packaged before deployment.
 
 <Tabs>
   <Tab title="PowerShell (Windows)">
-    ```powershell # Navigate to scripts directory cd SuperBox-Infra/scripts #
-    Run packaging script .\package_lambda.ps1 # Verify output ls
-    ../modules/lambda/lambda_payload.zip ```
+    ```powershell
+    # Navigate to scripts directory
+    cd SuperBox-Infra/scripts
+    
+    # Run packaging script
+    .\package_lambda.ps1
+    
+    # Verify output
+    ls ../modules/lambda/lambda_payload.zip
+    ```
   </Tab>
 
   <Tab title="Bash (Linux/macOS)">
-    ```bash # Navigate to scripts directory cd SuperBox-Infra/scripts # Make
-    script executable chmod +x package_lambda.sh # Run packaging script
-    ./package_lambda.sh # Verify output ls -lh
-    ../modules/lambda/lambda_payload.zip ```
+    ```bash
+# Navigate to scripts directory
+    cd SuperBox-Infra/scripts
+    
+    # Make script executable
+    chmod +x package_lambda.sh
+    
+    # Run packaging script
+    ./package_lambda.sh
+    
+    # Verify output
+    ls -lh ../modules/lambda/lambda_payload.zip
+```
   </Tab>
 </Tabs>
 
@@ -101,6 +126,7 @@ log_retention_days = 7          # CloudWatch retention
 
 **US:**
 
+- `ap-south-1` (Mumbai) - Recommended
 - `us-east-1` (N. Virginia)
 - `us-west-2` (Oregon)
 
@@ -117,20 +143,25 @@ Choose the region closest to your users for lower latency.
 
 <Steps>
   <Step title="Navigate to Infrastructure Directory">
-    ```bash cd SuperBox-Infra ```
+    ```bash
+cd SuperBox-Infra
+```
   </Step>
 
-  <Step title="Initialize OpenTofu/Terraform">
-    ```bash # OpenTofu tofu init # OR Terraform terraform init ``` This
-    downloads required providers and initializes backend. **Expected Output:**
-    ``` Initializing modules... Initializing the backend... Initializing
-    provider plugins... - Finding latest version of hashicorp/aws... -
-    Installing hashicorp/aws v5.x.x... OpenTofu has been successfully
-    initialized! ```
-  </Step>
+<Step title="Initialize OpenTofu/Terraform">
+  ```bash
+# OpenTofu tofu init # OR Terraform terraform init
+``` This downloads
+  required providers and initializes backend. **Expected Output:** ```
+  Initializing modules... Initializing the backend... Initializing provider
+  plugins... - Finding latest version of hashicorp/aws... - Installing
+  hashicorp/aws v5.x.x... OpenTofu has been successfully initialized! ```
+</Step>
 
   <Step title="Validate Configuration">
-    ```bash # OpenTofu tofu validate # OR Terraform terraform validate ```
+    ```bash
+# OpenTofu tofu validate # OR Terraform terraform validate
+```
     Ensures configuration syntax is correct.
   </Step>
 </Steps>
@@ -228,21 +259,21 @@ Verify infrastructure is working:
 <Tabs>
   <Tab title="Test Lambda Function">
     ```bash
-    # Get function URL from outputs
+# Get function URL from outputs
     LAMBDA_URL=$(tofu output -raw lambda_function_url)
     
     # Test with curl (should return 404 - no servers yet)
     curl -X POST "$LAMBDA_URL/test-server" \
       -H "Content-Type: application/json" \
       -d '{"test": "hello"}'
-    ```
+```
     
     **Expected:** 404 error (server not found in S3)
   </Tab>
   
   <Tab title="Test S3 Bucket">
     ```bash
-    # Get bucket name
+# Get bucket name
     BUCKET=$(tofu output -raw s3_bucket_name)
     
     # List objects (should be empty)
@@ -254,17 +285,17 @@ Verify infrastructure is working:
     
     # Verify upload
     aws s3 ls s3://$BUCKET/
-    ```
+```
   </Tab>
   
   <Tab title="Check CloudWatch Logs">
     ```bash
-    # View recent logs
+# View recent logs
     aws logs tail /aws/lambda/superbox-mcp-executor --follow
     
     # Or via AWS Console
     # CloudWatch → Logs → Log groups → /aws/lambda/superbox-mcp-executor
-    ```
+```
   </Tab>
 </Tabs>
 
@@ -294,11 +325,15 @@ To modify infrastructure after initial deployment:
     Modify `terraform.tfvars` or module files as needed
   </Step>
 
-  <Step title="Plan Changes">
-    ```bash tofu plan -out=tfplan ``` Review what will change
-  </Step>
+<Step title="Plan Changes">
+  ```bash
+tofu plan -out=tfplan
+``` Review what will change
+</Step>
 
-  <Step title="Apply Updates">```bash tofu apply tfplan ```</Step>
+  <Step title="Apply Updates">```bash
+tofu apply tfplan
+```</Step>
 </Steps>
 
 ## Destroying Infrastructure
@@ -339,13 +374,13 @@ tofu apply destroy.tfplan
     
     **Solution:**
     ```bash
-    # Re-package Lambda function
+# Re-package Lambda function
     cd SuperBox-Infra/scripts
     ./package_lambda.sh  # or .ps1 for Windows
     
     # Verify size (should be < 50MB)
     ls -lh ../modules/lambda/lambda_payload.zip
-    ```
+```
   </Accordion>
   
   <Accordion title="Error: Region not supported" icon="triangle-exclamation">

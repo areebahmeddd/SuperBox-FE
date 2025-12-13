@@ -1,96 +1,20 @@
 {
-  "$schema": "https://mintlify.com/schema.json",
-  "name": "SuperBox",
-  "logo": {
-    "dark": "/logo.svg",
-    "light": "/logo.svg",
-    "href": "https://superbox-fe.vercel.app"
-  },
+  "$schema": "https://mintlify.com/docs.json",
+  "name": "superbox.ai",
+  "theme": "prism",
   "favicon": "/favicon.ico",
   "colors": {
     "primary": "#ef4444",
     "light": "#f87171",
-    "dark": "#dc2626",
-    "background": {
-      "dark": "#0a0a0a",
-      "light": "#ffffff"
-    },
-    "anchors": {
-      "from": "#ef4444",
-      "to": "#dc2626"
-    }
+    "dark": "#dc2626"
   },
-  "topbar": {
-    "style": "gradient"
-  },
-  "sidebar": {
-    "items": "border"
-  },
-  "topbarLinks": [
-    {
-      "name": "GitHub",
-      "url": "https://github.com/areebahmeddd/superbox.ai"
-    },
-    {
-      "name": "Support",
-      "url": "mailto:hi@areeb.dev"
-    }
-  ],
-  "topbarCtaButton": {
-    "name": "Launch App",
-    "url": "https://superbox-fe.vercel.app"
-  },
-  "tabs": [
-    {
-      "name": "API Reference",
-      "url": "api"
-    },
-    {
-      "name": "CLI Reference",
-      "url": "cli"
-    }
-  ],
-  "anchors": [
-    {
-      "name": "GitHub",
-      "icon": "github",
-      "url": "https://github.com/areebahmeddd/superbox.ai"
-    },
-    {
-      "name": "Support",
-      "icon": "circle-dollar",
-      "url": "mailto:hi@areeb.dev"
-    }
-  ],
   "navigation": [
     {
       "group": "Getting Started",
-      "icon": "rocket",
       "pages": ["introduction", "quickstart", "architecture"]
     },
     {
-      "group": "Frontend",
-      "icon": "browser",
-      "pages": [
-        "frontend/overview",
-        "frontend/setup",
-        "frontend/components",
-        "frontend/deployment"
-      ]
-    },
-    {
-      "group": "Backend",
-      "icon": "server",
-      "pages": [
-        "backend/overview",
-        "backend/setup",
-        "backend/architecture",
-        "backend/deployment"
-      ]
-    },
-    {
       "group": "Core Concepts",
-      "icon": "lightbulb",
       "pages": [
         "concepts/mcp-servers",
         "concepts/sandboxes",
@@ -99,7 +23,6 @@
     },
     {
       "group": "Infrastructure",
-      "icon": "cloud",
       "pages": [
         "infrastructure/overview",
         "infrastructure/setup",
@@ -108,13 +31,29 @@
       ]
     },
     {
+      "group": "Backend",
+      "pages": [
+        "backend/overview",
+        "backend/setup",
+        "backend/architecture",
+        "backend/deployment"
+      ]
+    },
+    {
+      "group": "Frontend",
+      "pages": [
+        "frontend/overview",
+        "frontend/setup",
+        "frontend/components",
+        "frontend/deployment"
+      ]
+    },
+    {
       "group": "REST API",
-      "icon": "plug",
       "pages": ["api/introduction", "api/authentication", "api/errors"]
     },
     {
-      "group": "Servers",
-      "icon": "database",
+      "group": "Servers API",
       "pages": [
         "api/servers/list",
         "api/servers/get",
@@ -124,8 +63,7 @@
       ]
     },
     {
-      "group": "Authentication",
-      "icon": "lock",
+      "group": "Auth API",
       "pages": [
         "api/auth/register",
         "api/auth/login",
@@ -135,45 +73,22 @@
       ]
     },
     {
-      "group": "Payment",
-      "icon": "credit-card",
-      "pages": [
-        "api/payment/create-order",
-        "api/payment/verify",
-        "api/payment/status"
-      ]
-    },
-    {
-      "group": "CLI Commands",
-      "icon": "terminal",
+      "group": "CLI",
       "pages": ["cli/introduction", "cli/installation"]
     },
     {
-      "group": "Commands",
-      "icon": "wrench",
+      "group": "CLI Commands",
       "pages": [
         "cli/init",
         "cli/auth",
         "cli/push",
         "cli/pull",
         "cli/run",
+        "cli/logs",
         "cli/search",
         "cli/inspect",
         "cli/test"
       ]
     }
-  ],
-  "footerSocials": {
-    "github": "https://github.com/areebahmeddd/superbox.ai",
-    "x": "https://x.com/areebahmeddd"
-  },
-  "api": {
-    "baseUrl": "https://api.superbox.ai/api/v1",
-    "auth": {
-      "method": "bearer"
-    }
-  },
-  "styles": {
-    "styles": "/styles.css"
-  }
+  ]
 }

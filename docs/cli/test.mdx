@@ -1,7 +1,7 @@
 ---
 title: "superbox test"
 description: "Run MCP server test suite"
-icon: "vial"
+icon: "flask"
 ---
 
 ## Usage
@@ -17,7 +17,9 @@ Executes the test suite for your MCP server with coverage reporting.
 ## Options
 
 <ParamField path="--coverage" type="boolean">
-  Generate coverage report ```bash superbox test --coverage ```
+  Generate coverage report ```bash
+superbox test --coverage
+```
 </ParamField>
 
 <ParamField path="--verbose" type="boolean">
@@ -35,15 +37,18 @@ Executes the test suite for your MCP server with coverage reporting.
 ## Examples
 
 <CodeGroup>
-```bash Basic Test
+```bash
+Basic Test
 superbox test
 ```
 
-```bash With Coverage
+```bash
+With Coverage
 superbox test --coverage --verbose
 ```
 
-```bash Specific Pattern
+```bash
+Specific Pattern
 superbox test --pattern "integration_*.py"
 ```
 

@@ -1,7 +1,7 @@
 ---
 title: "Troubleshooting"
 description: "Debug common SuperBox infrastructure issues and errors"
-icon: "screwdriver-wrench"
+icon: "circle-exclamation"
 ---
 
 Comprehensive troubleshooting guide for common SuperBox infrastructure issues, deployment errors, and runtime problems.
@@ -325,11 +325,27 @@ Comprehensive troubleshooting guide for common SuperBox infrastructure issues, d
   </Accordion>
 
   <Accordion title="Connection Refused" icon="plug">
-    **Error:** ``` Error: Could not connect to SuperBox backend ``` **Causes:**
-    - Backend server down - Network/firewall blocking connection - Incorrect API
-    endpoint **Debug:** ```powershell # Test connectivity curl
-    https://api.superbox.dev/health # Check DNS resolution nslookup
-    api.superbox.dev # Verify endpoint in config superbox config get api_url ```
+    **Error:**
+    ```
+    Error: Could not connect to SuperBox backend
+    ```
+    
+    **Causes:**
+    - Backend server down
+    - Network/firewall blocking connection
+    - Incorrect API endpoint
+    
+    **Debug:**
+    ```powershell
+    # Test connectivity
+    curl https://api.superbox.dev/health
+    
+    # Check DNS resolution
+    nslookup api.superbox.dev
+    
+    # Verify endpoint in config
+    superbox config get api_url
+    ```
   </Accordion>
 </AccordionGroup>
 
@@ -403,17 +419,22 @@ Comprehensive troubleshooting guide for common SuperBox infrastructure issues, d
 
 <Steps>
   <Step title="Access Lambda Logs">
-    ```powershell aws logs tail /aws/lambda/superbox-mcp-executor --follow ```
+    ```powershell
+    aws logs tail /aws/lambda/superbox-mcp-executor --follow
+    ```
   </Step>
 
-  <Step title="Filter Error Logs">
-    ```sql fields @timestamp, @message | filter @message like
-    /Error|Exception|Failed/ | sort @timestamp desc | limit 100 ```
-  </Step>
+<Step title="Filter Error Logs">
+  ```sql fields @timestamp, @message | filter @message like
+  /Error|Exception|Failed/ | sort @timestamp desc | limit 100 ```
+</Step>
 
   <Step title="Extract Stack Traces">
-    ```sql fields @timestamp, @message | filter @message like /Traceback/ |
-    display @message ```
+    ```sql
+    fields @timestamp, @message
+    | filter @message like /Traceback/
+    | display @message
+    ```
   </Step>
 </Steps>
 

@@ -198,7 +198,8 @@ icon: "list"
 ## Examples
 
 <CodeGroup>
-```bash cURL
+```bash
+cURL
 # List all servers (default pagination)
 curl -X GET "https://api.superbox.dev/api/v1/servers" \
   -H "Content-Type: application/json"
@@ -223,7 +224,6 @@ curl -X GET "https://api.superbox.dev/api/v1/servers?search=weather&sort=-downlo
 curl -X GET "https://api.superbox.dev/api/v1/servers?page=2&limit=50" \
  -H "Authorization: Bearer $SUPERBOX_API_TOKEN" \
  -H "Content-Type: application/json"
-
 ````
 
 ```javascript JavaScript

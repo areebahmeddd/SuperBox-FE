@@ -65,7 +65,8 @@ export SUPERBOX_API_TOKEN="your_firebase_jwt_token_here"
 Then reference it in your code:
 
 <CodeGroup>
-```bash cURL
+```bash
+cURL
 curl -X GET "https://api.superbox.dev/api/v1/servers" \
   -H "Authorization: Bearer $SUPERBOX_API_TOKEN"
 ```
@@ -104,7 +105,8 @@ response = requests.get(
 For testing or development, you can use the token directly:
 
 <CodeGroup>
-```bash cURL
+```bash
+cURL
 curl -X GET "https://api.superbox.dev/api/v1/servers" \
   -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IjE5..."
 ```

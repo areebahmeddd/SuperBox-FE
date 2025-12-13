@@ -30,7 +30,6 @@ export default function PlaygroundPage() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
-  // Mock MCP servers data
   const mockMcpServers: MCPServer[] = [
     {
       name: "weather-api",
@@ -93,7 +92,6 @@ export default function PlaygroundPage() {
     setInputValue("");
     setIsLoading(true);
 
-    // Simulate AI response with 2 second delay
     setTimeout(() => {
       const responses = [
         "I've analyzed your request using the " +
@@ -138,7 +136,7 @@ export default function PlaygroundPage() {
         <div className="max-w-4xl mx-auto h-[calc(100vh-7rem)] flex flex-col px-6 relative z-10">
           {/* Messages Area */}
           <div className="flex-1 overflow-y-auto py-8 space-y-4">
-            <div className="max-w-2xl mx-auto px-6 space-y-4">
+            <div className="max-w-3xl mx-auto px-6 space-y-4">
               {messages.length === 0 ? (
                 <div className="flex flex-col items-center justify-center min-h-[60vh] w-full space-y-5 text-center">
                   <h2 className="text-3xl font-bold text-white">
@@ -153,19 +151,24 @@ export default function PlaygroundPage() {
                 messages.map((message) => (
                   <div
                     key={message.id}
-                    className={`flex ${
+                    className={`flex items-end gap-3 ${
                       message.role === "user" ? "justify-end" : "justify-start"
                     }`}
                   >
+                    {message.role === "assistant" && (
+                      <div className="w-9 h-9 rounded-full bg-white/10 border border-white/10 flex items-center justify-center text-xs text-white/70">
+                        AI
+                      </div>
+                    )}
                     <div
-                      className={`max-w-[85%] rounded-2xl px-4 py-2.5 ${
+                      className={`max-w-[82%] rounded-2xl px-4 py-3 shadow-md ${
                         message.role === "user"
-                          ? "bg-[var(--brand-red)] text-white"
-                          : "text-white"
+                          ? "bg-[var(--brand-red)] text-white rounded-br-md border border-white/10"
+                          : "bg-white/5 text-white border border-white/10"
                       }`}
                     >
                       {message.selectedMcp && message.role === "user" && (
-                        <div className="text-xs opacity-60 mb-1.5">
+                        <div className="text-xs opacity-70 mb-1.5">
                           Using: {message.selectedMcp}
                         </div>
                       )}
@@ -173,16 +176,19 @@ export default function PlaygroundPage() {
                         {message.content}
                       </p>
                     </div>
+                    {message.role === "user" && (
+                      <div className="w-9 h-9 rounded-full bg-[var(--brand-red)] text-white flex items-center justify-center text-xs border border-white/20">
+                        You
+                      </div>
+                    )}
                   </div>
                 ))
               )}
               {isLoading && (
                 <div className="flex justify-start">
-                  <div className="max-w-[85%] rounded-2xl px-4 py-2.5 bg-white/5 text-white border border-white/10">
-                    <div className="flex items-center gap-2">
-                      <Loader2 className="w-4 h-4 animate-spin text-[var(--brand-red)]" />
-                      <span className="text-sm text-gray-400">Thinking...</span>
-                    </div>
+                  <div className="flex items-center gap-2 text-sm text-gray-300 px-1 py-1">
+                    <Loader2 className="w-4 h-4 animate-spin text-white" />
+                    <span className="text-gray-400">Thinking...</span>
                   </div>
                 </div>
               )}
@@ -208,14 +214,14 @@ export default function PlaygroundPage() {
                 </div>
               </div>
             )}
-            <div className="max-w-2xl mx-auto">
-              <div className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 flex items-end gap-2 focus-within:border-[var(--brand-red)]/50 transition-all">
+            <div className="max-w-3xl mx-auto">
+              <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-black/60 px-4 py-2.5 focus-within:border-white/30 transition-all shadow-[0_10px_30px_rgba(0,0,0,0.35)]">
                 <button
                   onClick={() => setShowMcpSearch(!showMcpSearch)}
-                  className="p-2 rounded-lg hover:bg-white/10 border border-white/10 transition-all flex items-center justify-center relative"
+                  className="h-10 w-10 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition-all flex items-center justify-center relative"
                   title="Search MCP Servers"
                 >
-                  <Search className="w-5 h-5 text-gray-300" />
+                  <Search className="w-5 h-5 text-gray-200" />
                   {selectedMcp && (
                     <span className="absolute -top-1 -right-1 w-2 h-2 bg-[var(--brand-red)] rounded-full border-2 border-black" />
                   )}
@@ -228,22 +234,22 @@ export default function PlaygroundPage() {
                     if (inputRef.current) {
                       inputRef.current.style.height = "auto";
                       const scrollHeight = inputRef.current.scrollHeight;
-                      inputRef.current.style.height = `${Math.min(Math.max(scrollHeight, 48), 140)}px`;
+                      inputRef.current.style.height = `${Math.min(Math.max(scrollHeight, 44), 120)}px`;
                     }
                   }}
                   onKeyDown={handleKeyDown}
                   placeholder="Type your message..."
-                  className="flex-1 bg-transparent text-white placeholder-gray-400 py-2.5 px-2 resize-none focus:outline-none rounded-lg"
+                  className="flex-1 bg-transparent text-white placeholder-gray-400 py-2 px-2 resize-none focus:outline-none leading-relaxed"
                   style={{
-                    minHeight: "48px",
-                    maxHeight: "140px",
+                    minHeight: "44px",
+                    maxHeight: "120px",
                     lineHeight: "1.5",
                   }}
                 />
                 <button
                   onClick={handleSendMessage}
                   disabled={!inputValue.trim() || isLoading}
-                  className="px-3 py-2 rounded-lg bg-[var(--brand-red)] hover:bg-[var(--brand-red)]/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                  className="h-10 w-10 rounded-xl bg-[var(--brand-red)] hover:bg-[var(--brand-red)]/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                   title="Send Message"
                 >
                   <SendHorizontal className="w-4 h-4 text-white" />

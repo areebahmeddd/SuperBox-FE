@@ -717,10 +717,10 @@ def make_request(url, **kwargs):
   <Accordion title="Scenario 1: Creating a Server with Invalid Name" icon="circle-xmark">
     **Request:**
     ```bash
-    curl -X POST "https://api.superbox.dev/api/v1/servers" \
+curl -X POST "https://api.superbox.dev/api/v1/servers" \
       -H "Authorization: Bearer $TOKEN" \
       -d '{"name": "My Server!", "version": "1.0.0", ...}'
-    ```
+```
     
     **Response:** `400 Bad Request`
     ```json
@@ -744,9 +744,9 @@ def make_request(url, **kwargs):
   <Accordion title="Scenario 2: Token Expired During Request" icon="clock">
     **Request:**
     ```bash
-    curl -X GET "https://api.superbox.dev/api/v1/servers"
+curl -X GET "https://api.superbox.dev/api/v1/servers"
       -H "Authorization: Bearer expired_token"
-    ```
+```
     
     **Response:** `401 Unauthorized`
     ```json
@@ -765,9 +765,9 @@ def make_request(url, **kwargs):
   <Accordion title="Scenario 3: Deleting Someone Else's Server" icon="ban">
     **Request:**
     ```bash
-    curl -X DELETE "https://api.superbox.dev/api/v1/servers/other-user-server" \
+curl -X DELETE "https://api.superbox.dev/api/v1/servers/other-user-server" \
       -H "Authorization: Bearer $TOKEN"
-    ```
+```
     
     **Response:** `403 Forbidden`
     ```json
@@ -790,9 +790,9 @@ def make_request(url, **kwargs):
   <Accordion title="Scenario 4: Rate Limit Exceeded" icon="gauge-high">
     **Request:**
     ```bash
-    # After 1000 requests in an hour
+# After 1000 requests in an hour
     curl -X GET "https://api.superbox.dev/api/v1/servers"
-    ```
+```
     
     **Response:** `429 Too Many Requests`
     ```json

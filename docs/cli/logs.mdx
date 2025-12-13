@@ -1,0 +1,46 @@
+---
+title: "superbox logs"
+description: "View or follow CloudWatch logs for an MCP server"
+icon: "file-lines"
+---
+
+The `logs` command reads CloudWatch logs for a deployed MCP server. It maps to `src/superbox/cli/commands/logs.py` in the backend repo and requires AWS credentials plus registry access in `.env`.
+
+## Usage
+
+```bash
+superbox logs --name <server> [--follow|-f]
+```
+
+### Options
+
+<ParamField path="--name" type="string" required>
+  MCP server name (matches the registry entry and CloudWatch log group).
+</ParamField>
+
+<ParamField path="--follow" type="boolean" default={false}>
+  Follow logs in real time (tail). Shorthand: `-f`.
+</ParamField>
+
+## Behavior
+
+- Loads `.env` in the current directory for AWS creds/region and S3 bucket.
+- Verifies the server exists in the registry bucket.
+- Reads from CloudWatch log group `/aws/lambda/superbox-executor-<name>`.
+- Prints the last hour by default; with `--follow`, streams continuously.
+
+## Examples
+
+```bash
+# Fetch the last hour of logs
+superbox logs --name weather-mcp
+
+# Tail in real time
+superbox logs --name weather-mcp --follow
+```
+
+## Troubleshooting
+
+- If you see “log group not found”, the server may not have been executed yet or the name does not match the deployed Lambda suffix.
+- Ensure `.env` contains `AWS_REGION`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, and the registry bucket name (`S3_BUCKET_NAME`).
+- Use `superbox search` to confirm the server exists in the registry. If missing, run `superbox push` first.

@@ -189,7 +189,8 @@ icon: "magnifying-glass"
 ## Examples
 
 <CodeGroup>
-```bash cURL
+```bash
+cURL
 # Get server details
 curl -X GET "https://api.superbox.dev/api/v1/servers/weather-mcp" \
   -H "Content-Type: application/json"
@@ -199,7 +200,6 @@ curl -X GET "https://api.superbox.dev/api/v1/servers/weather-mcp" \
 curl -X GET "https://api.superbox.dev/api/v1/servers/weather-mcp" \
  -H "Authorization: Bearer $SUPERBOX_API_TOKEN" \
  -H "Content-Type: application/json"
-
 ````
 
 ```javascript JavaScript
@@ -518,12 +518,12 @@ func main() {
   
   <Accordion title="Clone Repository" icon="code-branch">
     ```bash
-    # Get repository URL and clone
+# Get repository URL and clone
     REPO_URL=$(curl -s "https://api.superbox.dev/api/v1/servers/weather-mcp" | \
       jq -r '.data.repository.url')
     
     git clone $REPO_URL
-    ```
+```
   </Accordion>
 </AccordionGroup>
 
