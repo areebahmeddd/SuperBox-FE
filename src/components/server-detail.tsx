@@ -259,14 +259,12 @@ export default function ServerDetail({ server }: ServerDetailProps) {
                   </div>
                 </div>
 
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                <button
                   onClick={() => setShowPaywall(true)}
-                  className="w-full py-3 rounded-xl bg-gradient-to-r from-[var(--brand-red)] to-[var(--brand-red-light)] text-white font-semibold text-sm hover:shadow-lg hover:shadow-[var(--brand-red)]/25 transition-shadow"
+                  className="w-full py-3 rounded-xl bg-[var(--brand-red)] text-white font-semibold text-sm hover:bg-[var(--brand-red)]/90 transition-colors"
                 >
                   Unlock Premium Access
-                </motion.button>
+                </button>
 
                 <p className="text-xs text-white/40 text-center mt-3">
                   Includes unlimited API calls & priority support

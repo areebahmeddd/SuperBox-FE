@@ -173,6 +173,14 @@ export default function Header() {
             whileTap={{ scale: 0.95 }}
             className="px-4 py-2 pl-2 text-sm text-white hover:text-[var(--brand-red)] transition-colors"
           >
+            <Link href="/explore">Explore</Link>
+          </motion.div>
+
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="px-4 py-2 pl-2 text-sm text-white hover:text-[var(--brand-red)] transition-colors"
+          >
             <a
               href="https://acm-aa28ebf6.mintlify.app"
               target="_blank"

@@ -290,11 +290,9 @@ export default function PaywallModal({
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.6 }}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
                   onClick={handlePayment}
                   disabled={isProcessing}
-                  className="w-full py-3 rounded-xl bg-gradient-to-r from-[var(--brand-red)] to-[var(--brand-red-light)] text-white font-semibold text-sm hover:shadow-lg hover:shadow-[var(--brand-red)]/25 transition-shadow duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full py-3 rounded-xl bg-[var(--brand-red)] text-white font-semibold text-sm hover:bg-[var(--brand-red)]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isProcessing ? "Processing..." : "Unlock Access"}
                 </motion.button>

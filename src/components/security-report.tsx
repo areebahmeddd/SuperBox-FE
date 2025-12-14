@@ -303,9 +303,34 @@ export default function SecurityReport({ security }: SecurityReportProps) {
           ))}
 
           {security.bandit.issues.length > 3 && (
-            <p className="text-center text-sm text-gray-400 mt-4">
-              +{security.bandit.issues.length - 3} more issues
-            </p>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3, delay: 0.2 }}
+              className="mt-6 relative"
+            >
+              <div className="flex items-center justify-center">
+                <button className="group flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors">
+                  <span className="relative">
+                    Show {security.bandit.issues.length - 3} more issues
+                    <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-white/50 group-hover:w-full transition-all duration-300" />
+                  </span>
+                  <svg
+                    className="w-3.5 h-3.5 transition-transform duration-300"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </motion.div>
           )}
         </motion.div>
       )}

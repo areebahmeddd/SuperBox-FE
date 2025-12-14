@@ -36,7 +36,7 @@ export default function ToolCard({ tool }: ToolCardProps) {
   return (
     <Link
       href={`/server/${encodeURIComponent(tool.name)}`}
-      className="block h-full"
+      className="block h-full w-full"
     >
       <motion.div
         whileHover={{
@@ -51,7 +51,7 @@ export default function ToolCard({ tool }: ToolCardProps) {
         style={{ willChange: "transform" }}
       >
         <motion.div
-          className="relative p-6 rounded-2xl bg-white/[0.02] h-full flex flex-col cursor-pointer"
+          className="relative p-6 rounded-2xl bg-white/[0.02] h-full min-h-[280px] flex flex-col cursor-pointer"
           initial={{ borderColor: "rgba(255, 255, 255, 0.1)" }}
           whileHover={{
             borderColor: "var(--brand-red)",

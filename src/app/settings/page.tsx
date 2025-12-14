@@ -245,14 +245,7 @@ export default function SettingsPage() {
                       className="mt-2"
                     />
                   </div>
-                  <div className="flex gap-3">
-                    <Button type="submit" disabled={isUpdating}>
-                      {isUpdating ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                      ) : (
-                        "Update Password"
-                      )}
-                    </Button>
+                  <div className="flex gap-3 justify-end">
                     <Button
                       type="button"
                       onClick={() => {
@@ -266,6 +259,13 @@ export default function SettingsPage() {
                       variant="outline"
                     >
                       Cancel
+                    </Button>
+                    <Button type="submit" disabled={isUpdating}>
+                      {isUpdating ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        "Update Password"
+                      )}
                     </Button>
                   </div>
                 </form>
