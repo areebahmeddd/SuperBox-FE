@@ -9,28 +9,30 @@ icon: "bolt"
 <Steps>
   <Step title="Install CLI">
     ```bash
-pip install superbox
-```
+    pip install superbox
+    ```
   </Step>
 
   <Step title="Authenticate">
     ```bash
-superbox auth login
-```
+    superbox auth login
+    ```
+    
     Follow the device flow instructions to authenticate via browser.
   </Step>
 
   <Step title="Initialize Your Server">
     ```bash
-superbox init
-```
+    superbox init
+    ```
+    
     Provide server details: name, repository URL, description, entrypoint file.
   </Step>
 
   <Step title="Push to Registry">
     ```bash
-superbox push
-```
+    superbox push
+    ```
     
     This will:
     - Run SonarCloud analysis on your repository
@@ -49,21 +51,22 @@ superbox push
 
   <Step title="Install CLI">
     ```bash
-pip install superbox
-```
+    pip install superbox
+    ```
   </Step>
 
   <Step title="Pull Server Configuration">
     ```bash
-superbox pull weather-server --client cursor
-```
+    superbox pull weather-server --client cursor
+    ```
+    
     Supports: vscode, cursor, windsurf, claude, chatgpt
   </Step>
 
   <Step title="Test the Server">
     ```bash
-superbox run --name weather-server
-```
+    superbox run --name weather-server
+    ```
     
     Interactive terminal session to test server tools.
   </Step>
@@ -74,26 +77,26 @@ superbox run --name weather-server
 <Steps>
   <Step title="List All Servers">
     ```bash
-curl https://api.superbox.ai/api/v1/servers
-```
+    curl https://api.superbox.ai/api/v1/servers
+    ```
     
     Response includes server metadata, tools, pricing, and security reports.
   </Step>
 
   <Step title="Get Server Details">
     ```bash
-curl https://api.superbox.ai/api/v1/servers/weather-server
-```
+    curl https://api.superbox.ai/api/v1/servers/weather-server
+    ```
   </Step>
 
   <Step title="Execute MCP Server">
     Send JSON-RPC requests to the Lambda endpoint:
     
     ```bash
-curl -X POST https://{lambda-url}/weather-server \
+    curl -X POST https://{lambda-url}/weather-server \
       -H "Content-Type: application/json" \
       -d '{"method": "tools/call", "params": {"name": "get_weather", "arguments": {"city": "NYC"}}}'
-```
+    ```
   </Step>
 </Steps>
 

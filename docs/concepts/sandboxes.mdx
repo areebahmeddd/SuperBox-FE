@@ -97,12 +97,24 @@ SuperBox uses **AWS Lambda** to execute MCP servers in completely isolated sandb
   configuration 5. Initialize server instance
 </Step>
 
-<Step title="Tool Execution">
-  Execute requested tool in sandbox: ```python # Inside Lambda handler async def
-  execute_tool(server_id, tool_name, parameters): # Load server server = await
-  load_mcp_server(server_id) # Call tool result = await server.call_tool(
-  name=tool_name, arguments=parameters ) return result ```
-</Step>
+  <Step title="Tool Execution">
+    Execute requested tool in sandbox:
+    
+    ```python
+    # Inside Lambda handler
+    async def execute_tool(server_id, tool_name, parameters):
+        # Load server
+        server = await load_mcp_server(server_id)
+        
+        # Call tool
+        result = await server.call_tool(
+            name=tool_name,
+            arguments=parameters
+        )
+        
+        return result
+    ```
+  </Step>
 
   <Step title="Response Return">
     Return execution result:

@@ -31,14 +31,17 @@ SuperBox uses **Firebase Authentication** with **JWT (JSON Web Tokens)** for sec
     </CardGroup>
   </Step>
 
-<Step title="Navigate to Settings">
-  Go to your [Profile Settings](https://superbox-fe.vercel.app/settings) page.
-</Step>
+  <Step title="Navigate to Settings">
+    Go to your [Profile Settings](https://superbox-fe.vercel.app/settings) page.
+  </Step>
 
-<Step title="Generate API Token">
-  Click **"Generate API Token"** to create a new authentication token.
-  <Warning>This token will only be shown once. Store it securely!</Warning>
-</Step>
+  <Step title="Generate API Token">
+    Click **"Generate API Token"** to create a new authentication token.
+    
+    <Warning>
+      This token will only be shown once. Store it securely!
+    </Warning>
+  </Step>
 
   <Step title="Copy and Store">
     Copy your token and store it in a secure location like:
@@ -67,14 +70,15 @@ Then reference it in your code:
 <CodeGroup>
 ```bash
 cURL
-curl -X GET "https://api.superbox.dev/api/v1/servers" \
+curl -X GET "https://api.superbox.ai/api/v1/servers" \
   -H "Authorization: Bearer $SUPERBOX_API_TOKEN"
 ```
 
-```javascript JavaScript
+```javascript
+JavaScript
 const token = process.env.SUPERBOX_API_TOKEN;
 
-const response = await fetch("https://api.superbox.dev/api/v1/servers", {
+const response = await fetch("https://api.superbox.ai/api/v1/servers", {
   headers: {
     Authorization: `Bearer ${token}`,
     "Content-Type": "application/json",
@@ -82,7 +86,8 @@ const response = await fetch("https://api.superbox.dev/api/v1/servers", {
 });
 ```
 
-```python Python
+```python
+Python
 import os
 import requests
 
@@ -93,11 +98,10 @@ headers = {
 }
 
 response = requests.get(
-    'https://api.superbox.dev/api/v1/servers',
+    'https://api.superbox.ai/api/v1/servers',
     headers=headers
 )
 ```
-
 </CodeGroup>
 
 ### Direct Usage
@@ -107,12 +111,13 @@ For testing or development, you can use the token directly:
 <CodeGroup>
 ```bash
 cURL
-curl -X GET "https://api.superbox.dev/api/v1/servers" \
+curl -X GET "https://api.superbox.ai/api/v1/servers" \
   -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IjE5..."
 ```
 
-```javascript JavaScript
-const response = await fetch("https://api.superbox.dev/api/v1/servers", {
+```javascript
+JavaScript
+const response = await fetch("https://api.superbox.ai/api/v1/servers", {
   headers: {
     Authorization: "Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IjE5...",
     "Content-Type": "application/json",
@@ -120,18 +125,18 @@ const response = await fetch("https://api.superbox.dev/api/v1/servers", {
 });
 ```
 
-```python Python
+```python
+Python
 headers = {
     'Authorization': 'Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IjE5...',
     'Content-Type': 'application/json'
 }
 
 response = requests.get(
-    'https://api.superbox.dev/api/v1/servers',
+    'https://api.superbox.ai/api/v1/servers',
     headers=headers
 )
 ```
-
 </CodeGroup>
 
 ## Authentication Flow
@@ -258,7 +263,8 @@ When a token expires, you'll receive a `401 Unauthorized` response:
 The SuperBox frontend automatically refreshes tokens before they expire. For API clients, implement token refresh logic:
 
 <CodeGroup>
-```javascript JavaScript
+```javascript
+JavaScript
 let token = await getFirebaseToken();
 let tokenExpiry = getTokenExpiry(token);
 
@@ -280,7 +286,8 @@ headers: {
 
 ````
 
-```python Python
+```python
+Python
 import time
 import jwt
 from datetime import datetime, timedelta
@@ -466,7 +473,8 @@ SuperBox implements resource-level permissions:
 Using our official SDKs simplifies authentication:
 
 <CodeGroup>
-```python Python SDK
+```python
+Python SDK
 from superbox import SuperBoxClient
 
 # Initialize with token
@@ -479,7 +487,8 @@ servers = client.servers.list()
 
 ````
 
-```javascript Node.js SDK
+```javascript
+Node.js SDK
 import { SuperBoxClient } from '@superbox/sdk';
 
 // Initialize with token
@@ -491,7 +500,8 @@ const client = new SuperBoxClient({
 const servers = await client.servers.list();
 ````
 
-```go Go SDK
+```go
+Go SDK
 package main
 
 import (
@@ -516,19 +526,19 @@ Test your authentication setup:
 
 ```bash
 # Test with valid token
-curl -X GET "https://api.superbox.dev/api/v1/user/profile" \
+curl -X GET "https://api.superbox.ai/api/v1/user/profile" \
   -H "Authorization: Bearer $SUPERBOX_API_TOKEN"
 
 # Expected: 200 OK with user profile
 
 # Test with invalid token
-curl -X GET "https://api.superbox.dev/api/v1/user/profile" \
+curl -X GET "https://api.superbox.ai/api/v1/user/profile" \
   -H "Authorization: Bearer invalid_token"
 
 # Expected: 401 Unauthorized
 
 # Test without token
-curl -X GET "https://api.superbox.dev/api/v1/user/profile"
+curl -X GET "https://api.superbox.ai/api/v1/user/profile"
 
 # Expected: 401 Unauthorized (missing token)
 ```

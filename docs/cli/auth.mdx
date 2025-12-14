@@ -18,23 +18,26 @@ Authenticates with SuperBox using OAuth 2.0 device authorization flow. Opens bro
 
 <ParamField path="--method" type="string">
   Authentication method: `device_flow` or `token`.
+  
   ```bash
-superbox auth --method device_flow
-```
+  superbox auth --method device_flow
+  ```
 </ParamField>
 
 <ParamField path="--token" type="string">
   Provide API token directly.
+  
   ```bash
-superbox auth --token sb_1234567890abcdef
-```
+  superbox auth --token sb_1234567890abcdef
+  ```
 </ParamField>
 
 <ParamField path="--logout" type="boolean">
   Log out and remove stored token.
+  
   ```bash
-superbox auth --logout
-```
+  superbox auth --logout
+  ```
 </ParamField>
 
 ## Device Flow Process
@@ -52,7 +55,9 @@ superbox auth --logout
     ```
   </Step>
 
-<Step title="User Authorization">User logs in and authorizes device</Step>
+  <Step title="User Authorization">
+    User logs in and authorizes device
+  </Step>
 
   <Step title="Token Storage">
     Token saved to `~/.superbox/token.json`
@@ -79,14 +84,16 @@ superbox auth --token $SUPERBOX_API_TOKEN
 Logout
 superbox auth --logout
 ```
-
 </CodeGroup>
 
 ## Troubleshooting
 
 <Accordion title="Browser doesn't open">
-  Manually visit the URL and enter the code: ```text
-  https://superbox.ai/device?code=ABCD-1234 ```
+  Manually visit the URL and enter the code:
+  
+  ```text
+  https://superbox.ai/device?code=ABCD-1234
+  ```
 </Accordion>
 
 ## Next Steps

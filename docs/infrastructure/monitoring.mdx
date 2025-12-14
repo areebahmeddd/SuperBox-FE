@@ -15,9 +15,9 @@ Create a comprehensive dashboard to visualize all metrics:
     AWS Console → **CloudWatch** → **Dashboards** → **Create dashboard**
   </Step>
 
-<Step title="Add Widgets">
-  Create widgets for Lambda, S3, and application metrics
-</Step>
+  <Step title="Add Widgets">
+    Create widgets for Lambda, S3, and application metrics
+  </Step>
 
   <Step title="Configure Refresh">
     Set auto-refresh to 1 minute for real-time monitoring
@@ -28,30 +28,68 @@ Create a comprehensive dashboard to visualize all metrics:
 
 <Tabs>
   <Tab title="Lambda Metrics">
-    **Invocations** - Metric: `AWS/Lambda` → `Invocations` - Statistic: Sum -
-    Period: 1 minute - Chart type: Line **Errors** - Metric: `AWS/Lambda` →
-    `Errors` - Statistic: Sum - Period: 1 minute - Chart type: Stacked area
-    (with Invocations) **Duration** - Metric: `AWS/Lambda` → `Duration` -
-    Statistics: Average, Maximum, p99 - Period: 1 minute - Chart type: Line
-    **Throttles** - Metric: `AWS/Lambda` → `Throttles` - Statistic: Sum -
-    Period: 1 minute - Chart type: Number
+    **Invocations**
+    - Metric: `AWS/Lambda` → `Invocations`
+    - Statistic: Sum
+    - Period: 1 minute
+    - Chart type: Line
+    
+    **Errors**
+    - Metric: `AWS/Lambda` → `Errors`
+    - Statistic: Sum
+    - Period: 1 minute
+    - Chart type: Stacked area (with Invocations)
+    
+    **Duration**
+    - Metric: `AWS/Lambda` → `Duration`
+    - Statistics: Average, Maximum, p99
+    - Period: 1 minute
+    - Chart type: Line
+    
+    **Throttles**
+    - Metric: `AWS/Lambda` → `Throttles`
+    - Statistic: Sum
+    - Period: 1 minute
+    - Chart type: Number
   </Tab>
 
-<Tab title="S3 Metrics">
-  **Bucket Size** - Metric: `AWS/S3` → `BucketSizeBytes` - Statistic: Average -
-  Period: 1 day - Chart type: Number **GET Requests** - Metric: `AWS/S3` →
-  `GetRequests` - Statistic: Sum - Period: 5 minutes - Chart type: Line **PUT
-  Requests** - Metric: `AWS/S3` → `PutRequests` - Statistic: Sum - Period: 5
-  minutes - Chart type: Line
-</Tab>
+  <Tab title="S3 Metrics">
+    **Bucket Size**
+    - Metric: `AWS/S3` → `BucketSizeBytes`
+    - Statistic: Average
+    - Period: 1 day
+    - Chart type: Number
+    
+    **GET Requests**
+    - Metric: `AWS/S3` → `GetRequests`
+    - Statistic: Sum
+    - Period: 5 minutes
+    - Chart type: Line
+    
+    **PUT Requests**
+    - Metric: `AWS/S3` → `PutRequests`
+    - Statistic: Sum
+    - Period: 5 minutes
+    - Chart type: Line
+  </Tab>
 
   <Tab title="Application Metrics">
-    **MCP Server Executions** - Custom metric from Lambda logs - Filter:
-    "Request received" - Period: 1 minute - Chart type: Line **Execution Success
-    Rate** - Calculated from (Invocations - Errors) / Invocations * 100 -
-    Period: 5 minutes - Chart type: Number with gauge **Average Response Time**
-    - Extracted from Lambda duration - Statistic: Average - Period: 1 minute -
-    Chart type: Line
+    **MCP Server Executions**
+    - Custom metric from Lambda logs
+    - Filter: "Request received"
+    - Period: 1 minute
+    - Chart type: Line
+    
+    **Execution Success Rate**
+    - Calculated from (Invocations - Errors) / Invocations * 100
+    - Period: 5 minutes
+    - Chart type: Number with gauge
+    
+    **Average Response Time**
+    - Extracted from Lambda duration
+    - Statistic: Average
+    - Period: 1 minute
+    - Chart type: Line
   </Tab>
 </Tabs>
 

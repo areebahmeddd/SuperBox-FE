@@ -149,14 +149,14 @@ sonar.python.xunit.reportPath=xunit-report.xml
 ```bash
 # Run SonarQube scanner
 sonar-scanner \
-  -Dsonar.host.url=https://sonarqube.superbox.com \
+  -Dsonar.host.url=https://sonarqube.superbox.ai \
   -Dsonar.login=$SONAR_TOKEN \
   -Dsonar.projectKey=$PROJECT_KEY
 
 # Wait for quality gate
 quality_gate=$(curl -s \
   -u $SONAR_TOKEN: \
-  "https://sonarqube.superbox.com/api/qualitygates/project_status?projectKey=$PROJECT_KEY" \
+  "https://sonarqube.superbox.ai/api/qualitygates/project_status?projectKey=$PROJECT_KEY" \
   | jq -r '.projectStatus.status')
 
 if [ "$quality_gate" != "OK" ]; then

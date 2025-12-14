@@ -10,22 +10,34 @@ Deploy the complete SuperBox AWS infrastructure using OpenTofu or Terraform. Thi
 
 <AccordionGroup>
   <Accordion title="AWS Account" icon="aws">
-    - Active AWS account with billing enabled - Programmatic access (Access Key
-    ID + Secret Access Key) - Permissions to create: S3, Lambda, IAM, CloudWatch
-    resources - Recommended: Admin access or custom IAM policy
+    - Active AWS account with billing enabled
+    - Programmatic access (Access Key ID + Secret Access Key)
+    - Permissions to create: S3, Lambda, IAM, CloudWatch resources
+    - Recommended: Admin access or custom IAM policy
   </Accordion>
 
-<Accordion title="OpenTofu/Terraform" icon="cube">
-  **OpenTofu (Recommended):** ```bash
-# Windows winget install OpenTofu.tofu #
-  macOS brew install opentofu # Linux curl -fsSL
-  https://get.opentofu.org/install-opentofu.sh | bash
-``` **Terraform
-  (Alternative):** ```bash
-# Download from https://www.terraform.io/downloads #
-  Extract and add to PATH terraform version
-```
-</Accordion>
+  <Accordion title="OpenTofu/Terraform" icon="cube">
+    **OpenTofu (Recommended):**
+    
+    ```bash
+    # Windows
+    winget install OpenTofu.tofu
+    
+    # macOS
+    brew install opentofu
+    
+    # Linux
+    curl -fsSL https://get.opentofu.org/install-opentofu.sh | bash
+    ```
+    
+    **Terraform (Alternative):**
+    
+    ```bash
+    # Download from https://www.terraform.io/downloads
+    # Extract and add to PATH
+    terraform version
+    ```
+  </Accordion>
 
   <Accordion title="AWS CLI (Optional)" icon="terminal">
     For verification and testing:
@@ -46,17 +58,19 @@ Deploy the complete SuperBox AWS infrastructure using OpenTofu or Terraform. Thi
     Navigate to AWS Console → **IAM** → **Users** → Select your user
   </Step>
 
-<Step title="Create Access Key">
-  - Go to **Security Credentials** tab - Click **Create Access Key** - Choose
-  **CLI/SDK** as use case - Download or copy the credentials
-</Step>
+  <Step title="Create Access Key">
+    - Go to **Security Credentials** tab
+    - Click **Create Access Key**
+    - Choose **CLI/SDK** as use case
+    - Download or copy the credentials
+  </Step>
 
   <Step title="Store Securely">
     ```bash
-# Never commit these to git!
+    # Never commit these to git!
     AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
     AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
-```
+    ```
   </Step>
 </Steps>
 
@@ -85,7 +99,7 @@ The Lambda function (`lambda.py`) must be packaged before deployment.
 
   <Tab title="Bash (Linux/macOS)">
     ```bash
-# Navigate to scripts directory
+    # Navigate to scripts directory
     cd SuperBox-Infra/scripts
     
     # Make script executable
@@ -96,7 +110,7 @@ The Lambda function (`lambda.py`) must be packaged before deployment.
     
     # Verify output
     ls -lh ../modules/lambda/lambda_payload.zip
-```
+    ```
   </Tab>
 </Tabs>
 
@@ -148,24 +162,43 @@ Choose the region closest to your users for lower latency.
 <Steps>
   <Step title="Navigate to Infrastructure Directory">
     ```bash
-cd SuperBox-Infra
-```
+    cd SuperBox-Infra
+    ```
   </Step>
 
-<Step title="Initialize OpenTofu/Terraform">
-  ```bash
-# OpenTofu tofu init # OR Terraform terraform init
-``` This downloads
-  required providers and initializes backend. **Expected Output:** ```
-  Initializing modules... Initializing the backend... Initializing provider
-  plugins... - Finding latest version of hashicorp/aws... - Installing
-  hashicorp/aws v5.x.x... OpenTofu has been successfully initialized! ```
-</Step>
+  <Step title="Initialize OpenTofu/Terraform">
+    ```bash
+    # OpenTofu
+    tofu init
+    
+    # OR Terraform
+    terraform init
+    ```
+    
+    This downloads required providers and initializes backend.
+    
+    **Expected Output:**
+    
+    ```
+    Initializing modules...
+    Initializing the backend...
+    Initializing provider plugins...
+    - Finding latest version of hashicorp/aws...
+    - Installing hashicorp/aws v5.x.x...
+    
+    OpenTofu has been successfully initialized!
+    ```
+  </Step>
 
   <Step title="Validate Configuration">
     ```bash
-# OpenTofu tofu validate # OR Terraform terraform validate
-```
+    # OpenTofu
+    tofu validate
+    
+    # OR Terraform
+    terraform validate
+    ```
+    
     Ensures configuration syntax is correct.
   </Step>
 </Steps>

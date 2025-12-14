@@ -41,20 +41,21 @@ The **Model Context Protocol (MCP)** is an open standard developed by Anthropic 
     ```
   </Tab>
 
-<Tab title="Core Concepts">
-  MCP servers can expose three main primitives:
-  <CardGroup cols={3}>
-    <Card title="Tools" icon="wrench">
-      Functions that the AI can invoke to perform actions
-    </Card>
-    <Card title="Resources" icon="database">
-      Data sources that the AI can read from
-    </Card>
-    <Card title="Prompts" icon="comment">
-      Pre-built prompt templates
-    </Card>
-  </CardGroup>
-</Tab>
+  <Tab title="Core Concepts">
+    MCP servers can expose three main primitives:
+    
+    <CardGroup cols={3}>
+      <Card title="Tools" icon="wrench">
+        Functions that the AI can invoke to perform actions
+      </Card>
+      <Card title="Resources" icon="database">
+        Data sources that the AI can read from
+      </Card>
+      <Card title="Prompts" icon="comment">
+        Pre-built prompt templates
+      </Card>
+    </CardGroup>
+  </Tab>
 
   <Tab title="Communication Flow">
     ```json
@@ -95,7 +96,8 @@ The **Model Context Protocol (MCP)** is an open standard developed by Anthropic 
 ### Basic Server Implementation
 
 <CodeGroup>
-```python Python Server
+```python
+Python Server
 from mcp.server import Server
 from mcp.types import Tool, TextContent
 
@@ -152,7 +154,8 @@ server.run()
 
 ````
 
-```typescript TypeScript Server
+```typescript
+TypeScript Server
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import {
@@ -230,7 +233,8 @@ async function main() {
 main().catch(console.error);
 ````
 
-```go Go Server
+```go
+Go Server
 package main
 
 import (
@@ -557,28 +561,35 @@ SuperBox provides a complete platform for publishing, discovering, and running M
     Develop your MCP server using any supported language:
     
     ```bash
-superbox init my-mcp-server --template python
-```
+    superbox init my-mcp-server --template python
+    ```
   </Step>
 
-<Step title="Test Locally">
-  Test your server with the SuperBox playground: ```bash
-superbox run
-  my-mcp-server
-```
-</Step>
+  <Step title="Test Locally">
+    Test your server with the SuperBox playground:
+    
+    ```bash
+    superbox run my-mcp-server
+    ```
+  </Step>
 
-<Step title="Security Scan">
-  Automatic 5-step security pipeline: - SonarQube: Code quality - Bandit: Python
-  security - GitGuardian: Secrets detection - Semgrep: Vulnerability scanning -
-  OWASP: Dependency check
-</Step>
+  <Step title="Security Scan">
+    Automatic 5-step security pipeline:
+    
+    - SonarQube: Code quality
+    - Bandit: Python security
+    - GitGuardian: Secrets detection
+    - Semgrep: Vulnerability scanning
+    - OWASP: Dependency check
+  </Step>
 
-<Step title="Publish to SuperBox">
-  Deploy to SuperBox marketplace: ```bash
-superbox push
-```
-</Step>
+  <Step title="Publish to SuperBox">
+    Deploy to SuperBox marketplace:
+    
+    ```bash
+    superbox push
+    ```
+  </Step>
 
   <Step title="Sandboxed Execution">
     Your MCP server runs in isolated AWS Lambda environments with:

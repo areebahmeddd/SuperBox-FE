@@ -1,7 +1,7 @@
 ---
 title: "OAuth Authentication"
 description: "OAuth 2.0 authentication with Google and GitHub"
-api: "GET https://api.superbox.com/v1/auth/oauth/{provider}"
+api: "GET https://api.superbox.ai/v1/auth/oauth/{provider}"
 icon: "link"
 ---
 
@@ -32,7 +32,7 @@ icon: "link"
 
 <Step title="Callback">
   Provider redirects to callback URL with code ```
-  https://superbox.com/auth/callback?code=abc123&state=xyz ```
+  https://superbox.ai/auth/callback?code=abc123&state=xyz ```
 </Step>
 
   <Step title="Token Exchange">
@@ -47,17 +47,19 @@ icon: "link"
 <CodeGroup>
 ```bash
 cURL
-curl https://api.superbox.com/v1/auth/oauth/google
+curl https://api.superbox.ai/v1/auth/oauth/google
 ```
 
-```javascript JavaScript
-window.location.href = "https://api.superbox.com/v1/auth/oauth/google";
+```javascript
+JavaScript
+window.location.href = "https://api.superbox.ai/v1/auth/oauth/google";
 ```
 
-```python Python
+```python
+Python
 import requests
 
-response = requests.get('https://api.superbox.com/v1/auth/oauth/google')
+response = requests.get('https://api.superbox.ai/v1/auth/oauth/google')
 # Redirect user to response.url
 ```
 
@@ -66,7 +68,7 @@ response = requests.get('https://api.superbox.com/v1/auth/oauth/google')
 ### Query Parameters
 
 <ParamField query="redirect_uri" type="string">
-  Callback URL after authorization Default: `https://superbox.com/auth/callback`
+  Callback URL after authorization Default: `https://superbox.ai/auth/callback`
 </ParamField>
 
 <ParamField query="state" type="string">
@@ -94,8 +96,8 @@ GET /auth/oauth/github?redirect_uri=https://yourapp.com/callback
 {
   "user": {
     "id": "usr_1234567890",
-    "email": "john@example.com",
-    "username": "johndoe",
+    "email": "areeb@example.com",
+    "username": "areeb",
     "avatar_url": "https://avatars.githubusercontent.com/u/12345",
     "oauth_provider": "github",
     "oauth_id": "12345"
@@ -128,7 +130,8 @@ GET /auth/oauth/github?redirect_uri=https://yourapp.com/callback
 ## Frontend Integration
 
 <CodeGroup>
-```javascript React
+```javascript
+React
 function GoogleLogin() {
   const handleLogin = () => {
     const width = 500;
@@ -137,7 +140,7 @@ function GoogleLogin() {
     const top = window.screen.height / 2 - height / 2;
     
     const popup = window.open(
-      'https://api.superbox.com/v1/auth/oauth/google',
+      'https://api.superbox.ai/v1/auth/oauth/google',
       'Google Login',
       `width=${width},height=${height},left=${left},top=${top}`
     );
@@ -159,14 +162,15 @@ function GoogleLogin() {
 }
 ```
 
-```javascript Next.js
+```javascript
+Next.js
 // pages/api/auth/callback.js
 export default async function handler(req, res) {
   const { code, state } = req.query;
 
   // Exchange code for token
   const response = await fetch(
-    "https://api.superbox.com/v1/auth/oauth/callback",
+    "https://api.superbox.ai/v1/auth/oauth/callback",
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },

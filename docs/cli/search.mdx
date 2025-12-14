@@ -17,10 +17,11 @@ Search for MCP servers in the SuperBox marketplace.
 ## Arguments
 
 <ParamField path="QUERY" type="string">
-  Search query (searches name and description). ```bash
-superbox search
-  "weather"
-```
+  Search query (searches name and description).
+  
+  ```bash
+  superbox search "weather"
+  ```
 </ParamField>
 
 ## Options
@@ -66,25 +67,24 @@ superbox search "api" --category data --tags realtime
 Sort by Rating
 superbox search --sort rating --limit 10
 ```
-
 </CodeGroup>
 
 ## Output
 
 ```
-╭──────────────────── Search Results ────────────────────╮
-│                                                         │
-│  Weather MCP                       ★ 4.8  ↓ 1.2k      │
-│  Real-time weather data and forecasts                 │
-│  Tags: weather, api, data                             │
-│  ID: weather-mcp-123                                   │
-│                                                         │
-│  Climate Data MCP                  ★ 4.6  ↓ 850       │
-│  Historical climate data access                        │
-│  Tags: weather, data, historical                      │
-│  ID: climate-mcp-456                                   │
-│                                                         │
-╰─────────────────────────────────────────────────────────╯
+╭──────────────────── Search Results ──────────────────────╮
+│                                                           │
+│  Weather MCP                  ★ 4.8   ↓ 1.2k              │
+│  Real-time weather data and forecasts                     │
+│  Tags: weather, api, data                                 │
+│  ID:   weather-mcp-123                                    │
+│                                                           │
+│  Climate Data MCP             ★ 4.6   ↓ 850                │
+│  Historical climate data access                           │
+│  Tags: weather, data, historical                          │
+│  ID:   climate-mcp-456                                    │
+│                                                           │
+╰───────────────────────────────────────────────────────────╯
 ```
 
 ## Next Steps

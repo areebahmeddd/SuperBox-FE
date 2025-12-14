@@ -68,7 +68,7 @@ SuperBox frontend is optimized for deployment on Vercel, the platform built by t
   Add all environment variables in the Vercel dashboard:
   ```bash
 # Required Variables
-  NEXT_PUBLIC_API_URL=https://api.superbox.com
+  NEXT_PUBLIC_API_URL=https://api.superbox.ai
   NEXT_PUBLIC_API_VERSION=v1
 
 # Authentication
@@ -127,13 +127,11 @@ First Deployment
 vercel login
 
 # Deploy to preview
-
 vercel
 
 # Deploy to production
-
 vercel --prod
-````
+```
 
 ```bash
 Subsequent Deployments
@@ -153,8 +151,8 @@ Upload your built application manually:
 <Steps>
   <Step title="Build Locally">
     ```bash
-npm run build
-```
+    npm run build
+    ```
   </Step>
 
 <Step title="Test Production Build">
@@ -184,7 +182,7 @@ npm run build
     1. Go to your project settings
     2. Navigate to **Domains** tab
     3. Click **Add Domain**
-    4. Enter your domain (e.g., `superbox.com`)
+    4. Enter your domain (e.g., `superbox.ai`)
   </Step>
 
 <Step title="Configure DNS">
@@ -218,8 +216,8 @@ npm run build
     Update `NEXTAUTH_URL` to your custom domain:
     
     ```bash
-NEXTAUTH_URL=https://superbox.com
-```
+    NEXTAUTH_URL=https://superbox.ai
+    ```
   </Step>
 </Steps>
 
@@ -236,7 +234,7 @@ Customize deployment behavior with `vercel.json`:
   "framework": "nextjs",
   "regions": ["iad1", "sfo1"],
   "env": {
-    "NEXT_PUBLIC_API_URL": "https://api.superbox.com"
+    "NEXT_PUBLIC_API_URL": "https://api.superbox.ai"
   },
   "headers": [
     {
@@ -267,7 +265,7 @@ Customize deployment behavior with `vercel.json`:
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://api.superbox.com/:path*"
+      "destination": "https://api.superbox.ai/:path*"
     }
   ]
 }
@@ -351,7 +349,7 @@ const nextConfig = {
 
   // Optimize images
   images: {
-    domains: ["api.superbox.com", "avatars.githubusercontent.com"],
+    domains: ["api.superbox.ai", "avatars.githubusercontent.com"],
     formats: ["image/avif", "image/webp"],
     minimumCacheTTL: 60,
   },
@@ -402,7 +400,8 @@ export default nextConfig;
 
 Use Vercel Edge Functions for ultra-low latency:
 
-```tsx app/api/health/route.ts
+```tsx
+app/api/health/route.ts
 export const runtime = "edge";
 
 export async function GET() {
@@ -417,7 +416,8 @@ export async function GET() {
 
 Implement intelligent caching:
 
-```tsx app/server/[id]/page.tsx
+```tsx
+app/server/[id]/page.tsx
 export const revalidate = 3600; // Revalidate every hour
 
 export async function generateStaticParams() {
@@ -435,7 +435,8 @@ export async function generateStaticParams() {
 
 Enable built-in analytics:
 
-```tsx app/layout.tsx
+```tsx
+app/layout.tsx
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
@@ -483,8 +484,8 @@ Monitor Core Web Vitals:
     Check Vercel build logs for errors:
     
     ```bash
-vercel logs [deployment-url]
-```
+    vercel logs [deployment-url]
+    ```
     
     Common issues:
     - Missing environment variables
@@ -493,11 +494,14 @@ vercel logs [deployment-url]
     - Memory limit exceeded
   </Accordion>
 
-<Accordion title="Environment Variables Not Working" icon="key">
-  Ensure variables are: 1. Added in Vercel dashboard 2. Assigned to correct
-  environment (Production/Preview/Development) 3. Prefixed with `NEXT_PUBLIC_`
-  if needed in browser 4. Redeployed after adding
-</Accordion>
+  <Accordion title="Environment Variables Not Working" icon="key">
+    Ensure variables are:
+    
+    1. Added in Vercel dashboard
+    2. Assigned to correct environment (Production/Preview/Development)
+    3. Prefixed with `NEXT_PUBLIC_` if needed in browser
+    4. Redeployed after adding
+  </Accordion>
 
 <Accordion title="404 Errors on Refresh" icon="magnifying-glass">
   Vercel automatically handles Next.js routing. If you see 404s: 1. Verify

@@ -36,34 +36,51 @@ SuperBox backend runs on AWS with a highly available, scalable architecture.
     Create an AWS account at [aws.amazon.com](https://aws.amazon.com)
   </Step>
 
-<Step title="AWS CLI">
-  Install and configure AWS CLI: ```bash
-# Install AWS CLI curl
-  "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-  unzip awscliv2.zip sudo ./aws/install # Configure credentials aws configure
-``` Enter your AWS credentials: ``` AWS Access Key ID: your_access_key AWS
-  Secret Access Key: your_secret_key Default region name: ap-south-1 Default
-  output format: json ```
-</Step>
+  <Step title="AWS CLI">
+    Install and configure AWS CLI:
+    
+    ```bash
+    # Install AWS CLI
+    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+    unzip awscliv2.zip
+    sudo ./aws/install
+    
+    # Configure credentials
+    aws configure
+    ```
+    
+    Enter your AWS credentials:
+    
+    ```
+    AWS Access Key ID: your_access_key
+    AWS Secret Access Key: your_secret_key
+    Default region name: ap-south-1
+    Default output format: json
+    ```
+  </Step>
 
-<Step title="Terraform">
-  Install Terraform for infrastructure as code: ```bash
-# Download Terraform
-  wget
-  https://releases.hashicorp.com/terraform/1.6.0/terraform_1.6.0_linux_amd64.zip
-  unzip terraform_1.6.0_linux_amd64.zip sudo mv terraform /usr/local/bin/ #
-  Verify installation terraform version
-```
-</Step>
+  <Step title="Terraform">
+    Install Terraform for infrastructure as code:
+    
+    ```bash
+    # Download Terraform
+    wget https://releases.hashicorp.com/terraform/1.6.0/terraform_1.6.0_linux_amd64.zip
+    unzip terraform_1.6.0_linux_amd64.zip
+    sudo mv terraform /usr/local/bin/
+    
+    # Verify installation
+    terraform version
+    ```
+  </Step>
 
   <Step title="Docker">
     Install Docker for containerization:
     
     ```bash
-curl -fsSL https://get.docker.com -o get-docker.sh
+    curl -fsSL https://get.docker.com -o get-docker.sh
     sudo sh get-docker.sh
     sudo usermod -aG docker $USER
-```
+    ```
   </Step>
 </Steps>
 
@@ -352,31 +369,38 @@ terraform/
 <Steps>
   <Step title="Initialize Terraform">
     ```bash
-cd terraform
+    cd terraform
     terraform init
-```
+    ```
   </Step>
 
-<Step title="Create terraform.tfvars">
-  ```hcl aws_region = "ap-south-1" environment = "production" app_name =
-  "superbox" db_username = "superbox_admin" db_password = "change-this-password"
-  jwt_secret = "your-jwt-secret-key" ```
+  <Step title="Create terraform.tfvars">
+    ```hcl
+    aws_region  = "ap-south-1"
+    environment = "production"
+    app_name    = "superbox"
+    db_username = "superbox_admin"
+    db_password = "change-this-password"
+    jwt_secret  = "your-jwt-secret-key"
+    ```
   <Warning>
     Store sensitive values in AWS Secrets Manager or use Terraform Cloud for
     secure variable management.
   </Warning>
 </Step>
 
-<Step title="Plan Infrastructure">
-  ```bash
-terraform plan -out=tfplan
-``` Review the planned changes carefully.
-</Step>
+  <Step title="Plan Infrastructure">
+    ```bash
+    terraform plan -out=tfplan
+    ```
+    
+    Review the planned changes carefully.
+  </Step>
 
   <Step title="Apply Infrastructure">
     ```bash
-terraform apply tfplan
-```
+    terraform apply tfplan
+    ```
     
     This will create:
     - VPC with public/private subnets
@@ -557,7 +581,8 @@ jobs:
 
 ### Lambda Function Code
 
-```python lambda/executor/handler.py
+```python
+lambda/executor/handler.py
 import json
 import subprocess
 import tempfile

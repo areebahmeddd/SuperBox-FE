@@ -8,7 +8,7 @@ icon: "trash"
 ## Endpoint
 
 <Card>
-  <code>DELETE https://api.superbox.dev/api/v1/servers/:name</code>
+  <code>DELETE https://api.superbox.ai/api/v1/servers/:name</code>
 </Card>
 
 ## Authentication
@@ -82,16 +82,17 @@ icon: "trash"
 ```bash
 cURL
 # Basic deletion (requires confirm=true)
-curl -X DELETE "https://api.superbox.dev/api/v1/servers/my-test-server?confirm=true" \
+curl -X DELETE "https://api.superbox.ai/api/v1/servers/my-test-server?confirm=true" \
   -H "Authorization: Bearer $SUPERBOX_API_TOKEN"
 
 # Force deletion with active users
 
-curl -X DELETE "https://api.superbox.dev/api/v1/servers/my-server?confirm=true&force=true" \
+curl -X DELETE "https://api.superbox.ai/api/v1/servers/my-server?confirm=true&force=true" \
  -H "Authorization: Bearer $SUPERBOX_API_TOKEN"
 ````
 
-```javascript JavaScript
+```javascript
+JavaScript
 // Delete a server
 async function deleteServer(serverName) {
   const confirmed = confirm(
@@ -103,7 +104,7 @@ async function deleteServer(serverName) {
   }
 
   const response = await fetch(
-    `https://api.superbox.dev/api/v1/servers/${serverName}?confirm=true`,
+    `https://api.superbox.ai/api/v1/servers/${serverName}?confirm=true`,
     {
       method: 'DELETE',
       headers: {
@@ -132,7 +133,7 @@ await deleteServer('my-test-server');
 // Force deletion
 async function forceDeleteServer(serverName) {
   const response = await fetch(
-    `https://api.superbox.dev/api/v1/servers/${serverName}?confirm=true&force=true`,
+    `https://api.superbox.ai/api/v1/servers/${serverName}?confirm=true&force=true`,
     {
       method: 'DELETE',
       headers: {
@@ -145,7 +146,8 @@ async function forceDeleteServer(serverName) {
 }
 ````
 
-```python Python
+```python
+Python
 import requests
 import os
 
@@ -158,7 +160,7 @@ def delete_server(server_name, force=False):
         print("Deletion cancelled")
         return None
 
-    url = f"https://api.superbox.dev/api/v1/servers/{server_name}"
+    url = f"https://api.superbox.ai/api/v1/servers/{server_name}"
     params = {'confirm': 'true'}
 
     if force:
@@ -191,7 +193,7 @@ def safe_delete(server_name):
     """Check server status before deletion"""
 
     # Get server details first
-    check_url = f"https://api.superbox.dev/api/v1/servers/{server_name}"
+    check_url = f"https://api.superbox.ai/api/v1/servers/{server_name}"
     headers = {'Authorization': f'Bearer {os.getenv("SUPERBOX_API_TOKEN")}'}
 
     response = requests.get(check_url, headers=headers)
@@ -206,7 +208,8 @@ def safe_delete(server_name):
     return delete_server(server_name)
 ```
 
-```go Go
+```go
+Go
 package main
 
 import (
@@ -231,7 +234,7 @@ func deleteServer(name string, force bool) error {
     }
 
     // Build URL
-    baseURL := fmt.Sprintf("https://api.superbox.dev/api/v1/servers/%s", name)
+    baseURL := fmt.Sprintf("https://api.superbox.ai/api/v1/servers/%s", name)
     params := url.Values{}
     params.Add("confirm", "true")
     if force {
@@ -311,7 +314,7 @@ func main() {
     "message": "You don't have permission to delete this server",
     "details": {
       "server": "weather-mcp",
-      "owner": "johndoe",
+      "owner": "areeb",
       "requester": "janedoe",
       "hint": "Only the server owner can delete it"
     }
@@ -410,7 +413,7 @@ When you delete a server, SuperBox performs these steps:
     ```javascript
     async function checkActiveUsers(serverName) {
       const response = await fetch(
-        `https://api.superbox.dev/api/v1/servers/${serverName}/stats`,
+        `https://api.superbox.ai/api/v1/servers/${serverName}/stats`,
         {
           headers: {
             'Authorization': `Bearer ${process.env.SUPERBOX_API_TOKEN}`
@@ -435,7 +438,7 @@ When you delete a server, SuperBox performs these steps:
         """Export all server data before deletion"""
         
         # Get server details
-        url = f"https://api.superbox.dev/api/v1/servers/{server_name}"
+        url = f"https://api.superbox.ai/api/v1/servers/{server_name}"
         headers = {'Authorization': f'Bearer {os.getenv("SUPERBOX_API_TOKEN")}'}
         
         response = requests.get(url, headers=headers)
@@ -512,7 +515,7 @@ When you delete a server, SuperBox performs these steps:
     ```bash
 # Quick deletion (no active users expected)
     curl -X DELETE \
-      "https://api.superbox.dev/api/v1/servers/test-server?confirm=true" \
+      "https://api.superbox.ai/api/v1/servers/test-server?confirm=true" \
       -H "Authorization: Bearer $TOKEN"
 ```
     
@@ -579,7 +582,7 @@ If you deleted by mistake, you can recover within 30 days:
 
 <Steps>
   <Step title="Contact Support">
-    Email support@superbox.dev with: - Server name - Backup ID (from deletion
+    Email support@superbox.ai with: - Server name - Backup ID (from deletion
     response) - Reason for recovery
   </Step>
 

@@ -1,7 +1,7 @@
 ---
 title: "Device Authorization Flow"
 description: "OAuth 2.0 device flow for CLI authentication"
-api: "POST https://api.superbox.com/v1/auth/device-flow"
+api: "POST https://api.superbox.ai/v1/auth/device-flow"
 icon: "mobile-screen"
 ---
 
@@ -26,7 +26,7 @@ Device authorization flow enables CLI tools and devices without browsers to auth
 
 <Step title="Display Codes">
   CLI displays verification URL and user code ``` Visit:
-  https://superbox.com/device Enter code: ABCD-1234 ```
+  https://superbox.ai/device Enter code: ABCD-1234 ```
 </Step>
 
 <Step title="User Authorization">
@@ -65,7 +65,7 @@ POST /auth/device-flow/request
 <CodeGroup>
 ```bash
 cURL
-curl -X POST https://api.superbox.com/v1/auth/device-flow/request \
+curl -X POST https://api.superbox.ai/v1/auth/device-flow/request \
   -H "Content-Type: application/json" \
   -d '{
     "client_id": "superbox-cli",
@@ -73,11 +73,12 @@ curl -X POST https://api.superbox.com/v1/auth/device-flow/request \
   }'
 ```
 
-```python Python
+```python
+Python
 import requests
 
 response = requests.post(
-    'https://api.superbox.com/v1/auth/device-flow/request',
+    'https://api.superbox.ai/v1/auth/device-flow/request',
     json={
         'client_id': 'superbox-cli',
         'scope': 'read write',
@@ -121,8 +122,8 @@ print(f"Enter code: {data['user_code']}")
 {
   "device_code": "GmRhmhcxhwAzkoEqiMEg_DnyEysNkuNhszIySk9eS",
   "user_code": "ABCD-1234",
-  "verification_uri": "https://superbox.com/device",
-  "verification_uri_complete": "https://superbox.com/device?code=ABCD-1234",
+  "verification_uri": "https://superbox.ai/device",
+  "verification_uri_complete": "https://superbox.ai/device?code=ABCD-1234",
   "expires_in": 600,
   "interval": 5
 }
@@ -151,7 +152,7 @@ POST /auth/device-flow/token
 <CodeGroup>
 ```bash
 cURL
-curl -X POST https://api.superbox.com/v1/auth/device-flow/token \
+curl -X POST https://api.superbox.ai/v1/auth/device-flow/token \
   -H "Content-Type: application/json" \
   -d '{
     "device_code": "GmRhmhcxhwAzkoEqiMEg_DnyEysNkuNhszIySk9eS",
@@ -159,7 +160,8 @@ curl -X POST https://api.superbox.com/v1/auth/device-flow/token \
   }'
 ```
 
-```python Python (with polling)
+```python
+Python (with polling)
 import requests
 import time
 
@@ -168,7 +170,7 @@ interval = 5
 
 while True:
     response = requests.post(
-        'https://api.superbox.com/v1/auth/device-flow/token',
+        'https://api.superbox.ai/v1/auth/device-flow/token',
         json={
             'device_code': device_code,
             'client_id': 'superbox-cli',
@@ -240,14 +242,15 @@ while True:
 ## Complete Implementation
 
 <CodeGroup>
-```python Python CLI
+```python
+Python CLI
 import requests
 import time
 import webbrowser
 
 def device_flow_auth(): # Step 1: Request device code
 response = requests.post(
-'https://api.superbox.com/v1/auth/device-flow/request',
+'https://api.superbox.ai/v1/auth/device-flow/request',
 json={'client_id': 'superbox-cli', 'scope': 'read write'}
 )
 data = response.json()
@@ -268,7 +271,7 @@ data = response.json()
         time.sleep(interval)
 
         response = requests.post(
-            'https://api.superbox.com/v1/auth/device-flow/token',
+            'https://api.superbox.ai/v1/auth/device-flow/token',
             json={
                 'device_code': device_code,
                 'client_id': 'superbox-cli'
@@ -297,14 +300,15 @@ token = device_flow_auth()
 
 ````
 
-```javascript JavaScript/Node.js
+```javascript
+JavaScript/Node.js
 const fetch = require('node-fetch');
 const open = require('open');
 
 async function deviceFlowAuth() {
   // Step 1: Request device code
   const requestResponse = await fetch(
-    'https://api.superbox.com/v1/auth/device-flow/request',
+    'https://api.superbox.ai/v1/auth/device-flow/request',
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -336,7 +340,7 @@ async function deviceFlowAuth() {
     await new Promise((resolve) => setTimeout(resolve, pollInterval * 1000));
 
     const tokenResponse = await fetch(
-      'https://api.superbox.com/v1/auth/device-flow/token',
+      'https://api.superbox.ai/v1/auth/device-flow/token',
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

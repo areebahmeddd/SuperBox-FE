@@ -69,7 +69,8 @@ The main navigation header with authentication and user menu.
 Display MCP server information in a card layout.
 
 <CodeGroup>
-```tsx Basic Usage
+```tsx
+Basic Usage
 import ServerCard from '@/components/server-card'
 
 <ServerCard
@@ -85,7 +86,8 @@ import ServerCard from '@/components/server-card'
 />
 ```
 
-```tsx With Actions
+```tsx
+With Actions
 <ServerCard
   server={serverData}
   onInstall={(id) => handleInstall(id)}
@@ -94,7 +96,8 @@ import ServerCard from '@/components/server-card'
 />
 ```
 
-```tsx Skeleton Loading
+```tsx
+Skeleton Loading
 <ServerCard loading />
 ```
 
@@ -204,7 +207,8 @@ import ServerDetail from "@/components/server-detail";
 Display individual MCP tool information.
 
 <CodeGroup>
-```tsx Tool Card
+```tsx
+Tool Card
 import ToolCard from '@/components/tool-card'
 
 <ToolCard
@@ -226,7 +230,8 @@ import ToolCard from '@/components/tool-card'
 />
 ```
 
-```tsx Compact View
+```tsx
+Compact View
 <ToolCard tool={toolData} compact />
 ```
 
@@ -261,7 +266,8 @@ Global toast notification system.
 
 <Tabs>
   <Tab title="Setup">
-    ```tsx app/layout.tsx
+    ```tsx
+app/layout.tsx
     import ToastProvider from '@/components/toast-provider'
 
     export default function RootLayout({ children }) {
@@ -389,7 +395,8 @@ import SecurityReport from "@/components/security-report";
 
 Smooth page transitions with Framer Motion.
 
-```tsx app/layout.tsx
+```tsx
+app/layout.tsx
 import PageTransition from "@/components/page-transition";
 
 export default function RootLayout({ children }) {

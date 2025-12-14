@@ -8,7 +8,7 @@ icon: "plus"
 ## Endpoint
 
 <Card>
-  <code>POST https://api.superbox.dev/api/v1/servers</code>
+  <code>POST https://api.superbox.ai/api/v1/servers</code>
 </Card>
 
 ## Authentication
@@ -145,7 +145,7 @@ icon: "plus"
 <CodeGroup>
 ```bash
 cURL
-curl -X POST "https://api.superbox.dev/api/v1/servers" \
+curl -X POST "https://api.superbox.ai/api/v1/servers" \
   -H "Authorization: Bearer $SUPERBOX_API_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -158,7 +158,7 @@ curl -X POST "https://api.superbox.dev/api/v1/servers" \
     "entrypoint": "main.py",
     "repository": {
       "type": "git",
-      "url": "https://github.com/johndoe/weather-mcp"
+      "url": "https://github.com/areeb/weather-mcp"
     },
     "pricing": {
       "currency": "USD",
@@ -171,7 +171,8 @@ curl -X POST "https://api.superbox.dev/api/v1/servers" \
   }'
 ```
 
-```javascript JavaScript
+```javascript
+JavaScript
 const serverData = {
   name: "weather-mcp",
   version: "1.0.0",
@@ -183,7 +184,7 @@ const serverData = {
   entrypoint: "main.py",
   repository: {
     type: "git",
-    url: "https://github.com/johndoe/weather-mcp",
+    url: "https://github.com/areeb/weather-mcp",
   },
   pricing: {
     currency: "USD",
@@ -195,7 +196,7 @@ const serverData = {
   },
 };
 
-const response = await fetch("https://api.superbox.dev/api/v1/servers", {
+const response = await fetch("https://api.superbox.ai/api/v1/servers", {
   method: "POST",
   headers: {
     Authorization: `Bearer ${process.env.SUPERBOX_API_TOKEN}`,
@@ -216,7 +217,8 @@ if (result.success) {
 }
 ```
 
-```python Python
+```python
+Python
 import requests
 import os
 
@@ -230,7 +232,7 @@ server_data = {
     "entrypoint": "main.py",
     "repository": {
         "type": "git",
-        "url": "https://github.com/johndoe/weather-mcp"
+        "url": "https://github.com/areeb/weather-mcp"
     },
     "pricing": {
         "currency": "USD",
@@ -248,7 +250,7 @@ headers = {
 }
 
 response = requests.post(
-    "https://api.superbox.dev/api/v1/servers",
+    "https://api.superbox.ai/api/v1/servers",
     headers=headers,
     json=server_data
 )
@@ -264,7 +266,8 @@ else:
     print(f"Failed to create server: {result['error']['message']}")
 ```
 
-```go Go
+```go
+Go
 package main
 
 import (
@@ -314,7 +317,7 @@ func main() {
         Entrypoint:  "main.py",
         Repository: Repository{
             Type: "git",
-            URL:  "https://github.com/johndoe/weather-mcp",
+            URL:  "https://github.com/areeb/weather-mcp",
         },
         Pricing: Pricing{
             Currency: "USD",
@@ -326,7 +329,7 @@ func main() {
 
     req, _ := http.NewRequest(
         "POST",
-        "https://api.superbox.dev/api/v1/servers",
+        "https://api.superbox.ai/api/v1/servers",
         bytes.NewBuffer(jsonData),
     )
 
@@ -606,11 +609,12 @@ Your repository must meet these requirements:
 After creating a server, monitor its status:
 
 <CodeGroup>
-```javascript JavaScript
+```javascript
+JavaScript
 async function waitForDeployment(serverName) {
   const checkStatus = async () => {
     const response = await fetch(
-      `https://api.superbox.dev/api/v1/servers/${serverName}`,
+      `https://api.superbox.ai/api/v1/servers/${serverName}`,
       {
         headers: {
           'Authorization': `Bearer ${process.env.SUPERBOX_API_TOKEN}`
@@ -641,12 +645,13 @@ console.error('✗ Deployment failed');
 
 ````
 
-```python Python
+```python
+Python
 import time
 import requests
 
 def wait_for_deployment(server_name, token):
-    url = f"https://api.superbox.dev/api/v1/servers/{server_name}"
+    url = f"https://api.superbox.ai/api/v1/servers/{server_name}"
     headers = {'Authorization': f'Bearer {token}'}
 
     status = 'scanning'

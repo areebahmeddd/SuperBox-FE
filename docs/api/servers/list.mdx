@@ -8,7 +8,7 @@ icon: "list"
 ## Endpoint
 
 <Card>
-  <code>GET https://api.superbox.dev/api/v1/servers</code>
+  <code>GET https://api.superbox.ai/api/v1/servers</code>
 </Card>
 
 ## Authentication
@@ -201,34 +201,35 @@ icon: "list"
 ```bash
 cURL
 # List all servers (default pagination)
-curl -X GET "https://api.superbox.dev/api/v1/servers" \
+curl -X GET "https://api.superbox.ai/api/v1/servers" \
   -H "Content-Type: application/json"
 
 # List Python servers only
 
-curl -X GET "https://api.superbox.dev/api/v1/servers?lang=python" \
+curl -X GET "https://api.superbox.ai/api/v1/servers?lang=python" \
  -H "Content-Type: application/json"
 
 # List free servers with security passed
 
-curl -X GET "https://api.superbox.dev/api/v1/servers?pricing=free&security_passed=true" \
+curl -X GET "https://api.superbox.ai/api/v1/servers?pricing=free&security_passed=true" \
  -H "Content-Type: application/json"
 
 # Search and sort
 
-curl -X GET "https://api.superbox.dev/api/v1/servers?search=weather&sort=-downloads" \
+curl -X GET "https://api.superbox.ai/api/v1/servers?search=weather&sort=-downloads" \
  -H "Content-Type: application/json"
 
 # With authentication
 
-curl -X GET "https://api.superbox.dev/api/v1/servers?page=2&limit=50" \
+curl -X GET "https://api.superbox.ai/api/v1/servers?page=2&limit=50" \
  -H "Authorization: Bearer $SUPERBOX_API_TOKEN" \
  -H "Content-Type: application/json"
 ````
 
-```javascript JavaScript
+```javascript
+JavaScript
 // Basic request
-const response = await fetch('https://api.superbox.dev/api/v1/servers');
+const response = await fetch('https://api.superbox.ai/api/v1/servers');
 const data = await response.json();
 console.log(data);
 
@@ -242,12 +243,12 @@ const filters = new URLSearchParams({
 });
 
 const response = await fetch(
-  `https://api.superbox.dev/api/v1/servers?${filters}`
+  `https://api.superbox.ai/api/v1/servers?${filters}`
 );
 const data = await response.json();
 
 // With authentication
-const response = await fetch('https://api.superbox.dev/api/v1/servers', {
+const response = await fetch('https://api.superbox.ai/api/v1/servers', {
   headers: {
     'Authorization': `Bearer ${process.env.SUPERBOX_API_TOKEN}`,
     'Content-Type': 'application/json'
@@ -260,11 +261,12 @@ data.data.forEach(server => {
 });
 ````
 
-```python Python
+```python
+Python
 import requests
 
 # Basic request
-url = "https://api.superbox.dev/api/v1/servers"
+url = "https://api.superbox.ai/api/v1/servers"
 response = requests.get(url)
 data = response.json()
 
@@ -295,7 +297,8 @@ for server in data['data']:
     print(f"{server['name']} v{server['version']} - {server['description']}")
 ```
 
-```go Go
+```go
+Go
 package main
 
 import (
@@ -307,7 +310,7 @@ import (
 
 func main() {
     // Build URL with query parameters
-    baseURL := "https://api.superbox.dev/api/v1/servers"
+    baseURL := "https://api.superbox.ai/api/v1/servers"
     params := url.Values{}
     params.Add("lang", "python")
     params.Add("pricing", "free")
@@ -357,13 +360,13 @@ func main() {
       "name": "weather-mcp",
       "version": "1.2.3",
       "description": "Get weather information for any location using OpenWeatherMap API",
-      "author": "johndoe",
+      "author": "areeb",
       "lang": "python",
       "license": "MIT",
       "entrypoint": "main.py",
       "repository": {
         "type": "git",
-        "url": "https://github.com/johndoe/weather-mcp"
+        "url": "https://github.com/areeb/weather-mcp"
       },
       "tools": {
         "count": 3,
@@ -473,7 +476,7 @@ func main() {
 <AccordionGroup>
   <Accordion title="Browse All Servers" icon="list">
     ```javascript
-    const response = await fetch('https://api.superbox.dev/api/v1/servers');
+    const response = await fetch('https://api.superbox.ai/api/v1/servers');
     const { data: servers } = await response.json();
     
     // Display servers in UI
@@ -487,7 +490,7 @@ func main() {
     ```python
     # Get all Python servers
     response = requests.get(
-        'https://api.superbox.dev/api/v1/servers',
+        'https://api.superbox.ai/api/v1/servers',
         params={'lang': 'python'}
     )
     python_servers = response.json()['data']
@@ -498,7 +501,7 @@ func main() {
     ```javascript
     async function searchServers(query) {
       const response = await fetch(
-        `https://api.superbox.dev/api/v1/servers?search=${encodeURIComponent(query)}`
+        `https://api.superbox.ai/api/v1/servers?search=${encodeURIComponent(query)}`
       );
       return response.json();
     }
@@ -515,7 +518,7 @@ func main() {
         
         while True:
             response = requests.get(
-                'https://api.superbox.dev/api/v1/servers',
+                'https://api.superbox.ai/api/v1/servers',
                 params={'page': page, 'limit': 100}
             )
             data = response.json()
@@ -535,7 +538,7 @@ func main() {
     ```javascript
     // Only show secure, free servers
     const response = await fetch(
-      'https://api.superbox.dev/api/v1/servers?pricing=free&security_passed=true'
+      'https://api.superbox.ai/api/v1/servers?pricing=free&security_passed=true'
     );
     const secureServers = await response.json();
     ```
