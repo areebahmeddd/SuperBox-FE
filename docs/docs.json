@@ -21,83 +21,83 @@
         "group": "Getting Started",
         "pages": ["introduction", "quickstart", "architecture"]
       },
-    {
-      "group": "Core Concepts",
-      "pages": [
-        "concepts/mcp-servers",
-        "concepts/sandboxes",
-        "concepts/security"
-      ]
-    },
-    {
-      "group": "Infrastructure",
-      "pages": [
-        "infrastructure/overview",
-        "infrastructure/setup",
-        "infrastructure/monitoring",
-        "infrastructure/troubleshooting"
-      ]
-    },
-    {
-      "group": "Backend",
-      "pages": [
-        "backend/overview",
-        "backend/setup",
-        "backend/architecture",
-        "backend/deployment"
-      ]
-    },
-    {
-      "group": "Frontend",
-      "pages": [
-        "frontend/overview",
-        "frontend/setup",
-        "frontend/components",
-        "frontend/deployment"
-      ]
-    },
-    {
-      "group": "REST API",
-      "pages": ["api/introduction", "api/authentication", "api/errors"]
-    },
-    {
-      "group": "Servers API",
-      "pages": [
-        "api/servers/list",
-        "api/servers/get",
-        "api/servers/create",
-        "api/servers/update",
-        "api/servers/delete"
-      ]
-    },
-    {
-      "group": "Auth API",
-      "pages": [
-        "api/auth/register",
-        "api/auth/login",
-        "api/auth/oauth",
-        "api/auth/device-flow",
-        "api/auth/profile"
-      ]
-    },
-    {
-      "group": "CLI",
-      "pages": ["cli/introduction", "cli/installation"]
-    },
-    {
-      "group": "CLI Commands",
-      "pages": [
-        "cli/init",
-        "cli/auth",
-        "cli/push",
-        "cli/pull",
-        "cli/run",
-        "cli/logs",
-        "cli/search",
-        "cli/inspect",
-        "cli/test"
-      ]
-    }
+      {
+        "group": "Core Concepts",
+        "pages": [
+          "concepts/mcp-servers",
+          "concepts/sandboxes",
+          "concepts/security"
+        ]
+      },
+      {
+        "group": "Infrastructure",
+        "pages": [
+          "infrastructure/overview",
+          "infrastructure/setup",
+          "infrastructure/monitoring",
+          "infrastructure/troubleshooting"
+        ]
+      },
+      {
+        "group": "Backend",
+        "pages": [
+          "backend/overview",
+          "backend/setup",
+          "backend/architecture",
+          "backend/deployment"
+        ]
+      },
+      {
+        "group": "Frontend",
+        "pages": [
+          "frontend/overview",
+          "frontend/setup",
+          "frontend/components",
+          "frontend/deployment"
+        ]
+      },
+      {
+        "group": "REST API",
+        "pages": ["api/introduction", "api/authentication", "api/errors"]
+      },
+      {
+        "group": "Servers API",
+        "pages": [
+          "api/servers/list",
+          "api/servers/get",
+          "api/servers/create",
+          "api/servers/update",
+          "api/servers/delete"
+        ]
+      },
+      {
+        "group": "Auth API",
+        "pages": [
+          "api/auth/register",
+          "api/auth/login",
+          "api/auth/oauth",
+          "api/auth/device-flow",
+          "api/auth/profile"
+        ]
+      },
+      {
+        "group": "CLI",
+        "pages": ["cli/introduction", "cli/installation"]
+      },
+      {
+        "group": "CLI Commands",
+        "pages": [
+          "cli/init",
+          "cli/auth",
+          "cli/push",
+          "cli/pull",
+          "cli/run",
+          "cli/logs",
+          "cli/search",
+          "cli/inspect",
+          "cli/test"
+        ]
+      }
     ]
   }
 }

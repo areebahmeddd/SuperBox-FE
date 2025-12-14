@@ -1,8 +1,9 @@
 "use client";
 
+import { showToast } from "@/lib/toast-utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { Check, X } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
 interface PaywallModalProps {
@@ -44,6 +45,8 @@ export default function PaywallModal({
   onClose,
   server,
 }: PaywallModalProps) {
+  const [isProcessing, setIsProcessing] = useState(false);
+
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -59,6 +62,127 @@ export default function PaywallModal({
       document.body.style.overflow = "unset";
     };
   }, [isOpen, onClose]);
+
+  const handlePayment = async () => {
+    setIsProcessing(true);
+    try {
+      const API_URL = process.env.NEXT_PUBLIC_API_URL;
+      if (!API_URL) {
+        throw new Error("API URL not configured");
+      }
+
+      const orderResponse = await fetch(`${API_URL}/payment/create-order`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          server_name: server.name,
+          amount: server.pricing.amount,
+          currency: server.pricing.currency,
+        }),
+      });
+
+      if (!orderResponse.ok) {
+        const errorData = await orderResponse.json();
+        throw new Error(errorData.detail || "Failed to create order");
+      }
+
+      const orderData = await orderResponse.json();
+
+      if (orderData.status !== "success") {
+        throw new Error(orderData.detail || "Failed to create order");
+      }
+
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.async = true;
+      document.body.appendChild(script);
+
+      await new Promise<void>((resolve, reject) => {
+        script.onload = () => resolve();
+        script.onerror = () => reject(new Error("Failed to load Razorpay"));
+      });
+
+      const options = {
+        key: orderData.key_id,
+        amount: orderData.order.amount,
+        currency: orderData.order.currency,
+        name: "SuperBox",
+        description: `Purchase ${server.name}`,
+        order_id: orderData.order.id,
+        handler: async function (response: {
+          razorpay_payment_id: string;
+          razorpay_order_id: string;
+          razorpay_signature: string;
+        }) {
+          try {
+            const verifyResponse = await fetch(
+              `${API_URL}/payment/verify-payment`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  razorpay_order_id: response.razorpay_order_id,
+                  razorpay_payment_id: response.razorpay_payment_id,
+                  razorpay_signature: response.razorpay_signature,
+                  server_name: server.name,
+                }),
+              },
+            );
+
+            if (!verifyResponse.ok) {
+              const errorData = await verifyResponse.json();
+              throw new Error(
+                errorData.detail || "Payment verification failed",
+              );
+            }
+
+            const verifyData = await verifyResponse.json();
+
+            if (verifyData.status === "success") {
+              showToast.success(
+                "Payment successful! You now have access to this server.",
+              );
+              onClose();
+            } else {
+              throw new Error(
+                verifyData.detail || "Payment verification failed",
+              );
+            }
+          } catch (error) {
+            console.error("Payment verification error:", error);
+            showToast.error(
+              error instanceof Error
+                ? error.message
+                : "Payment verification failed",
+            );
+          } finally {
+            setIsProcessing(false);
+          }
+        },
+        modal: {
+          ondismiss: function () {
+            setIsProcessing(false);
+          },
+        },
+        theme: {
+          color: "#EF4444",
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    } catch (error) {
+      console.error("Payment error:", error);
+      showToast.error(
+        error instanceof Error ? error.message : "Failed to initiate payment",
+      );
+      setIsProcessing(false);
+    }
+  };
 
   return createPortal(
     <AnimatePresence>
@@ -168,9 +292,11 @@ export default function PaywallModal({
                   transition={{ delay: 0.6 }}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className="w-full py-3 rounded-xl bg-gradient-to-r from-[var(--brand-red)] to-[var(--brand-red-light)] text-white font-semibold text-sm hover:shadow-lg hover:shadow-[var(--brand-red)]/25 transition-shadow duration-300"
+                  onClick={handlePayment}
+                  disabled={isProcessing}
+                  className="w-full py-3 rounded-xl bg-gradient-to-r from-[var(--brand-red)] to-[var(--brand-red-light)] text-white font-semibold text-sm hover:shadow-lg hover:shadow-[var(--brand-red)]/25 transition-shadow duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Unlock Access
+                  {isProcessing ? "Processing..." : "Unlock Access"}
                 </motion.button>
 
                 <motion.button

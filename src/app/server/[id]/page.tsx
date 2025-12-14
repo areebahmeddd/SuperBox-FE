@@ -2,6 +2,7 @@
 
 import Header from "@/components/header";
 import ServerDetail from "@/components/server-detail";
+import { Button } from "@/components/ui/button";
 import { showToast } from "@/lib/toast-utils";
 import type { ServerResponse } from "@/lib/types";
 import { motion } from "framer-motion";
@@ -92,17 +93,15 @@ export default function ServerPage() {
               >
                 The server you're looking for doesn't exist or has been removed.
               </motion.p>
-              <motion.button
+              <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => router.push("/explore")}
-                className="px-6 py-3 rounded-xl bg-gradient-to-r from-[var(--brand-red)] to-[var(--brand-red-light)] text-white font-semibold text-sm hover:shadow-lg hover:shadow-[var(--brand-red)]/25 transition-shadow"
               >
-                Browse Servers
-              </motion.button>
+                <Button onClick={() => router.push("/explore")} size="lg">
+                  Browse Servers
+                </Button>
+              </motion.div>
             </motion.div>
           </main>
         </motion.div>
