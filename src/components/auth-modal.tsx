@@ -346,9 +346,10 @@ export default function AuthModal({
                     delay: 0.15,
                     ease: [0.4, 0, 0.2, 1],
                   }}
-                  className="space-y-2"
                 >
-                  <Label htmlFor="email">Email or Username</Label>
+                  <Label htmlFor="email" className="mb-2 block">
+                    Email or Username
+                  </Label>
                   <div className="relative">
                     <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
                     <Input
@@ -371,9 +372,10 @@ export default function AuthModal({
                     delay: 0.2,
                     ease: [0.4, 0, 0.2, 1],
                   }}
-                  className="space-y-2"
                 >
-                  <Label htmlFor="password">Password</Label>
+                  <Label htmlFor="password" className="mb-2 block">
+                    Password
+                  </Label>
                   <div className="relative">
                     <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
                     <Input
@@ -760,33 +762,39 @@ export default function AuthModal({
             </>
           )}
 
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.25, delay: 0.5, ease: [0.4, 0, 0.2, 1] }}
-            className="mt-6 text-center"
-          >
-            <p className="text-xs text-gray-500">
-              By continuing, you agree to our{" "}
-              <a
-                href="/terms-of-service"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[var(--brand-red)] underline hover:underline transition-all"
-              >
-                Terms of Service
-              </a>{" "}
-              and{" "}
-              <a
-                href="/privacy-policy"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[var(--brand-red)] underline hover:underline transition-all"
-              >
-                Privacy Policy
-              </a>
-            </p>
-          </motion.div>
+          {authStep !== "forgot" && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{
+                duration: 0.25,
+                delay: 0.5,
+                ease: [0.4, 0, 0.2, 1],
+              }}
+              className="mt-6 text-center"
+            >
+              <p className="text-xs text-gray-500">
+                By continuing, you agree to our{" "}
+                <a
+                  href="/terms-of-service"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[var(--brand-red)] underline hover:underline transition-all"
+                >
+                  Terms of Service
+                </a>{" "}
+                and{" "}
+                <a
+                  href="/privacy-policy"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[var(--brand-red)] underline hover:underline transition-all"
+                >
+                  Privacy Policy
+                </a>
+              </p>
+            </motion.div>
+          )}
         </div>
       </DialogContent>
     </Dialog>

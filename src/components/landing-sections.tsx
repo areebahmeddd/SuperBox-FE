@@ -1,35 +1,78 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { auth } from "@/lib/firebase";
+import { showToast } from "@/lib/toast-utils";
+import { onAuthStateChanged, type User } from "firebase/auth";
 import { motion } from "framer-motion";
 import { Compass, Upload } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import AuthModal from "./auth-modal";
+import PublishServerModal, { ServerFormData } from "./publish-modal";
 
 export default function LandingSections() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    const authStatus = localStorage.getItem("isAuthenticated") === "true";
-    setIsAuthenticated(authStatus);
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+    return () => unsubscribe();
   }, []);
 
   const handlePublishClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    if (!isAuthenticated) {
+    if (!user) {
       setIsAuthModalOpen(true);
     } else {
-      window.location.href = "/my-servers";
+      setIsPublishModalOpen(true);
     }
   };
 
   const handleAuthSuccess = () => {
-    setIsAuthenticated(true);
-    localStorage.setItem("isAuthenticated", "true");
     setIsAuthModalOpen(false);
-    window.location.href = "/my-servers";
+    setIsPublishModalOpen(true);
+  };
+
+  const handlePublishServer = async (data: ServerFormData) => {
+    if (!user) {
+      showToast.error("Please sign in to publish servers");
+      return;
+    }
+
+    try {
+      const token = await user.getIdToken();
+      const API_URL = process.env.NEXT_PUBLIC_API_URL!;
+
+      const response = await fetch(`${API_URL}/servers`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          result?.detail || result?.message || "Failed to publish server",
+        );
+      }
+
+      showToast.success(`"${data.name}" has been published successfully`);
+      setIsPublishModalOpen(false);
+
+      window.location.href = "/my-servers";
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to publish server";
+      showToast.error(errorMessage);
+    }
   };
 
   return (
@@ -160,6 +203,12 @@ export default function LandingSections() {
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
         onSuccess={handleAuthSuccess}
+      />
+      <PublishServerModal
+        isOpen={isPublishModalOpen}
+        onClose={() => setIsPublishModalOpen(false)}
+        onSubmit={handlePublishServer}
+        editingServer={null}
       />
     </section>
   );

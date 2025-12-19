@@ -251,83 +251,36 @@ export default function MyServersPage() {
             </p>
           </motion.div>
 
-          {showEmptyState ? (
+          <div className="max-w-5xl mx-auto">
             <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{
-                duration: 0.6,
-                delay: 0.3,
-                type: "spring",
-                stiffness: 100,
-              }}
-              className="border border-white/10 rounded-3xl bg-white/[0.02] p-10 text-center max-w-2xl mx-auto"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="flex items-center justify-between mb-8"
             >
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.4 }}
-                className="text-center"
-              >
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{
-                    duration: 0.5,
-                    delay: 0.5,
-                    type: "spring",
-                    stiffness: 150,
-                  }}
-                  className="inline-flex items-center justify-center w-20 h-20 rounded-full border border-white/20 mb-6"
-                >
-                  <Plus className="w-10 h-10 text-[var(--brand-red)]" />
-                </motion.div>
-                <motion.h2
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.5, delay: 0.6 }}
-                  className="text-2xl font-bold text-white/95 mb-3"
-                >
-                  No servers yet
-                </motion.h2>
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.5, delay: 0.7 }}
-                  className="text-gray-400/80 mb-8 max-w-md mx-auto"
-                >
-                  Publish your first MCP server to make it available to your
-                  agents.
-                </motion.p>
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.8 }}
-                >
-                  <Button onClick={handlePublishClick}>
-                    Publish Your First Server
-                  </Button>
-                </motion.div>
-              </motion.div>
+              <p className="text-sm font-medium text-gray-400">
+                {userServers.length}{" "}
+                {userServers.length === 1 ? "server" : "servers"}
+              </p>
+              <Button onClick={handlePublishClick}>
+                <Plus className="w-4 h-4" />
+                Add New Server
+              </Button>
             </motion.div>
-          ) : (
-            <div className="max-w-5xl mx-auto">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.3 }}
-                className="flex items-center justify-between mb-8"
-              >
-                <p className="text-sm font-medium text-gray-400">
-                  {userServers.length}{" "}
-                  {userServers.length === 1 ? "server" : "servers"}
-                </p>
-                <Button onClick={handlePublishClick}>
-                  <Plus className="w-4 h-4" />
-                  Publish New Server
-                </Button>
-              </motion.div>
 
+            {showEmptyState ? (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.4, delay: 0.4 }}
+                className="text-center py-12"
+              >
+                <p className="text-gray-400 text-sm">
+                  No servers published yet. Click "Add New Server" to get
+                  started.
+                </p>
+              </motion.div>
+            ) : (
               <div className="grid grid-cols-1 gap-5">
                 {userServers.map((server, index) => (
                   <motion.div
@@ -427,8 +380,8 @@ export default function MyServersPage() {
                   </motion.div>
                 ))}
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </motion.div>
       </main>
     </motion.div>

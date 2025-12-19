@@ -1,5 +1,6 @@
 "use client";
 
+import { showToast } from "@/lib/toast-utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { AlertCircle, Check, Github, Globe, Upload, X } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -118,6 +119,33 @@ export default function PublishServerModal({
     onSubmit(formData);
   };
 
+  const handleReadmeUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (
+      file.type !== "text/plain" &&
+      !file.name.toLowerCase().endsWith(".md") &&
+      !file.name.toLowerCase().endsWith(".txt")
+    ) {
+      showToast.error("Please upload a README file (.md or .txt)");
+      return;
+    }
+
+    try {
+      const text = await file.text();
+      setFormData({
+        ...formData,
+        description: text.trim(),
+      });
+      showToast.success("README file uploaded successfully");
+    } catch {
+      showToast.error("Failed to read README file. Please try again.");
+    }
+
+    e.target.value = "";
+  };
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -145,21 +173,19 @@ export default function PublishServerModal({
             className="relative bg-black/40 border border-white/10 rounded-2xl w-full max-w-2xl max-h-[85vh] overflow-hidden backdrop-blur-xl shadow-2xl z-10"
           >
             <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-3.5 bg-black/60 backdrop-blur-xl">
-              <div className="flex items-center gap-3">
-                <div>
-                  <h2 className="text-lg font-bold text-white">
-                    {editingServer ? "Edit Server" : "Publish Server"}
-                  </h2>
-                  <p className="text-xs text-gray-400">
-                    {editingServer
-                      ? "Update your server's information"
-                      : "Share your MCP server with the community"}
-                  </p>
-                </div>
+              <div className="flex-1 text-left">
+                <h2 className="text-lg font-bold text-white">
+                  {editingServer ? "Edit Server" : "Publish Server"}
+                </h2>
+                <p className="text-xs text-gray-400">
+                  {editingServer
+                    ? "Update your server's information"
+                    : "Share your MCP server with the community"}
+                </p>
               </div>
               <button
                 onClick={onClose}
-                className="p-1.5 transition-colors group"
+                className="p-1.5 transition-colors group flex-shrink-0"
               >
                 <X className="w-4 h-4 text-gray-400 group-hover:text-[var(--brand-red)] transition-colors" />
               </button>
@@ -169,12 +195,12 @@ export default function PublishServerModal({
               onSubmit={handleSubmit}
               className="overflow-y-auto max-h-[calc(85vh-140px)]"
             >
-              <div className="p-6 space-y-5">
+              <div className="px-6 pt-2 pb-6 space-y-5 text-left">
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 }}
-                  className="p-3.5 bg-white/5 border border-white/10 rounded-xl flex items-start gap-3"
+                  className="p-3.5 bg-white/5 border border-white/10 rounded-xl flex items-start gap-3 -mt-1"
                 >
                   <AlertCircle className="w-4 h-4 text-[var(--brand-red)] flex-shrink-0 mt-0.5" />
                   <div className="text-sm text-gray-300">
@@ -195,9 +221,9 @@ export default function PublishServerModal({
                   transition={{ delay: 0.15 }}
                   className="space-y-4"
                 >
-                  <div className="flex items-center gap-2 mb-3">
+                  <div className="flex items-center justify-center gap-3 mb-3">
                     <div className="h-px flex-1 bg-white/10"></div>
-                    <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                    <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider whitespace-nowrap">
                       Basic Information
                     </span>
                     <div className="h-px flex-1 bg-white/10"></div>
@@ -256,10 +282,24 @@ export default function PublishServerModal({
                     </div>
 
                     <div className="col-span-2">
-                      <label className="block text-sm font-medium text-white mb-2">
-                        Description{" "}
-                        <span className="text-[var(--brand-red)]">*</span>
-                      </label>
+                      <div className="flex items-center justify-between mb-2">
+                        <label className="block text-sm font-medium text-white">
+                          Description{" "}
+                          <span className="text-[var(--brand-red)]">*</span>
+                        </label>
+                        <label className="cursor-pointer">
+                          <input
+                            type="file"
+                            accept=".md,.txt,text/plain"
+                            onChange={handleReadmeUpload}
+                            className="hidden"
+                          />
+                          <span className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-[var(--brand-red)] transition-colors px-3 py-1.5 rounded-full border border-white/10 hover:border-[var(--brand-red)]/30 bg-white/5 hover:bg-white/10">
+                            <Upload className="w-3 h-3" />
+                            Upload README
+                          </span>
+                        </label>
+                      </div>
                       <textarea
                         required
                         value={formData.description}
@@ -273,9 +313,6 @@ export default function PublishServerModal({
                         rows={4}
                         className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[var(--brand-red)]/50 focus:bg-white/[0.07] transition-all duration-200 resize-none"
                       />
-                      <p className="mt-1.5 text-xs text-gray-500">
-                        Minimum 50 characters
-                      </p>
                     </div>
                   </div>
                 </motion.div>
@@ -286,9 +323,9 @@ export default function PublishServerModal({
                   transition={{ delay: 0.2 }}
                   className="space-y-4"
                 >
-                  <div className="flex items-center gap-2 mb-3">
+                  <div className="flex items-center justify-center gap-3 mb-3">
                     <div className="h-px flex-1 bg-white/10"></div>
-                    <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                    <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider whitespace-nowrap">
                       Technical Details
                     </span>
                     <div className="h-px flex-1 bg-white/10"></div>
@@ -370,9 +407,9 @@ export default function PublishServerModal({
                   transition={{ delay: 0.25 }}
                   className="space-y-4"
                 >
-                  <div className="flex items-center gap-2 mb-3">
+                  <div className="flex items-center justify-center gap-3 mb-3">
                     <div className="h-px flex-1 bg-white/10"></div>
-                    <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                    <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider whitespace-nowrap">
                       Repository
                     </span>
                     <div className="h-px flex-1 bg-white/10"></div>
@@ -431,9 +468,9 @@ export default function PublishServerModal({
                   transition={{ delay: 0.28 }}
                   className="space-y-4"
                 >
-                  <div className="flex items-center gap-2 mb-3">
+                  <div className="flex items-center justify-center gap-3 mb-3">
                     <div className="h-px flex-1 bg-white/10"></div>
-                    <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                    <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider whitespace-nowrap">
                       Pricing
                     </span>
                     <div className="h-px flex-1 bg-white/10"></div>
@@ -534,9 +571,9 @@ export default function PublishServerModal({
                   transition={{ delay: 0.3 }}
                   className="space-y-4"
                 >
-                  <div className="flex items-center gap-2 mb-3">
+                  <div className="flex items-center justify-center gap-3 mb-3">
                     <div className="h-px flex-1 bg-white/10"></div>
-                    <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                    <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider whitespace-nowrap">
                       Optional
                     </span>
                     <div className="h-px flex-1 bg-white/10"></div>
