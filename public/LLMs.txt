@@ -41,7 +41,7 @@ This repository is the Next.js frontend for browsing servers, viewing details (i
 ## Contact Information
 
 - GitHub: `https://github.com/areebahmeddd/superbox.ai`
-- Website: `https://superbox-fe.vercel.app`
+- Website: `https://superbox-ai.vercel.app`
 - Author/Org: Areeb Ahmed
 
 

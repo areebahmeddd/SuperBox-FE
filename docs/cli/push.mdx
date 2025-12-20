@@ -1,80 +1,113 @@
 ---
 title: "superbox push"
-description: "Publish MCP server to SuperBox marketplace with security scanning"
+description: "Publish MCP server to SuperBox registry with comprehensive security scanning"
 icon: "cloud-arrow-up"
 ---
 
 ## Usage
 
 ```bash
-superbox push [OPTIONS]
+superbox push [--name NAME] [--force]
 ```
 
 ## Description
 
-Publishes your MCP server to SuperBox marketplace. Runs 5-step security scan, uploads code to S3, and deploys to Lambda.
+Publish an MCP server to the S3-backed registry with comprehensive security scanning.
+
+<Warning>Requires authentication - run `superbox auth login` first</Warning>
 
 ## Options
 
-<ParamField path="--category" type="string">
-  Server category: `data`, `api`, `automation`, `ml`, `other`
+<ParamField path="--name" type="string">
+  MCP server name (reads from `superbox.json` if not provided)
 </ParamField>
 
-<ParamField path="--tags" type="array">
-  Comma-separated tags
-  
-  ```bash
-  superbox push --tags weather,api,realtime
-  ```
+<ParamField path="--force" type="boolean">
+  Force overwrite if server already exists in registry
 </ParamField>
 
-<ParamField path="--visibility" type="string" default="public">
-  `public` or `private`
-</ParamField>
+## What It Does
 
-<ParamField path="--skip-tests" type="boolean">
-  Skip running tests before push
-</ParamField>
+<Steps>
+  <Step title="SonarQube Analysis">
+    Creates project and scans code quality
+  </Step>
 
-<ParamField path="--skip-security" type="boolean">
-  Skip security scanning (not recommended)
-</ParamField>
+  <Step title="Tool Discovery">
+    Discovers MCP tools via regex patterns in Python/Node.js code
+  </Step>
 
-<ParamField path="--message" type="string">
-  Version commit message
-</ParamField>
+  <Step title="GitGuardian Scan">
+    Scans for exposed secrets and credentials
+  </Step>
+
+  <Step title="Bandit Security Scan">
+    Python-specific security vulnerability analysis
+  </Step>
+
+  <Step title="Generate Report">
+    Creates unified security report
+  </Step>
+
+  <Step title="Upload to S3">
+    Uploads server metadata and configuration to S3 registry
+  </Step>
+</Steps>
 
 ## Security Pipeline
 
-<Steps>
-  <Step title="SonarQube">Code quality analysis</Step>
-  <Step title="Bandit">Python security scan</Step>
-  <Step title="GitGuardian">Secrets detection</Step>
-  <Step title="Semgrep">Vulnerability scan</Step>
-  <Step title="OWASP">Dependency check</Step>
-</Steps>
+The 5-step security check includes:
+
+- **SonarQube**: Code quality, bugs, code smells, security hotspots
+- **Bandit**: Python security issues (SQL injection, XSS, etc.)
+- **GitGuardian**: Secret detection (API keys, tokens, credentials)
+- **Tool Discovery**: Validates MCP tool definitions
+- **Unified Report**: Comprehensive security assessment
+
+## Prerequisites
+
+<CardGroup cols={2}>
+  <Card title="superbox.json" icon="file">
+    Run `superbox init` first
+  </Card>
+  <Card title="Environment Variables" icon="key">
+    Configure `.env` with AWS, SonarQube, GitGuardian credentials
+  </Card>
+</CardGroup>
 
 ## Examples
 
 <CodeGroup>
-```bash
-Basic Push
+```bash Basic Push
+superbox push --name my-mcp
+```
+
+```bash Force Overwrite
+superbox push --name my-mcp --force
+```
+
+```bash Using superbox.json
 superbox push
-```
-
-```bash
-With Metadata
-superbox push \
-  --category data \
-  --tags weather,forecast,api \
-  --message "Added forecast tool"
-```
-
-```bash
-Quick Push
-superbox push --skip-tests --quiet
+# Reads name from superbox.json
 ```
 </CodeGroup>
+
+## Example Output
+
+```bash
+$ superbox push --name weather-mcp
+Pushing server: weather-mcp
+Running SonarCloud analysis...
+✓ SonarQube scan complete
+Discovering tools...
+✓ Found 3 tools
+Running GitGuardian scan...
+✓ No secrets detected
+Running Bandit scan...
+✓ Security checks passed
+Uploading to S3...
+✓ Push complete
+```
 
 ## Next Steps
 

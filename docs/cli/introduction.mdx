@@ -1,17 +1,31 @@
 ---
 title: "CLI Introduction"
-description: "SuperBox CLI — init, auth, push, pull, run, logs, search, inspect, test"
+description: "SuperBox CLI — Manage MCP servers end to end"
 icon: "terminal"
 ---
 
 ## Overview
 
-The SuperBox CLI is a Python (Click) tool for managing MCP servers end to end. Commands map directly to the backend implementation in `superbox.cli` (see repo `SuperBox-BE/src/superbox/cli`), so usage here matches the code.
+The SuperBox CLI is a Python (Click) tool for managing MCP servers from initialization to deployment. Commands map directly to the backend implementation in `superbox.ai/src/superbox/cli`.
 
-## Install
+<Info>
+  All CLI documentation matches the actual backend implementation. For detailed setup and usage, visit [https://superbox.mintlify.app](https://acm-aa28ebf6.mintlify.app/)
+</Info>
+
+## Installation
 
 ```bash
-pip install superbox
+# Clone backend repository
+git clone https://github.com/areebahmeddd/superbox.ai.git
+cd superbox.ai
+
+# Create virtual environment
+python -m venv .venv
+source .venv/bin/activate  # macOS/Linux
+# or .\.venv\Scripts\Activate.ps1 (Windows)
+
+# Install CLI
+python -m pip install -e .[cli]
 ```
 
 ## Quick Start
@@ -19,7 +33,9 @@ pip install superbox
 <Steps>
   <Step title="Authenticate">
     ```bash
-    superbox auth login
+    superbox auth login --provider google
+    # or
+    superbox auth login --provider email
     ```
     Device flow for Google/GitHub is supported; email/password works too.
   </Step>
@@ -33,7 +49,7 @@ pip install superbox
     ```bash
     superbox push --name my-mcp
     ```
-    Runs SonarCloud, Bandit, GitGuardian, tool discovery, then uploads to the registry (S3).
+    Runs SonarCloud, Bandit, GitGuardian, tool discovery, then uploads to S3 registry.
   </Step>
   <Step title="Configure client">
     ```bash
@@ -49,50 +65,164 @@ pip install superbox
   </Step>
 </Steps>
 
-## Commands (source-of-truth)
+## Available Commands
 
-- `superbox init` — create `superbox.json` interactively.
-- `superbox auth` — grouped commands:
-  - `superbox auth register`
-  - `superbox auth login [--provider email|google|github] [--email] [--password]`
-  - `superbox auth status`
-  - `superbox auth refresh`
-  - `superbox auth logout`
-- `superbox push [--name NAME] [--force]` — security scan + publish to S3 registry.
-- `superbox pull --name NAME --client CLIENT` — write client config for Lambda executor.
-- `superbox run --name NAME` — interactive JSON-RPC calls to the executor.
-- `superbox logs --name NAME [--follow|-f]` — CloudWatch logs with optional tail.
-- `superbox search` — list servers from the registry.
-- `superbox inspect --name NAME` — open repo URL for a server.
-- `superbox test --url URL --client CLIENT [--entrypoint FILE] [--lang LANGUAGE]` — bypass registry/scans for quick trials.
+### Authentication
+
+<CardGroup cols={2}>
+  <Card title="auth register" icon="user-plus" href="/cli/auth">
+    Create new account
+  </Card>
+  <Card title="auth login" icon="right-to-bracket" href="/cli/auth">
+    Log in with email/Google/GitHub
+  </Card>
+  <Card title="auth status" icon="circle-info" href="/cli/auth">
+    Check auth status
+  </Card>
+  <Card title="auth logout" icon="right-from-bracket" href="/cli/auth">
+    Log out
+  </Card>
+</CardGroup>
+
+### Server Management
+
+<CardGroup cols={2}>
+  <Card title="init" icon="wand-magic-sparkles" href="/cli/init">
+    Initialize superbox.json
+  </Card>
+  <Card title="push" icon="cloud-arrow-up" href="/cli/push">
+    Publish to registry with security scans
+  </Card>
+  <Card title="pull" icon="cloud-arrow-down" href="/cli/pull">
+    Configure client for server
+  </Card>
+  <Card title="search" icon="magnifying-glass" href="/cli/search">
+    List registry servers
+  </Card>
+</CardGroup>
+
+### Testing & Debugging
+
+<CardGroup cols={2}>
+  <Card title="run" icon="play" href="/cli/run">
+    Interactive terminal session
+  </Card>
+  <Card title="test" icon="flask" href="/cli/test">
+    Test without registry
+  </Card>
+  <Card title="logs" icon="file-lines" href="/cli/logs">
+    View CloudWatch logs
+  </Card>
+  <Card title="inspect" icon="eye" href="/cli/inspect">
+    Open repository in browser
+  </Card>
+</CardGroup>
+
+## Command Reference
+
+```bash
+# Authentication
+superbox auth register
+superbox auth login [--provider email|google|github]
+superbox auth status
+superbox auth refresh
+superbox auth logout
+
+# Server management
+superbox init
+superbox push [--name NAME] [--force]
+superbox pull --name NAME --client CLIENT
+superbox search
+superbox inspect --name NAME
+
+# Testing & debugging
+superbox run --name NAME
+superbox test --url URL --client CLIENT
+superbox logs --name NAME [--follow]
+```
+
+## Configuration
+
+The CLI expects a `.env` file in your working directory for AWS/Firebase config:
+
+```bash
+# AWS (required for S3 registry)
+AWS_REGION=ap-south-1
+AWS_ACCESS_KEY_ID=your_key
+AWS_SECRET_ACCESS_KEY=your_secret
+S3_BUCKET_NAME=your-bucket
+
+# Lambda executor
+LAMBDA_BASE_URL=https://your-api.example.com/run
+
+# Scanners (for push command)
+SONAR_TOKEN=your_token
+SONAR_ORGANIZATION=your_org
+GITGUARDIAN_API_KEY=your_key
+```
+
+## Token Storage
+
+Authentication tokens are stored in `~/.superbox/auth.json`:
+
+```json
+{
+  "id_token": "...",
+  "refresh_token": "...",
+  "email": "user@example.com",
+  "provider": "google"
+}
+```
 
 ## Examples
 
-```bash
-# Register + login (email/password)
+<CodeGroup>
+```bash Full Workflow
+# Register and login
 superbox auth register
-superbox auth login --provider email --email user@example.com
-
-# Google device flow
 superbox auth login --provider google
 
-# Publish a server
+# Initialize and publish
 superbox init
 superbox push --name weather-mcp
 
-# Configure for Cursor
+# Configure client
 superbox pull --name weather-mcp --client cursor
 
-# Test without publishing
-superbox test --url https://github.com/user/repo --client chatgpt
-
-# Inspect + logs
-superbox inspect --name weather-mcp
+# Test and monitor
+superbox run --name weather-mcp
 superbox logs --name weather-mcp --follow
 ```
 
-## Notes
+```bash Quick Test
+# Test without publishing
+superbox test --url https://github.com/user/repo --client cursor
+```
 
-- The CLI expects a valid `.env` in the working directory for AWS/Firebase config when pushing/logging.
-- Tokens are stored under `~/.superbox/auth.json`.
-- For full behavior, see `SuperBox-BE/src/superbox/cli` and `README.md` in the backend repo.
+```bash Browse Servers
+# Search and inspect
+superbox search
+superbox inspect --name weather-mcp
+```
+</CodeGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Installation" icon="download" href="/cli/installation">
+    Setup guide
+  </Card>
+  <Card title="Authentication" icon="key" href="/cli/auth">
+    Auth commands
+  </Card>
+  <Card title="Publishing" icon="upload" href="/cli/push">
+    Publish servers
+  </Card>
+  <Card title="Backend Setup" icon="server" href="/backend/setup">
+    Run local server
+  </Card>
+</CardGroup>
+
+<Info>
+  For complete documentation, visit [https://superbox.mintlify.app](https://acm-aa28ebf6.mintlify.app/)
+</Info>

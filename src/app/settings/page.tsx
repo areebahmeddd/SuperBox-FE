@@ -272,7 +272,7 @@ export default function SettingsPage() {
               </div>
 
               {/* Two-Factor Authentication */}
-              <div className="mb-8 py-4 border-t border-white/5">
+              <div className="py-4 border-t border-white/5">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="font-medium text-white">
@@ -298,7 +298,7 @@ export default function SettingsPage() {
               </div>
 
               {/* Delete Account */}
-              <div className="pt-4 border-t border-white/5">
+              <div className="py-4 border-t border-white/5">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="font-medium text-white">Delete Account</p>

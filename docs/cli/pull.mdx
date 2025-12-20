@@ -1,70 +1,111 @@
 ---
 title: "superbox pull"
-description: "Download MCP server configuration for client integration"
+description: "Configure AI client to use an MCP server from the registry"
 icon: "cloud-arrow-down"
 ---
 
 ## Usage
 
 ```bash
-superbox pull [SERVER_ID] [OPTIONS]
+superbox pull --name NAME --client CLIENT
 ```
 
 ## Description
 
-Downloads MCP server configuration for integrating with MCP clients like Claude Desktop.
-
-## Arguments
-
-<ParamField path="SERVER_ID" type="string" required>
-  Server ID to pull
-  
-  ```bash
-  superbox pull weather-mcp-123
-  ```
-</ParamField>
+Pull an MCP server from the S3 registry and configure it for your AI client. Automatically writes the correct MCP configuration file for the specified client.
 
 ## Options
 
-<ParamField path="--output" type="string" default="client_config.json">
-  Output file path
+<ParamField path="--name" type="string" required>
+  MCP server name to pull from registry
 </ParamField>
 
-<ParamField path="--format" type="string" default="json">
-  Output format: `json`, `yaml`
+<ParamField path="--client" type="string" required>
+  Target AI client: `vscode`, `cursor`, `windsurf`, `claude`, or `chatgpt`
 </ParamField>
+
+## Supported Clients
+
+<CardGroup cols={3}>
+  <Card title="VS Code" icon="code">
+    Configures `.vscode/mcp.json`
+  </Card>
+  <Card title="Cursor" icon="mouse-pointer">
+    Configures `~/.cursor/mcp.json`
+  </Card>
+  <Card title="Windsurf" icon="wind">
+    Configures Windsurf MCP settings
+  </Card>
+  <Card title="Claude" icon="message">
+    Configures Claude Desktop MCP
+  </Card>
+  <Card title="ChatGPT" icon="comment">
+    Configures ChatGPT MCP settings
+  </Card>
+</CardGroup>
+
+## What It Does
+
+<Steps>
+  <Step title="Fetch from S3">
+    Retrieves server metadata from S3 registry
+  </Step>
+
+  <Step title="Generate Config">
+    Creates client-specific MCP configuration
+  </Step>
+
+  <Step title="Configure Endpoint">
+    Points client to Lambda executor endpoint
+  </Step>
+
+  <Step title="Save Config">
+    Writes configuration to client's config file
+  </Step>
+</Steps>
 
 ## Examples
 
 <CodeGroup>
-```bash
-Basic Pull
-superbox pull weather-mcp-123
+```bash Cursor
+superbox pull --name weather-mcp --client cursor
 ```
 
-```bash
-Custom Output
-superbox pull weather-mcp-123 --output mcp-config.json
+```bash VS Code
+superbox pull --name my-mcp --client vscode
 ```
 
-```bash
-YAML Format
-superbox pull weather-mcp-123 --format yaml --output config.yaml
+```bash Claude Desktop
+superbox pull --name database-mcp --client claude
 ```
 </CodeGroup>
 
+## Example Output
+
+```bash
+$ superbox pull --name my-mcp --client cursor
+Fetching server 'my-mcp' from S3 bucket...
+Success!
+Server 'my-mcp' added to Cursor MCP config
+Location: ~/.cursor/mcp.json
+```
+
 ## Configuration Format
+
+The generated configuration points to the Lambda executor:
 
 ```json
 {
   "mcpServers": {
-    "weather": {
-      "url": "https://api.superbox.ai/execute/weather-mcp-123",
-      "apiKey": "your_api_key"
+    "my-mcp": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-proxy"],
+      "env": {
+        "MCP_PROXY_URL": "https://lambda-url/my-mcp"
+      }
     }
   }
 }
-```
 
 ## Next Steps
 

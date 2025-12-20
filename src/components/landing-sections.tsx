@@ -189,12 +189,12 @@ export default function LandingSections() {
           transition={{ duration: 0.6, delay: 0.9 }}
           className="flex items-center justify-center gap-3"
         >
-          <Button asChild>
-            <Link href="/explore">
+          <Link href="/explore">
+            <Button>
               <Compass className="w-4 h-4" /> Start exploring
-            </Link>
-          </Button>
-          <Button variant="ghost" onClick={handlePublishClick}>
+            </Button>
+          </Link>
+          <Button variant="outline" onClick={handlePublishClick}>
             <Upload className="w-4 h-4" /> Publish a server
           </Button>
         </motion.div>

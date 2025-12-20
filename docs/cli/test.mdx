@@ -1,75 +1,104 @@
 ---
 title: "superbox test"
-description: "Run MCP server test suite"
+description: "Test MCP server directly from repository without registry"
 icon: "flask"
 ---
 
 ## Usage
 
 ```bash
-superbox test [OPTIONS]
+superbox test --url URL --client CLIENT [--entrypoint FILE] [--lang LANGUAGE]
 ```
 
 ## Description
 
-Executes the test suite for your MCP server with coverage reporting.
+Test an MCP server directly from a repository URL without registry registration or security checks. Useful for quick testing before publishing.
+
+<Warning>
+  **TEST MODE** - Bypasses security scanning. Use only for testing your own servers.
+</Warning>
 
 ## Options
 
-<ParamField path="--coverage" type="boolean">
-  Generate coverage report
-  
-  ```bash
-  superbox test --coverage
-  ```
+<ParamField path="--url" type="string" required>
+  Repository URL of the MCP server
 </ParamField>
 
-<ParamField path="--verbose" type="boolean">
-  Detailed test output
+<ParamField path="--client" type="string" required>
+  Target client: `vscode`, `cursor`, `windsurf`, `claude`, or `chatgpt`
 </ParamField>
 
-<ParamField path="--pattern" type="string" default="test_*.py">
-  Test file pattern
+<ParamField path="--entrypoint" type="string" default="main.py">
+  Entrypoint file for the server
 </ParamField>
 
-<ParamField path="--failfast" type="boolean">
-  Stop on first failure
+<ParamField path="--lang" type="string" default="python">
+  Programming language (python/node)
 </ParamField>
+
+## What It Does
+
+<Steps>
+  <Step title="Skip Registry">
+    Bypasses S3 registry and security scanning
+  </Step>
+
+  <Step title="Configure Client">
+    Configures client to use Lambda executor with direct repo URL
+  </Step>
+
+  <Step title="Test Execution">
+    Enables immediate testing without publishing
+  </Step>
+</Steps>
+
+## Security Notice
+
+<Warning>
+This command skips:
+- Security scanning (SonarQube, Bandit, GitGuardian)
+- Quality checks
+- Registry validation
+
+Use only for testing your own servers before publishing.
+</Warning>
 
 ## Examples
 
 <CodeGroup>
-```bash
-Basic Test
-superbox test
+```bash Basic Test
+superbox test --url https://github.com/user/my-mcp --client cursor
 ```
 
-```bash
-With Coverage
-superbox test --coverage --verbose
+```bash Custom Entrypoint
+superbox test \
+  --url https://github.com/user/my-mcp \
+  --client vscode \
+  --entrypoint server.py
 ```
 
-```bash
-Specific Pattern
-superbox test --pattern "integration_*.py"
+```bash Node.js Server
+superbox test \
+  --url https://github.com/user/my-mcp \
+  --client claude \
+  --lang node \
+  --entrypoint index.js
 ```
 </CodeGroup>
 
-## Test Output
+## Example Output
 
-```
-╭────────────── Test Results ──────────────╮
-│                                           │
-│  ✓ test_get_weather_success              │
-│  ✓ test_get_weather_invalid_city         │
-│  ✓ test_get_forecast_success             │
-│  ✗ test_get_historical_data              │
-│                                           │
-│  Tests: 3 passed, 1 failed, 4 total      │
-│  Coverage: 85.3%                          │
-│  Duration: 2.4s                           │
-│                                           │
-╰───────────────────────────────────────────╯
+```bash
+$ superbox test --url https://github.com/user/my-mcp --client cursor
+⚠️  TEST MODE - No Security Checks
+This server is being tested directly and has NOT gone through:
+  • Security scanning (SonarQube, Bandit, GitGuardian)
+  • Quality checks
+  • Registry validation
+
+✓ Configuration written to ~/.cursor/mcp.json
+
+Ready to test in Cursor!
 ```
 
 ## Next Steps

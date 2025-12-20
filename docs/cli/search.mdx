@@ -1,73 +1,59 @@
 ---
 title: "superbox search"
-description: "Search SuperBox marketplace for MCP servers"
+description: "List all MCP servers in the SuperBox registry"
 icon: "magnifying-glass"
 ---
 
 ## Usage
 
 ```bash
-superbox search [QUERY] [OPTIONS]
+superbox search
 ```
 
 ## Description
 
-Search for MCP servers in the SuperBox marketplace.
+List all available MCP servers from the S3-backed registry. Shows repository URL, tool count, description, and security status for each server.
 
-## Arguments
+<Info>No arguments or filters - displays all servers in registry</Info>
 
-<ParamField path="QUERY" type="string">
-  Search query (searches name and description).
-  
-  ```bash
-  superbox search "weather"
-  ```
-</ParamField>
+## What It Does
 
-## Options
+<Steps>
+  <Step title="Fetch from S3">
+    Retrieves all server metadata from S3 registry
+  </Step>
 
-<ParamField path="--category" type="string">
-  Filter by category.
-  
-  ```bash
-  superbox search weather --category data
-  ```
-</ParamField>
+  <Step title="Display List">
+    Shows formatted list of servers with details
+  </Step>
+</Steps>
 
-<ParamField path="--tags" type="array">
-  Filter by tags.
-  
-  ```bash
-  superbox search --tags api,realtime
-  ```
-</ParamField>
-
-<ParamField path="--limit" type="number" default={20}>
-  Number of results
-</ParamField>
-
-<ParamField path="--sort" type="string" default="downloads">
-  Sort by: `downloads`, `rating`, `recent`
-</ParamField>
-
-## Examples
-
-<CodeGroup>
-```bash
-Basic Search
-superbox search "weather"
-```
+## Example
 
 ```bash
-Filtered Search
-superbox search "api" --category data --tags realtime
-```
+$ superbox search
+======================================================================
+Available MCP Servers (5 found)
+======================================================================
 
-```bash
-Sort by Rating
-superbox search --sort rating --limit 10
+[my-mcp]
+   Repository: https://github.com/user/my-mcp
+   Tools: 3
+   Description: My awesome MCP server
+   Security: All scans passed
+
+[weather-mcp]
+   Repository: https://github.com/user/weather-mcp
+   Tools: 5
+   Description: Real-time weather data and forecasts
+   Security: All scans passed
+
+[database-mcp]
+   Repository: https://github.com/user/database-mcp
+   Tools: 7
+   Description: Database management tools
+   Security: All scans passed
 ```
-</CodeGroup>
 
 ## Output
 

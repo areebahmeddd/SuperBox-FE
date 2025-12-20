@@ -1,58 +1,97 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
 
 @layer base {
   :root {
+    /* Brand Colors */
     --brand-red: #ff5252;
     --brand-red-light: #ffbaba;
     --brand-black: #000000;
     --brand-accent: var(--brand-red);
 
-    --background: 0 0% 0%;
-    --foreground: 0 0% 100%;
-    --card: 0 0% 0%;
-    --card-foreground: 0 0% 100%;
-    --popover: 0 0% 0%;
-    --popover-foreground: 0 0% 100%;
-    --primary: 0 100% 66%;
-    --primary-foreground: 0 0% 0%;
-    --secondary: 0 0% 10%;
-    --secondary-foreground: 0 0% 100%;
-    --muted: 0 0% 10%;
-    --muted-foreground: 0 0% 64%;
-    --accent: 0 100% 66%;
-    --accent-foreground: 0 0% 0%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 20%;
-    --input: 0 0% 20%;
-    --ring: 0 100% 66%;
-    --radius: 1rem;
-
-    --animation-duration: 250ms;
-    --animation-easing: cubic-bezier(0.4, 0, 0.2, 1);
+    /* Shadcn/UI Theme Colors */
+    --background: oklch(0.145 0 0);
+    --foreground: oklch(0.985 0 0);
+    --card: oklch(0.205 0 0);
+    --card-foreground: oklch(0.985 0 0);
+    --popover: oklch(0.205 0 0);
+    --popover-foreground: oklch(0.985 0 0);
+    --primary: oklch(0.704 0.191 22.216);
+    --primary-foreground: oklch(0.145 0 0);
+    --secondary: oklch(0.269 0 0);
+    --secondary-foreground: oklch(0.985 0 0);
+    --muted: oklch(0.269 0 0);
+    --muted-foreground: oklch(0.708 0 0);
+    --accent: oklch(0.704 0.191 22.216);
+    --accent-foreground: oklch(0.145 0 0);
+    --destructive: oklch(0.704 0.191 22.216);
+    --border: oklch(1 0 0 / 10%);
+    --input: oklch(1 0 0 / 15%);
+    --ring: oklch(0.704 0.191 22.216);
+    --radius: 0.625rem;
   }
+}
 
+@theme inline {
+  /* Map CSS variables to Tailwind theme */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Radius scale */
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+}
+
+@layer base {
   * {
+    @apply border-border outline-ring/50;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
   }
-}
 
-html {
-  scroll-behavior: auto;
-}
+  *::-webkit-scrollbar {
+    display: none;
+  }
 
-html[data-scroll-behavior="smooth"] {
-  scroll-behavior: smooth;
-}
+  body {
+    @apply bg-background text-foreground;
+    overflow-x: hidden;
+  }
 
-body {
-  background-color: var(--brand-black);
-  color: #ffffff;
-  overflow-x: hidden;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  html {
+    scroll-behavior: auto;
+  }
+
+  html[data-scroll-behavior="smooth"] {
+    scroll-behavior: smooth;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -66,19 +105,7 @@ body {
   }
 }
 
-a {
-  transition: all var(--animation-duration) var(--animation-easing);
-  will-change: auto;
-}
-
-* {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-*::-webkit-scrollbar {
-  display: none;
-}
+/* Custom scrollbar styling */
 .overflow-y-auto:hover::-webkit-scrollbar,
 .overflow-y-scroll:hover::-webkit-scrollbar,
 .overflow-x-auto:hover::-webkit-scrollbar,
@@ -102,7 +129,6 @@ a {
 .overflow-x-scroll:hover::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 3px;
-  transition: background var(--animation-duration) var(--animation-easing);
 }
 
 .overflow-y-auto:hover::-webkit-scrollbar-thumb:hover,
@@ -110,26 +136,4 @@ a {
 .overflow-x-auto:hover::-webkit-scrollbar-thumb:hover,
 .overflow-x-scroll:hover::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.15);
-}
-
-.custom-scrollbar::-webkit-scrollbar {
-  display: none;
-  width: 6px;
-}
-
-.custom-scrollbar:hover::-webkit-scrollbar {
-  display: block;
-}
-
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(255, 82, 82, 0.3);
-  border-radius: 3px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 82, 82, 0.5);
 }

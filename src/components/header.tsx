@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -192,42 +193,42 @@ export default function Header() {
 
           {user ? (
             <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="rounded-full border border-white/20 hover:border-white/30 w-9 h-9 p-0"
-                >
-                  <div className="w-full h-full rounded-full bg-white/10 flex items-center justify-center text-white text-sm font-bold">
-                    {(user.displayName || user.email || "U")[0].toUpperCase()}
-                  </div>
-                </Button>
+              <DropdownMenuTrigger
+                render={
+                  <button className="rounded-full border border-white/20 w-9 h-9 p-0 cursor-pointer outline-none" />
+                }
+              >
+                <div className="w-full h-full rounded-full bg-white/10 flex items-center justify-center text-white text-sm font-bold pointer-events-none">
+                  {(user.displayName || user.email || "U")[0].toUpperCase()}
+                </div>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuLabel>
-                  <div>
-                    <p className="text-sm font-medium">
-                      {user.displayName || "User"}
-                    </p>
-                    <p className="text-xs text-gray-400 font-normal">
-                      {user.email || ""}
-                    </p>
-                  </div>
-                </DropdownMenuLabel>
+                <DropdownMenuGroup>
+                  <DropdownMenuLabel>
+                    <div>
+                      <p className="text-sm font-medium">
+                        {user.displayName || "User"}
+                      </p>
+                      <p className="text-xs text-gray-400 font-normal">
+                        {user.email || ""}
+                      </p>
+                    </div>
+                  </DropdownMenuLabel>
+                </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 {menuItems.map((item) => (
-                  <DropdownMenuItem key={item.label} asChild>
-                    <Link href={item.href}>
+                  <DropdownMenuItem key={item.label}>
+                    <Link
+                      href={item.href}
+                      className="flex items-center gap-1.5 w-full"
+                    >
                       <item.icon className="w-4 h-4" />
                       {item.label}
                     </Link>
                   </DropdownMenuItem>
                 ))}
                 <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={handleSignOut}
-                  className="text-[var(--brand-red)] focus:text-[var(--brand-red)]"
-                >
+                <DropdownMenuItem onClick={handleSignOut} variant="destructive">
                   <LogOut className="w-4 h-4" />
                   Sign Out
                 </DropdownMenuItem>

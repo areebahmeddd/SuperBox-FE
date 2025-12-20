@@ -4,7 +4,14 @@ import { showToast } from "@/lib/toast-utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { AlertCircle, Check, Github, Globe, Upload, X } from "lucide-react";
 import { useEffect, useState } from "react";
-import CustomDropdown from "./custom-dropdown";
+import { Button } from "./ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
 
 interface PublishServerModalProps {
   isOpen: boolean;
@@ -333,50 +340,83 @@ export default function PublishServerModal({
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <CustomDropdown
-                        label="Language"
+                      <label className="block text-sm font-medium text-white mb-2">
+                        Language{" "}
+                        <span className="text-[var(--brand-red)]">*</span>
+                      </label>
+                      <Select
                         required
                         value={formData.lang}
-                        onChange={(value) =>
-                          setFormData({ ...formData, lang: value })
+                        onValueChange={(value) =>
+                          setFormData({ ...formData, lang: value ?? "" })
                         }
-                        placeholder="Select language"
-                        options={[
-                          { value: "Python", label: "Python", icon: "🐍" },
-                          {
-                            value: "JavaScript",
-                            label: "JavaScript",
-                            icon: "📜",
-                          },
-                          {
-                            value: "TypeScript",
-                            label: "TypeScript",
-                            icon: "💙",
-                          },
-                          { value: "Go", label: "Go", icon: "🐹" },
-                          { value: "Rust", label: "Rust", icon: "🦀" },
-                          { value: "Java", label: "Java", icon: "☕" },
-                        ]}
-                      />
+                      >
+                        <SelectTrigger className="w-full bg-white/5 border-white/10 text-white hover:bg-white/[0.07] data-[placeholder]:text-gray-500">
+                          <SelectValue>
+                            {formData.lang ? (
+                              <>
+                                {formData.lang === "Python" && "🐍 Python"}
+                                {formData.lang === "JavaScript" &&
+                                  "📜 JavaScript"}
+                                {formData.lang === "TypeScript" &&
+                                  "💙 TypeScript"}
+                                {formData.lang === "Go" && "🐹 Go"}
+                                {formData.lang === "Rust" && "🦀 Rust"}
+                                {formData.lang === "Java" && "☕ Java"}
+                              </>
+                            ) : (
+                              <span className="text-gray-500">
+                                Select language
+                              </span>
+                            )}
+                          </SelectValue>
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Python">🐍 Python</SelectItem>
+                          <SelectItem value="JavaScript">
+                            📜 JavaScript
+                          </SelectItem>
+                          <SelectItem value="TypeScript">
+                            💙 TypeScript
+                          </SelectItem>
+                          <SelectItem value="Go">🐹 Go</SelectItem>
+                          <SelectItem value="Rust">🦀 Rust</SelectItem>
+                          <SelectItem value="Java">☕ Java</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
 
                     <div>
-                      <CustomDropdown
-                        label="License"
+                      <label className="block text-sm font-medium text-white mb-2">
+                        License{" "}
+                        <span className="text-[var(--brand-red)]">*</span>
+                      </label>
+                      <Select
                         required
                         value={formData.license}
-                        onChange={(value) =>
-                          setFormData({ ...formData, license: value })
+                        onValueChange={(value) =>
+                          setFormData({ ...formData, license: value ?? "" })
                         }
-                        placeholder="Select license"
-                        options={[
-                          { value: "MIT", label: "MIT" },
-                          { value: "Apache-2.0", label: "Apache 2.0" },
-                          { value: "GPL-3.0", label: "GPL 3.0" },
-                          { value: "BSD-3-Clause", label: "BSD 3-Clause" },
-                          { value: "ISC", label: "ISC" },
-                        ]}
-                      />
+                      >
+                        <SelectTrigger className="w-full bg-white/5 border-white/10 text-white hover:bg-white/[0.07] data-[placeholder]:text-gray-500">
+                          <SelectValue>
+                            {formData.license || (
+                              <span className="text-gray-500">
+                                Select license
+                              </span>
+                            )}
+                          </SelectValue>
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="MIT">MIT</SelectItem>
+                          <SelectItem value="Apache-2.0">Apache 2.0</SelectItem>
+                          <SelectItem value="GPL-3.0">GPL 3.0</SelectItem>
+                          <SelectItem value="BSD-3-Clause">
+                            BSD 3-Clause
+                          </SelectItem>
+                          <SelectItem value="ISC">ISC</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
 
                     <div className="col-span-2">
@@ -417,21 +457,33 @@ export default function PublishServerModal({
 
                   <div className="grid grid-cols-6 gap-4">
                     <div className="col-span-1">
-                      <CustomDropdown
-                        label="Type"
+                      <label className="block text-sm font-medium text-white mb-2">
+                        Type
+                      </label>
+                      <Select
                         value={formData.repository.type}
-                        onChange={(value) =>
+                        onValueChange={(value) =>
                           setFormData({
                             ...formData,
-                            repository: { ...formData.repository, type: value },
+                            repository: {
+                              ...formData.repository,
+                              type: value ?? "git",
+                            },
                           })
                         }
-                        placeholder="Type"
-                        options={[
-                          { value: "git", label: "Git" },
-                          { value: "svn", label: "SVN" },
-                        ]}
-                      />
+                      >
+                        <SelectTrigger className="w-full bg-white/5 border-white/10 text-white hover:bg-white/[0.07] data-[placeholder]:text-gray-500">
+                          <SelectValue>
+                            {formData.repository.type || (
+                              <span className="text-gray-500">Type</span>
+                            )}
+                          </SelectValue>
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="git">Git</SelectItem>
+                          <SelectItem value="svn">SVN</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
 
                     <div className="col-span-5">
@@ -478,28 +530,32 @@ export default function PublishServerModal({
 
                   <div className="space-y-4">
                     <div className="flex items-center gap-3 p-4 bg-white/5 border border-white/10 rounded-xl">
-                      <button
+                      <Button
                         type="button"
                         onClick={() => setIsFree(true)}
-                        className={`flex-1 py-2.5 rounded-full font-medium transition-all duration-200 ${
+                        variant={isFree ? "default" : "ghost"}
+                        size="default"
+                        className={`flex-1 py-2.5 rounded-full font-medium ${
                           isFree
-                            ? "bg-[var(--brand-red)] text-black"
+                            ? "bg-[var(--brand-red)] text-black hover:bg-[var(--brand-red)]/90"
                             : "bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white"
                         }`}
                       >
                         Free
-                      </button>
-                      <button
+                      </Button>
+                      <Button
                         type="button"
                         onClick={() => setIsFree(false)}
-                        className={`flex-1 py-2.5 rounded-full font-medium transition-all duration-200 ${
+                        variant={!isFree ? "default" : "ghost"}
+                        size="default"
+                        className={`flex-1 py-2.5 rounded-full font-medium ${
                           !isFree
-                            ? "bg-[var(--brand-red)] text-black"
+                            ? "bg-[var(--brand-red)] text-black hover:bg-[var(--brand-red)]/90"
                             : "bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white"
                         }`}
                       >
                         Paid
-                      </button>
+                      </Button>
                     </div>
 
                     {!isFree && (
@@ -511,29 +567,56 @@ export default function PublishServerModal({
                         className="grid grid-cols-2 gap-4"
                       >
                         <div>
-                          <CustomDropdown
-                            label="Currency"
+                          <label className="block text-sm font-medium text-white mb-2">
+                            Currency{" "}
+                            <span className="text-[var(--brand-red)]">*</span>
+                          </label>
+                          <Select
                             required={!isFree}
                             value={formData.pricing.currency}
-                            onChange={(value) =>
+                            onValueChange={(value) =>
                               setFormData({
                                 ...formData,
                                 pricing: {
                                   ...formData.pricing,
-                                  currency: value,
+                                  currency: value ?? "",
                                 },
                               })
                             }
-                            placeholder="Select currency"
-                            options={[
-                              { value: "USD", label: "USD", icon: "💵" },
-                              { value: "EUR", label: "EUR", icon: "💶" },
-                              { value: "GBP", label: "GBP", icon: "�" },
-                              { value: "JPY", label: "JPY", icon: "�" },
-                              { value: "CAD", label: "CAD", icon: "🍁" },
-                              { value: "AUD", label: "AUD", icon: "🦘" },
-                            ]}
-                          />
+                          >
+                            <SelectTrigger className="w-full bg-white/5 border-white/10 text-white hover:bg-white/[0.07] data-[placeholder]:text-gray-500">
+                              <SelectValue>
+                                {formData.pricing.currency ? (
+                                  <>
+                                    {formData.pricing.currency === "USD" &&
+                                      "💵 USD"}
+                                    {formData.pricing.currency === "EUR" &&
+                                      "💶 EUR"}
+                                    {formData.pricing.currency === "GBP" &&
+                                      "💷 GBP"}
+                                    {formData.pricing.currency === "JPY" &&
+                                      "💴 JPY"}
+                                    {formData.pricing.currency === "CAD" &&
+                                      "🍁 CAD"}
+                                    {formData.pricing.currency === "AUD" &&
+                                      "🦘 AUD"}
+                                  </>
+                                ) : (
+                                  <span className="text-gray-500">
+                                    Select currency
+                                  </span>
+                                )}
+                              </SelectValue>
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="USD">💵 USD</SelectItem>
+                              <SelectItem value="EUR">💶 EUR</SelectItem>
+                              <SelectItem value="GBP">💷 GBP</SelectItem>
+                              <SelectItem value="JPY">💴 JPY</SelectItem>
+                              <SelectItem value="CAD">🍁 CAD</SelectItem>
+                              <SelectItem value="AUD">🦘 AUD</SelectItem>
+                            </SelectContent>
+                          </Select>
                         </div>
 
                         <div>
@@ -612,20 +695,24 @@ export default function PublishServerModal({
                 <span>All changes are saved locally</span>
               </div>
               <div className="flex gap-2.5">
-                <button
+                <Button
                   type="button"
                   onClick={onClose}
-                  className="px-5 py-2 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20 text-white text-sm font-medium transition-all duration-200"
+                  variant="outline"
+                  size="default"
+                  className="px-5 py-2 rounded-full"
                 >
                   Cancel
-                </button>
-                <button
+                </Button>
+                <Button
                   onClick={handleSubmit}
-                  className="px-5 py-2 rounded-full bg-[var(--brand-red)] hover:bg-[var(--brand-red)]/90 text-black text-sm font-semibold transition-all duration-200 flex items-center gap-2"
+                  variant="default"
+                  size="default"
+                  className="px-5 py-2 rounded-full bg-[var(--brand-red)] hover:bg-[var(--brand-red)]/90 text-black font-semibold"
                 >
                   <Upload className="w-4 h-4" />
                   {editingServer ? "Update Server" : "Publish Server"}
-                </button>
+                </Button>
               </div>
             </div>
           </motion.div>

@@ -1,88 +1,84 @@
 ---
 title: "superbox init"
-description: "Initialize a new MCP server project"
+description: "Initialize superbox.json configuration for your MCP server"
 icon: "wand-magic-sparkles"
 ---
 
 ## Usage
 
 ```bash
-superbox init [NAME] [OPTIONS]
+superbox init
 ```
 
 ## Description
 
-Creates a new MCP server project with boilerplate code, configuration files, and directory structure.
+Initialize a new `superbox.json` configuration file for your MCP server through an interactive prompt.
 
-## Arguments
+<Info>No arguments required - all information is gathered interactively</Info>
 
-<ParamField path="NAME" type="string" required>
-  Project name (lowercase, alphanumeric, hyphens)
-  
-  ```bash
-  superbox init weather-mcp
-  ```
-</ParamField>
+## What It Does
 
-## Options
+<Steps>
+  <Step title="Creates superbox.json">
+    Creates `superbox.json` in the current directory
+  </Step>
 
-<ParamField path="--template" type="string" default="python">
-  Project template: `python`, `typescript`, `go`
-  
-  ```bash
-  superbox init my-server --template typescript
-  ```
-</ParamField>
+  <Step title="Prompts for Metadata">
+    Asks for server information:
+    - Repository URL (GitHub)
+    - Server name
+    - Version
+    - Description
+    - Author
+    - Language
+    - License
+    - Entrypoint file
+  </Step>
 
-<ParamField path="--category" type="string">
-  Server category: `data`, `api`, `automation`, `ml`, `other`
-  
-  ```bash
-  superbox init my-server --category data
-  ```
-</ParamField>
+  <Step title="Optional Pricing">
+    Optionally add pricing information
+  </Step>
 
-<ParamField path="--path" type="string" default=".">
-  Target directory
-  
-  ```bash
-  superbox init my-server --path ~/projects
-  ```
-</ParamField>
+  <Step title="Extracts Git Info">
+    Automatically extracts repository information from GitHub URLs
+  </Step>
+</Steps>
 
-## Examples
-
-<CodeGroup>
-```bash
-Python Server
-superbox init weather-mcp --template python --category data
-```
+## Example Session
 
 ```bash
-TypeScript Server
-superbox init database-mcp --template typescript --category api
+$ superbox init
+Initialize SuperBox Configuration
+==================================================
+Repository URL (GitHub): https://github.com/user/my-mcp
+Server name: my-mcp
+Version: 1.0.0
+Description: My awesome MCP server
+Author: user
+Language (python/node): python
+License (MIT/Apache-2.0/GPL-3.0): MIT
+Entrypoint (main.py): main.py
+Add pricing? (y/n): n
+
+✓ Configuration saved to superbox.json
 ```
 
-```bash
-Go Server
-superbox init file-mcp --template go --category automation
-```
-</CodeGroup>
+## Generated superbox.json
 
-## Project Structure
-
-```
-weather-mcp/
-├── mcp_server.py      # Main server file
-├── tools/             # Tool implementations
-│   └── get_weather.py
-├── config.yaml        # Server configuration
-├── requirements.txt   # Dependencies
-├── tests/             # Test files
-│   └── test_weather.py
-├── README.md          # Documentation
-└── .gitignore
-```
+```json
+{
+  "name": "my-mcp",
+  "version": "1.0.0",
+  "description": "My awesome MCP server",
+  "author": "user",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/user/my-mcp"
+  },
+  "language": "python",
+  "license": "MIT",
+  "entrypoint": "main.py"
+}
 
 ## Next Steps
 

@@ -1,84 +1,66 @@
 ---
 title: "superbox inspect"
-description: "View detailed information about an MCP server"
+description: "Open MCP server repository in browser"
 icon: "file-magnifying-glass"
 ---
 
 ## Usage
 
 ```bash
-superbox inspect [SERVER_ID] [OPTIONS]
+superbox inspect --name NAME
 ```
 
 ## Description
 
-Display comprehensive information about an MCP server including tools, metadata, and statistics.
-
-## Arguments
-
-<ParamField path="SERVER_ID" type="string" required>
-  Server ID to inspect
-  
-  ```bash
-  superbox inspect weather-mcp-123
-  ```
-</ParamField>
+Open the repository URL for a registered MCP server in your default browser. Useful for viewing source code, documentation, and other repository details.
 
 ## Options
 
-<ParamField path="--tools" type="boolean">
-  Show only tools list
+<ParamField path="--name" type="string" required>
+  MCP server name to inspect
 </ParamField>
 
-<ParamField path="--json" type="boolean">
-  Output as JSON
-</ParamField>
+## What It Does
 
-## Examples
+<Steps>
+  <Step title="Fetch from S3">
+    Retrieves server metadata from S3 registry
+  </Step>
 
-<CodeGroup>
+  <Step title="Extract URL">
+    Extracts repository URL from server metadata
+  </Step>
+
+  <Step title="Open Browser">
+    Opens repository URL in default browser
+  </Step>
+</Steps>
+
+## Example
+
 ```bash
-Basic Inspect
-superbox inspect weather-mcp-123
+$ superbox inspect --name weather-mcp
+Fetching server 'weather-mcp' from S3 bucket...
+Opening repository: https://github.com/user/weather-mcp
+Done.
 ```
 
-```bash
-Tools Only
-superbox inspect weather-mcp-123 --tools
-```
+## Use Cases
 
-```bash
-JSON Output
-superbox inspect weather-mcp-123 --json > server.json
-```
-</CodeGroup>
-
-## Output
-
-```
-╭─────────────── Weather MCP ────────────────╮
-│                                             │
-│  ID: weather-mcp-123                        │
-│  Author: @areeb                           │
-│  Category: Data                             │
-│  Downloads: 1,234                           │
-│  Rating: ★★★★★ 4.8 (42 reviews)           │
-│                                             │
-│  Description:                               │
-│  Real-time weather data and forecasts       │
-│  from multiple APIs                         │
-│                                             │
-│  Tools:                                     │
-│  • get_weather       - Get current weather  │
-│  • get_forecast      - Get weather forecast │
-│  • get_historical    - Get historical data  │
-│                                             │
-│  Tags: weather, api, realtime               │
-│  Version: 1.2.0                             │
-│  Last updated: 2 days ago                   │
-│                                             │
-╰─────────────────────────────────────────────╯
-```
+<CardGroup cols={2}>
+  <Card title="View Source" icon="code">
+    Inspect server implementation
+  </Card>
+  <Card title="Read Docs" icon="book">
+    Check repository README
+  </Card>
+  <Card title="Check Issues" icon="bug">
+    View open issues
+  </Card>
+  <Card title="Fork" icon="code-fork">
+    Fork for customization
+  </Card>
+</CardGroup>
 
 ## Next Steps
 

@@ -4,46 +4,56 @@ description: "Install SuperBox CLI on your system"
 icon: "download"
 ---
 
-## Installation Methods
+## Prerequisites
 
-<Tabs>
-  <Tab title="pip (Recommended)">
-    Install via Python Package Index:
+- Python 3.11+
+- Git
+- Virtual environment (recommended)
+
+## Installation
+
+<Steps>
+  <Step title="Clone Repository">
+    Clone the SuperBox backend repository:
     
     ```bash
-    pip install superbox-cli
+    git clone https://github.com/areebahmeddd/superbox.ai.git
+    cd superbox.ai
+    ```
+  </Step>
+
+  <Step title="Create Virtual Environment">
+    Create and activate a virtual environment:
+    
+    **Windows (PowerShell):**
+    ```powershell
+    python -m venv .venv
+    .\.venv\Scripts\Activate.ps1
     ```
     
-    <Check>Works on Linux, macOS, and Windows</Check>
-  </Tab>
+    **macOS/Linux:**
+    ```bash
+    python3 -m venv .venv
+    source .venv/bin/activate
+    ```
+  </Step>
 
-  <Tab title="pipx">
-    Install in isolated environment:
+  <Step title="Install SuperBox CLI">
+    Install with CLI support:
     
     ```bash
-    pipx install superbox-cli
+    python -m pip install -e .[cli]
     ```
     
-    <Info>Recommended for CLI tools to avoid dependency conflicts</Info>
-  </Tab>
-
-  <Tab title="From Source">
-    Install from GitHub:
-    
-    ```bash
-    git clone https://github.com/areebahmeddd/SuperBox-CLI.git
-    cd SuperBox-CLI
-    pip install -e .
-    ```
-  </Tab>
-</Tabs>
+    <Info>For development, install with dev tools: `python -m pip install -e .[dev]`</Info>
+  </Step>
+</Steps>
 
 ## Verify Installation
 
 ```bash
-superbox --version
-# Output: superbox-cli v1.0.0
-```
+superbox --help
+# Shows available commands
 ```
 
 ## Next Steps

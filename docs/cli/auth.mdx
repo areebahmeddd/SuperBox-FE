@@ -1,90 +1,150 @@
 ---
 title: "superbox auth"
-description: "Authenticate with SuperBox using device authorization flow"
+description: "Authenticate with SuperBox using Firebase authentication"
 icon: "fingerprint"
 ---
 
-## Usage
+## Overview
+
+Authenticate with SuperBox using Firebase authentication. Supports email/password, Google OAuth, and GitHub OAuth.
+
+<Info>Authentication tokens are stored in `~/.superbox/auth.json`</Info>
+
+## Commands
+
+### `superbox auth register`
+
+Create a new SuperBox account.
 
 ```bash
-superbox auth [OPTIONS]
+superbox auth register
 ```
 
-## Description
+**Process:**
+- Prompts for email and password
+- Creates Firebase account
+- Automatically logs you in
+- Stores tokens locally
 
-Authenticates with SuperBox using OAuth 2.0 device authorization flow. Opens browser for authorization and stores token locally.
+**Example:**
+```bash
+$ superbox auth register
+Email: user@example.com
+Password: ********
+✓ Successfully registered and logged in
+```
 
-## Options
+### `superbox auth login`
 
-<ParamField path="--method" type="string">
-  Authentication method: `device_flow` or `token`.
-  
-  ```bash
-  superbox auth --method device_flow
-  ```
+Log in to your SuperBox account.
+
+```bash
+superbox auth login [--provider PROVIDER] [--email EMAIL] [--password PASSWORD]
+```
+
+#### Options
+
+<ParamField path="--provider" type="string" default="email">
+  Authentication provider: `email`, `google`, or `github`
 </ParamField>
 
-<ParamField path="--token" type="string">
-  Provide API token directly.
-  
-  ```bash
-  superbox auth --token sb_1234567890abcdef
-  ```
+<ParamField path="--email" type="string">
+  Email address (for email provider only)
 </ParamField>
 
-<ParamField path="--logout" type="boolean">
-  Log out and remove stored token.
-  
-  ```bash
-  superbox auth --logout
-  ```
+<ParamField path="--password" type="string">
+  Password (for email provider only)
 </ParamField>
 
-## Device Flow Process
+#### Email/Password Login
+
+```bash
+$ superbox auth login --provider email
+Email: user@example.com
+Password: ********
+✓ Successfully logged in
+```
+
+#### OAuth Device Flow (Google/GitHub)
 
 <Steps>
-  <Step title="Request Device Code">
-    CLI requests device code from API
-  </Step>
-
-  <Step title="Display Code">
-    Visit and enter the device code:
-    ```text
-    https://superbox.ai/device
-    Code: ABCD-1234
+  <Step title="Initiate OAuth Flow">
+    ```bash
+    superbox auth login --provider google
+    # or
+    superbox auth login --provider github
     ```
   </Step>
 
-  <Step title="User Authorization">
-    User logs in and authorizes device
+  <Step title="Browser Opens">
+    Browser opens to device verification page
+    
+    ```text
+    Visit: http://localhost:8000/api/v1/auth/device?code=XXXX-XXXX
+    Or enter code: XXXX-XXXX
+    ```
   </Step>
 
-  <Step title="Token Storage">
-    Token saved to `~/.superbox/token.json`
+  <Step title="Complete Authorization">
+    Authorize in browser, CLI detects completion automatically
+  </Step>
+
+  <Step title="Token Stored">
+    Authentication tokens saved to `~/.superbox/auth.json`
   </Step>
 </Steps>
 
-## Examples
-
-<CodeGroup>
+**Example:**
 ```bash
-Device Flow
-superbox auth
-# Opens browser automatically
-# Enter displayed code
+$ superbox auth login --provider google
+Opening browser for Google authentication...
+Visit this URL: http://localhost:8000/api/v1/auth/device?code=XXXX-XXXX
+Waiting for authentication...
+✓ Successfully authenticated with Google
 ```
 
-```bash
-Direct Token
-export SUPERBOX_API_TOKEN=sb_your_token_here
-superbox auth --token $SUPERBOX_API_TOKEN
-```
+### `superbox auth status`
+
+Check current authentication status.
 
 ```bash
-Logout
-superbox auth --logout
+superbox auth status
 ```
-</CodeGroup>
+
+**Example:**
+```bash
+$ superbox auth status
+Logged in as: user@example.com
+Provider: google
+```
+
+### `superbox auth refresh`
+
+Manually refresh authentication token.
+
+```bash
+superbox auth refresh
+```
+
+**Example:**
+```bash
+$ superbox auth refresh
+✓ Token refreshed successfully
+```
+
+### `superbox auth logout`
+
+Log out from current session.
+
+```bash
+superbox auth logout
+```
+
+**Example:**
+```bash
+$ superbox auth logout
+✓ Logged out successfully
+```
 
 ## Troubleshooting
 

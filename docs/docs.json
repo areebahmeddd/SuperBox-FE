@@ -12,7 +12,7 @@
     "primary": {
       "type": "button",
       "label": "Website",
-      "href": "https://superbox-fe.vercel.app"
+      "href": "https://superbox-ai.vercel.app"
     }
   },
   "navigation": {

@@ -1,78 +1,93 @@
 ---
 title: "superbox run"
-description: "Test MCP server locally with interactive playground"
+description: "Interactive terminal session to test MCP server via Lambda executor"
 icon: "play"
 ---
 
 ## Usage
 
 ```bash
-superbox run [OPTIONS]
+superbox run --name NAME
 ```
 
 ## Description
 
-Starts local MCP server for testing tools interactively before publishing.
+Start an interactive terminal session to test an MCP server through the Lambda executor. Send requests and view responses in real-time.
 
 ## Options
 
-<ParamField path="--port" type="number" default={8080}>
-  Server port
-  
-  ```bash
-  superbox run --port 3000
-  ```
+<ParamField path="--name" type="string" required>
+  MCP server name to run (must exist in registry)
 </ParamField>
 
-<ParamField path="--debug" type="boolean">
-  Enable debug logging
-</ParamField>
-
-<ParamField path="--watch" type="boolean">
-  Auto-reload on file changes
-</ParamField>
-
-## Examples
-
-<CodeGroup>
-```bash
-Basic Run
-superbox run
-# Server running on http://localhost:8080
-```
-
-```bash
-With Debug
-superbox run --debug --watch
-```
-
-```bash
-Custom Port
-superbox run --port 5000
-```
-</CodeGroup>
-
-## Interactive Testing
+## What It Does
 
 <Steps>
-  <Step title="Start Server">
-    ```bash
-    superbox run
-    ```
+  <Step title="Connect to Executor">
+    Connects to the Lambda executor endpoint
   </Step>
 
-  <Step title="List Tools">
-    CLI displays available tools
+  <Step title="Interactive Prompt">
+    Provides interactive prompt for sending requests
   </Step>
 
-  <Step title="Execute Tool">
-    Select tool and provide parameters interactively
+  <Step title="Send Requests">
+    Type prompts and send to MCP server
   </Step>
 
-  <Step title="View Results">
-    See tool output and logs
+  <Step title="View Responses">
+    Displays JSON responses from the server
   </Step>
 </Steps>
+
+## Interactive Session
+
+```bash
+$ superbox run --name weather-mcp
+Connecting to MCP executor: https://lambda-url/weather-mcp
+Type 'exit' or 'quit' to end. Press Enter on empty line to continue.
+
+> What tools are available?
+{
+  "tools": [
+    "get_weather",
+    "get_forecast",
+    "get_historical"
+  ]
+}
+
+> Get weather for London
+{
+  "result": {
+    "location": "London",
+    "temperature": "15°C",
+    "conditions": "Cloudy"
+  }
+}
+
+> exit
+Goodbye!
+```
+
+## Commands
+
+Within the interactive session:
+
+- Type your prompt and press Enter to send request
+- Type `exit` or `quit` to end session
+- Press Enter on empty line to continue
+
+## Example
+
+```bash
+$ superbox run --name my-mcp
+Connecting to MCP executor: https://lambda-url/my-mcp
+Type 'exit' or 'quit' to end. Press Enter on empty line to continue.
+> What's the weather today?
+{
+  "response": "Weather data retrieved successfully"
+}
+```
 
 ## Next Steps
 
