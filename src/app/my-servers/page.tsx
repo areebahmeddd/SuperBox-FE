@@ -5,7 +5,13 @@ import Header from "@/components/header";
 import PublishServerModal, { ServerFormData } from "@/components/publish-modal";
 import { Button } from "@/components/ui/button";
 import { auth } from "@/lib/firebase";
+import {
+  deleteUserServer,
+  getUserServersByAuthor,
+  saveUserServer,
+} from "@/lib/local-storage";
 import { showToast } from "@/lib/toast-utils";
+import type { ServerResponse } from "@/lib/types";
 import type { User } from "firebase/auth";
 import { onAuthStateChanged } from "firebase/auth";
 import { motion } from "framer-motion";
@@ -55,35 +61,12 @@ export default function MyServersPage() {
   };
 
   useEffect(() => {
-    const fetchUserServers = async () => {
-      if (!user) return;
+    if (!user) return;
 
-      try {
-        const token = await user.getIdToken();
-        const API_URL = process.env.NEXT_PUBLIC_API_URL!;
-        const response = await fetch(
-          `${API_URL}/servers?author=${encodeURIComponent(user.displayName || user.email || "")}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          },
-        );
-
-        if (response.ok) {
-          const result = await response.json();
-          setUserServers(result.data || []);
-          setShowEmptyState(result.data?.length === 0);
-        } else {
-          setShowEmptyState(true);
-        }
-      } catch (error) {
-        setShowEmptyState(true);
-      }
-    };
-
-    fetchUserServers();
+    const author = user.displayName || user.email || "";
+    const localServers = getUserServersByAuthor(author);
+    setUserServers(localServers);
+    setShowEmptyState(localServers.length === 0);
   }, [user]);
 
   const handlePublishServer = async (data: ServerFormData) => {
@@ -92,62 +75,37 @@ export default function MyServersPage() {
       return;
     }
 
-    try {
-      const token = await user.getIdToken();
-      const API_URL = process.env.NEXT_PUBLIC_API_URL!;
+    const isEditing = !!editingServer;
 
-      const isEditing = !!editingServer;
-      const endpoint = isEditing
-        ? `${API_URL}/servers/${editingServer.name}`
-        : `${API_URL}/servers`;
-      const method = isEditing ? "PUT" : "POST";
+    const author = user.displayName || user.email || data.author || "";
 
-      const response = await fetch(endpoint, {
-        method,
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
+    const serverData: ServerResponse = {
+      name: data.name,
+      version: data.version,
+      description: data.description,
+      author: author,
+      lang: data.lang,
+      license: data.license,
+      entrypoint: data.entrypoint,
+      repository: data.repository,
+      pricing: {
+        currency: data.pricing.currency || "USD",
+        amount: data.pricing.amount || 0,
+      },
+    };
 
-      const result = await response.json();
+    saveUserServer(serverData, user.uid);
 
-      if (!response.ok) {
-        throw new Error(
-          result?.detail ||
-            result?.message ||
-            `Failed to ${isEditing ? "update" : "create"} server`,
-        );
-      }
+    const localServers = getUserServersByAuthor(author);
+    setUserServers(localServers);
+    setShowEmptyState(localServers.length === 0);
 
-      showToast.success(
-        `"${data.name}" has been ${isEditing ? "updated" : "published"} successfully`,
-      );
+    showToast.success(
+      `"${data.name}" has been ${isEditing ? "updated" : "published"} successfully`,
+    );
 
-      const listResponse = await fetch(
-        `${API_URL}/servers?author=${encodeURIComponent(user.displayName || user.email || "")}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        },
-      );
-
-      if (listResponse.ok) {
-        const listResult = await listResponse.json();
-        setUserServers(listResult.data || []);
-        setShowEmptyState(listResult.data?.length === 0);
-      }
-
-      setIsModalOpen(false);
-      setEditingServer(null);
-    } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : "Failed to publish server";
-      showToast.error(errorMessage);
-    }
+    setIsModalOpen(false);
+    setEditingServer(null);
   };
 
   const handleDeleteServer = async (serverName: string) => {
@@ -162,49 +120,16 @@ export default function MyServersPage() {
 
     if (!confirmed) return;
 
-    try {
-      const token = await user.getIdToken();
-      const API_URL = process.env.NEXT_PUBLIC_API_URL!;
+    const deleted = deleteUserServer(serverName);
 
-      const response = await fetch(
-        `${API_URL}/servers/${serverName}?confirm=true`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(
-          result?.detail || result?.message || "Failed to delete server",
-        );
-      }
-
+    if (deleted) {
+      const author = user.displayName || user.email || "";
+      const localServers = getUserServersByAuthor(author);
+      setUserServers(localServers);
+      setShowEmptyState(localServers.length === 0);
       showToast.success(`"${serverName}" has been removed successfully`);
-
-      const listResponse = await fetch(
-        `${API_URL}/servers?author=${encodeURIComponent(user.displayName || user.email || "")}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        },
-      );
-
-      if (listResponse.ok) {
-        const listResult = await listResponse.json();
-        setUserServers(listResult.data || []);
-        setShowEmptyState(listResult.data?.length === 0);
-      }
-    } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : "Failed to delete server";
-      showToast.error(errorMessage);
+    } else {
+      showToast.error("Server not found");
     }
   };
 
@@ -315,8 +240,16 @@ export default function MyServersPage() {
                                   {server.name}
                                 </h3>
                                 {server.pricing && (
-                                  <span className="px-2.5 py-1 bg-primary/15 text-primary text-xs font-semibold rounded-lg border border-primary/20">
-                                    ${server.pricing.amount}/mo
+                                  <span
+                                    className={`px-2.5 py-1 text-xs font-semibold rounded-lg border ${
+                                      server.pricing.amount > 0
+                                        ? "bg-primary/15 text-primary border-primary/20"
+                                        : "bg-green-500/15 text-green-600 dark:text-green-400 border-green-500/20"
+                                    }`}
+                                  >
+                                    {server.pricing.amount > 0
+                                      ? `$${server.pricing.amount}/mo`
+                                      : "Free"}
                                   </span>
                                 )}
                               </div>

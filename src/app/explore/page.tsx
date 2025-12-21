@@ -2,7 +2,8 @@
 
 import Header from "@/components/header";
 import ToolCard from "@/components/tool-card";
-import { showToast } from "@/lib/toast-utils";
+import { getUserServers } from "@/lib/local-storage";
+import { getAllMockServers } from "@/lib/mock-data";
 import type { ServerListItem, ServerResponse } from "@/lib/types";
 import { motion } from "framer-motion";
 import { Mic, Search } from "lucide-react";
@@ -28,7 +29,9 @@ function ExploreContent() {
         if (!res.ok) throw new Error("Failed to fetch servers");
         const json = await res.json();
         const servers: ServerResponse[] = json?.data || json?.servers || [];
-        const list: ServerListItem[] = servers.map((s) => ({
+        const userServers = getUserServers();
+        const allServers = [...servers, ...userServers];
+        const list: ServerListItem[] = allServers.map((s) => ({
           name: s.name,
           author: s.author,
           description: s.description,
@@ -38,7 +41,19 @@ function ExploreContent() {
         }));
         setAllTools(list);
       } catch (error) {
-        showToast.error("Failed to load servers. Please retry in a moment.");
+        console.log("API unavailable, using mock data");
+        const mockServers = getAllMockServers();
+        const userServers = getUserServers();
+        const allServers = [...mockServers, ...userServers];
+        const list: ServerListItem[] = allServers.map((s) => ({
+          name: s.name,
+          author: s.author,
+          description: s.description,
+          lang: s.lang,
+          license: s.license,
+          pricing: s.pricing,
+        }));
+        setAllTools(list);
       } finally {
         setLoading(false);
       }

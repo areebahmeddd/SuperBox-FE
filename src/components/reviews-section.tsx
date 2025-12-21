@@ -1,5 +1,6 @@
 "use client";
 
+import { getReviewsForServer } from "@/lib/mock-data";
 import { motion } from "framer-motion";
 import { ChevronDown, Star, ThumbsUp, User } from "lucide-react";
 import { useState } from "react";
@@ -22,11 +23,19 @@ interface ReviewsSectionProps {
 
 export default function ReviewsSection({
   serverName,
-  averageRating = 4.5,
-  totalReviews = REVIEWS.length,
+  averageRating: propAverageRating,
+  totalReviews: propTotalReviews,
 }: ReviewsSectionProps) {
   const [sortBy, setSortBy] = useState<"recent" | "helpful">("recent");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const REVIEWS = getReviewsForServer(serverName);
+  const averageRating =
+    propAverageRating ??
+    (REVIEWS.length > 0
+      ? REVIEWS.reduce((sum, r) => sum + r.rating, 0) / REVIEWS.length
+      : 4.5);
+  const totalReviews = propTotalReviews ?? REVIEWS.length;
 
   const renderStars = (rating: number) => {
     return (

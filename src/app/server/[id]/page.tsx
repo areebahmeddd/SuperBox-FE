@@ -3,7 +3,8 @@
 import Header from "@/components/header";
 import ServerDetail from "@/components/server-detail";
 import { Button } from "@/components/ui/button";
-import { showToast } from "@/lib/toast-utils";
+import { getUserServers } from "@/lib/local-storage";
+import { getMockServerByName, getReviewsForServer } from "@/lib/mock-data";
 import type { ServerResponse } from "@/lib/types";
 import { motion } from "framer-motion";
 import { Box } from "lucide-react";
@@ -28,8 +29,20 @@ export default function ServerPage() {
         const found = servers.find((s) => s.name === serverName) || null;
         setServer(found);
       } catch {
-        showToast.error("Failed to load server. Please try again.");
-        setServer(null);
+        console.log("API unavailable, using mock data");
+        const mockServer = getMockServerByName(serverName);
+
+        if (!mockServer) {
+          const userServers = getUserServers();
+          const userServer = userServers.find((s) => s.name === serverName);
+          if (userServer) {
+            setServer(userServer);
+          } else {
+            setServer(null);
+          }
+        } else {
+          setServer(mockServer);
+        }
       } finally {
         setLoading(false);
       }
@@ -111,6 +124,12 @@ export default function ServerPage() {
     );
   }
 
+  const reviews = getReviewsForServer(server.name);
+  const averageRating =
+    reviews.length > 0
+      ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+      : undefined;
+
   const transformedServer = {
     id: Math.abs(
       server.name.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0),
@@ -121,8 +140,8 @@ export default function ServerPage() {
     icon: "",
     about: server.description,
     downloads: undefined,
-    rating: undefined,
-    reviewCount: undefined,
+    rating: averageRating,
+    reviewCount: reviews.length,
     tools: server.tools?.names
       ? server.tools.names.map((toolName) => ({
           name: toolName,

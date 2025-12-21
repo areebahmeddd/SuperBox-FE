@@ -113,13 +113,13 @@ export default function ServerDetailTabs({ server }: ServerDetailTabsProps) {
               <h3 className="text-lg font-semibold text-foreground mb-4">
                 About
               </h3>
-              <p className="text-gray-300 leading-relaxed">{server.about}</p>
+              <p className="text-foreground leading-relaxed">{server.about}</p>
             </section>
 
             <section>
               <div className="flex items-center gap-3 mb-4">
                 <Code className="w-5 h-5 text-[var(--brand-red)]" />
-                <h3 className="text-lg font-semibold text-white/95">Tools</h3>
+                <h3 className="text-lg font-semibold text-foreground">Tools</h3>
                 <span className="px-2.5 py-0.5 bg-[var(--brand-red)]/15 text-[var(--brand-red)] text-xs font-semibold rounded-lg">
                   {server.tools.length}
                 </span>
@@ -134,16 +134,16 @@ export default function ServerDetailTabs({ server }: ServerDetailTabsProps) {
                     transition={{ duration: 0.3, delay: index * 0.05 }}
                     className="border-2 border-border rounded-2xl bg-card p-5"
                   >
-                    <h4 className="text-base font-semibold text-white/95 mb-2">
+                    <h4 className="text-base font-semibold text-foreground mb-2">
                       {tool.name}
                     </h4>
-                    <p className="text-gray-400 text-sm leading-relaxed">
+                    <p className="text-muted-foreground text-sm leading-relaxed">
                       {tool.description}
                     </p>
 
                     {tool.parameters && tool.parameters.length > 0 && (
                       <div className="mt-4 pt-4 border-t border-white/5">
-                        <p className="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wider">
+                        <p className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
                           Parameters
                         </p>
                         <div className="space-y-2">
