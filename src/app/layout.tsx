@@ -1,4 +1,5 @@
 import PageTransition from "@/components/page-transition";
+import { ThemeProvider } from "@/lib/theme-provider";
 import type { Metadata } from "next";
 import type React from "react";
 import { Toaster } from "react-hot-toast";
@@ -16,38 +17,55 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark" data-scroll-behavior="smooth">
-      <body className={`font-sans antialiased`}>
-        <PageTransition>{children}</PageTransition>
-        <Toaster
-          position="top-right"
-          toastOptions={{
-            duration: 4000,
-            style: {
-              background: "rgba(0, 0, 0, 0.95)",
-              backdropFilter: "blur(24px)",
-              border: "1px solid rgba(255, 255, 255, 0.1)",
-              color: "#fff",
-              borderRadius: "16px",
-              padding: "16px",
-              fontSize: "14px",
-            },
-            success: {
-              duration: 3000,
-              iconTheme: {
-                primary: "#ff5252",
-                secondary: "#000",
-              },
-            },
-            error: {
-              duration: 5000,
-              iconTheme: {
-                primary: "#ff5252",
-                secondary: "#000",
-              },
-            },
+    <html lang="en" data-scroll-behavior="smooth" className="dark">
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  const theme = localStorage.getItem('theme');
+                  if (theme === 'light') {
+                    document.documentElement.classList.remove('dark');
+                  } else {
+                    document.documentElement.classList.add('dark');
+                  }
+                } catch (e) {}
+              })();
+            `,
           }}
         />
+      </head>
+      <body className={`font-sans antialiased`}>
+        <ThemeProvider>
+          <PageTransition>{children}</PageTransition>
+          <Toaster
+            position="top-right"
+            toastOptions={{
+              duration: 4000,
+              className: "toast-theme",
+              style: {
+                borderRadius: "16px",
+                padding: "16px",
+                fontSize: "14px",
+              },
+              success: {
+                duration: 3000,
+                iconTheme: {
+                  primary: "#ff5252",
+                  secondary: "#fff",
+                },
+              },
+              error: {
+                duration: 5000,
+                iconTheme: {
+                  primary: "#ff5252",
+                  secondary: "#fff",
+                },
+              },
+            }}
+          />
+        </ThemeProvider>
       </body>
     </html>
   );

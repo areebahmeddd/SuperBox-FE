@@ -12,20 +12,4 @@ export const showToast = {
       id: `error-${message}`,
     });
   },
-
-  info: (message: string) => {
-    toast(message, {
-      id: `info-${message}`,
-    });
-  },
-
-  loading: (message: string) => {
-    return toast.loading(message, {
-      id: `loading-${message}`,
-    });
-  },
-
-  dismiss: (toastId?: string) => {
-    toast.dismiss(toastId);
-  },
 };

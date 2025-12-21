@@ -82,7 +82,7 @@ export default function LandingSections() {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="text-xs tracking-widest text-[var(--brand-red-light)] mb-3"
+          className="text-xs tracking-widest text-primary mb-3"
         >
           DISCOVER • CONNECT • BUILD
         </motion.p>
@@ -96,22 +96,22 @@ export default function LandingSections() {
             type: "spring",
             stiffness: 100,
           }}
-          className="text-6xl md:text-7xl font-bold text-white mb-4 leading-tight"
+          className="text-6xl md:text-7xl font-bold text-foreground mb-4 leading-tight"
         >
-          SUPER [<span className="text-[var(--brand-red)]">BOX</span>]
+          SUPER [<span className="text-primary">BOX</span>]
         </motion.h1>
 
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.5 }}
-          className="text-2xl md:text-3xl text-white/90 font-semibold mb-4"
+          className="text-2xl md:text-3xl text-foreground font-semibold mb-4"
         >
           An{" "}
           <span className="relative inline-block">
             open marketplace
             <motion.span
-              className="absolute left-0 bottom-[-2px] w-full h-[2.5px] bg-[var(--brand-red)] rounded-full"
+              className="absolute left-0 bottom-[-2px] w-full h-[2.5px] bg-primary rounded-full"
               style={{ transformOrigin: "left" }}
               initial={{ scaleX: 0, opacity: 0.4 }}
               animate={{ scaleX: 1, opacity: 1 }}
@@ -136,12 +136,12 @@ export default function LandingSections() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.7 }}
-          className="text-lg md:text-xl text-white/80 mb-8"
+          className="text-lg md:text-xl text-foreground/90 mb-8"
         >
           <span className="relative inline-block">
             Deploy MCP
             <motion.span
-              className="absolute left-0 bottom-[-2px] w-full h-[2.5px] bg-[var(--brand-red)] rounded-full"
+              className="absolute left-0 bottom-[-2px] w-full h-[2.5px] bg-primary rounded-full"
               style={{ transformOrigin: "left" }}
               initial={{ scaleX: 0, opacity: 0.4 }}
               animate={{ scaleX: 1, opacity: 1 }}
@@ -163,7 +163,7 @@ export default function LandingSections() {
           <span className="relative inline-block">
             on cloud
             <motion.span
-              className="absolute left-0 bottom-[-2px] w-full h-[2.5px] bg-[var(--brand-red)] rounded-full"
+              className="absolute left-0 bottom-[-2px] w-full h-[2.5px] bg-primary rounded-full"
               style={{ transformOrigin: "left" }}
               initial={{ scaleX: 0, opacity: 0.4 }}
               animate={{ scaleX: 1, opacity: 1 }}

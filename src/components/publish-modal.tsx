@@ -163,7 +163,7 @@ export default function PublishServerModal({
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
             onClick={onClose}
-            className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+            className="absolute inset-0 bg-background/80 dark:bg-black/70 backdrop-blur-sm"
           />
 
           <motion.div
@@ -177,14 +177,14 @@ export default function PublishServerModal({
               damping: 30,
             }}
             onClick={(e) => e.stopPropagation()}
-            className="relative bg-black/40 border border-white/10 rounded-2xl w-full max-w-2xl max-h-[85vh] overflow-hidden backdrop-blur-xl shadow-2xl z-10"
+            className="relative bg-card border border-border rounded-2xl w-full max-w-2xl max-h-[85vh] overflow-hidden backdrop-blur-xl shadow-2xl z-10"
           >
-            <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-3.5 bg-black/60 backdrop-blur-xl">
+            <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-3.5 bg-card/80 backdrop-blur-xl border-b border-border">
               <div className="flex-1 text-left">
-                <h2 className="text-lg font-bold text-white">
+                <h2 className="text-lg font-bold text-foreground">
                   {editingServer ? "Edit Server" : "Publish Server"}
                 </h2>
-                <p className="text-xs text-gray-400">
+                <p className="text-xs text-muted-foreground">
                   {editingServer
                     ? "Update your server's information"
                     : "Share your MCP server with the community"}
@@ -194,7 +194,7 @@ export default function PublishServerModal({
                 onClick={onClose}
                 className="p-1.5 transition-colors group flex-shrink-0"
               >
-                <X className="w-4 h-4 text-gray-400 group-hover:text-[var(--brand-red)] transition-colors" />
+                <X className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
               </button>
             </div>
 
@@ -207,14 +207,14 @@ export default function PublishServerModal({
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 }}
-                  className="p-3.5 bg-white/5 border border-white/10 rounded-xl flex items-start gap-3 -mt-1"
+                  className="p-3.5 bg-muted border border-border rounded-xl flex items-start gap-3 -mt-1"
                 >
-                  <AlertCircle className="w-4 h-4 text-[var(--brand-red)] flex-shrink-0 mt-0.5" />
-                  <div className="text-sm text-gray-300">
-                    <p className="font-medium text-white mb-1">
+                  <AlertCircle className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
+                  <div className="text-sm text-foreground">
+                    <p className="font-medium text-foreground mb-1">
                       Before you publish
                     </p>
-                    <p className="text-gray-400 text-xs">
+                    <p className="text-muted-foreground text-xs">
                       Ensure your server follows our guidelines and includes
                       proper documentation. All published servers undergo
                       security scanning.
@@ -229,18 +229,17 @@ export default function PublishServerModal({
                   className="space-y-4"
                 >
                   <div className="flex items-center justify-center gap-3 mb-3">
-                    <div className="h-px flex-1 bg-white/10"></div>
-                    <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider whitespace-nowrap">
+                    <div className="h-px flex-1 bg-border"></div>
+                    <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap">
                       Basic Information
                     </span>
-                    <div className="h-px flex-1 bg-white/10"></div>
+                    <div className="h-px flex-1 bg-border"></div>
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="col-span-2">
-                      <label className="block text-sm font-medium text-white mb-2">
-                        Server Name{" "}
-                        <span className="text-[var(--brand-red)]">*</span>
+                      <label className="block text-sm font-medium text-foreground mb-2">
+                        Server Name <span className="text-primary">*</span>
                       </label>
                       <input
                         type="text"
@@ -250,14 +249,13 @@ export default function PublishServerModal({
                           setFormData({ ...formData, name: e.target.value })
                         }
                         placeholder="my-awesome-server"
-                        className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[var(--brand-red)]/50 focus:bg-white/[0.07] transition-all duration-200"
+                        className="w-full px-4 py-2 bg-input border border-border rounded-xl text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:border-primary/50 focus:bg-input/80 transition-all duration-200"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-white mb-2">
-                        Version{" "}
-                        <span className="text-[var(--brand-red)]">*</span>
+                      <label className="block text-sm font-medium text-foreground mb-2">
+                        Version <span className="text-primary">*</span>
                       </label>
                       <input
                         type="text"
@@ -267,14 +265,13 @@ export default function PublishServerModal({
                           setFormData({ ...formData, version: e.target.value })
                         }
                         placeholder="1.0.0"
-                        className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[var(--brand-red)]/50 focus:bg-white/[0.07] transition-all duration-200"
+                        className="w-full px-4 py-2 bg-input border border-border rounded-xl text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:border-primary/50 focus:bg-input/80 transition-all duration-200"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-white mb-2">
-                        Author{" "}
-                        <span className="text-[var(--brand-red)]">*</span>
+                      <label className="block text-sm font-medium text-foreground mb-2">
+                        Author <span className="text-primary">*</span>
                       </label>
                       <input
                         type="text"
@@ -284,15 +281,14 @@ export default function PublishServerModal({
                           setFormData({ ...formData, author: e.target.value })
                         }
                         placeholder="Your name"
-                        className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[var(--brand-red)]/50 focus:bg-white/[0.07] transition-all duration-200"
+                        className="w-full px-4 py-2 bg-input border border-border rounded-xl text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:border-primary/50 focus:bg-input/80 transition-all duration-200"
                       />
                     </div>
 
                     <div className="col-span-2">
                       <div className="flex items-center justify-between mb-2">
-                        <label className="block text-sm font-medium text-white">
-                          Description{" "}
-                          <span className="text-[var(--brand-red)]">*</span>
+                        <label className="block text-sm font-medium text-foreground">
+                          Description <span className="text-primary">*</span>
                         </label>
                         <label className="cursor-pointer">
                           <input
@@ -301,7 +297,7 @@ export default function PublishServerModal({
                             onChange={handleReadmeUpload}
                             className="hidden"
                           />
-                          <span className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-[var(--brand-red)] transition-colors px-3 py-1.5 rounded-full border border-white/10 hover:border-[var(--brand-red)]/30 bg-white/5 hover:bg-white/10">
+                          <span className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary transition-colors px-3 py-1.5 rounded-full border border-border hover:border-primary/30 bg-muted hover:bg-muted/80">
                             <Upload className="w-3 h-3" />
                             Upload README
                           </span>
@@ -318,7 +314,7 @@ export default function PublishServerModal({
                         }
                         placeholder="Describe what your server does and its key features..."
                         rows={4}
-                        className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[var(--brand-red)]/50 focus:bg-white/[0.07] transition-all duration-200 resize-none"
+                        className="w-full px-4 py-2 bg-input border border-border rounded-xl text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:border-primary/50 focus:bg-input/80 transition-all duration-200 resize-none"
                       />
                     </div>
                   </div>
@@ -331,18 +327,17 @@ export default function PublishServerModal({
                   className="space-y-4"
                 >
                   <div className="flex items-center justify-center gap-3 mb-3">
-                    <div className="h-px flex-1 bg-white/10"></div>
-                    <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider whitespace-nowrap">
+                    <div className="h-px flex-1 bg-border"></div>
+                    <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap">
                       Technical Details
                     </span>
-                    <div className="h-px flex-1 bg-white/10"></div>
+                    <div className="h-px flex-1 bg-border"></div>
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-white mb-2">
-                        Language{" "}
-                        <span className="text-[var(--brand-red)]">*</span>
+                      <label className="block text-sm font-medium text-foreground mb-2">
+                        Language <span className="text-primary">*</span>
                       </label>
                       <Select
                         required
@@ -351,7 +346,7 @@ export default function PublishServerModal({
                           setFormData({ ...formData, lang: value ?? "" })
                         }
                       >
-                        <SelectTrigger className="w-full bg-white/5 border-white/10 text-white hover:bg-white/[0.07] data-[placeholder]:text-gray-500">
+                        <SelectTrigger className="w-full">
                           <SelectValue>
                             {formData.lang ? (
                               <>
@@ -365,7 +360,7 @@ export default function PublishServerModal({
                                 {formData.lang === "Java" && "☕ Java"}
                               </>
                             ) : (
-                              <span className="text-gray-500">
+                              <span className="text-muted-foreground">
                                 Select language
                               </span>
                             )}
@@ -387,9 +382,8 @@ export default function PublishServerModal({
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-white mb-2">
-                        License{" "}
-                        <span className="text-[var(--brand-red)]">*</span>
+                      <label className="block text-sm font-medium text-foreground mb-2">
+                        License <span className="text-primary">*</span>
                       </label>
                       <Select
                         required
@@ -398,10 +392,10 @@ export default function PublishServerModal({
                           setFormData({ ...formData, license: value ?? "" })
                         }
                       >
-                        <SelectTrigger className="w-full bg-white/5 border-white/10 text-white hover:bg-white/[0.07] data-[placeholder]:text-gray-500">
+                        <SelectTrigger className="w-full">
                           <SelectValue>
                             {formData.license || (
-                              <span className="text-gray-500">
+                              <span className="text-muted-foreground">
                                 Select license
                               </span>
                             )}
@@ -420,9 +414,8 @@ export default function PublishServerModal({
                     </div>
 
                     <div className="col-span-2">
-                      <label className="block text-sm font-medium text-white mb-2">
-                        Entrypoint{" "}
-                        <span className="text-[var(--brand-red)]">*</span>
+                      <label className="block text-sm font-medium text-foreground mb-2">
+                        Entrypoint <span className="text-primary">*</span>
                       </label>
                       <input
                         type="text"
@@ -435,7 +428,7 @@ export default function PublishServerModal({
                           })
                         }
                         placeholder="src/index.js"
-                        className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[var(--brand-red)]/50 focus:bg-white/[0.07] transition-all duration-200 font-mono text-sm"
+                        className="w-full px-4 py-2 bg-input border border-border rounded-xl text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:border-primary/50 focus:bg-input/80 transition-all duration-200 font-mono text-sm"
                       />
                     </div>
                   </div>
@@ -448,16 +441,16 @@ export default function PublishServerModal({
                   className="space-y-4"
                 >
                   <div className="flex items-center justify-center gap-3 mb-3">
-                    <div className="h-px flex-1 bg-white/10"></div>
-                    <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider whitespace-nowrap">
+                    <div className="h-px flex-1 bg-border"></div>
+                    <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap">
                       Repository
                     </span>
-                    <div className="h-px flex-1 bg-white/10"></div>
+                    <div className="h-px flex-1 bg-border"></div>
                   </div>
 
                   <div className="grid grid-cols-6 gap-4">
                     <div className="col-span-1">
-                      <label className="block text-sm font-medium text-white mb-2">
+                      <label className="block text-sm font-medium text-foreground mb-2">
                         Type
                       </label>
                       <Select
@@ -472,10 +465,12 @@ export default function PublishServerModal({
                           })
                         }
                       >
-                        <SelectTrigger className="w-full bg-white/5 border-white/10 text-white hover:bg-white/[0.07] data-[placeholder]:text-gray-500">
+                        <SelectTrigger className="w-full">
                           <SelectValue>
                             {formData.repository.type || (
-                              <span className="text-gray-500">Type</span>
+                              <span className="text-muted-foreground">
+                                Type
+                              </span>
                             )}
                           </SelectValue>
                         </SelectTrigger>
@@ -487,12 +482,11 @@ export default function PublishServerModal({
                     </div>
 
                     <div className="col-span-5">
-                      <label className="block text-sm font-medium text-white mb-2">
-                        Repository URL{" "}
-                        <span className="text-[var(--brand-red)]">*</span>
+                      <label className="block text-sm font-medium text-foreground mb-2">
+                        Repository URL <span className="text-primary">*</span>
                       </label>
                       <div className="relative">
-                        <Github className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                        <Github className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                         <input
                           type="url"
                           required
@@ -507,7 +501,7 @@ export default function PublishServerModal({
                             })
                           }
                           placeholder="https://github.com/username/repo"
-                          className="w-full pl-11 pr-4 py-2 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[var(--brand-red)]/50 focus:bg-white/[0.07] transition-all duration-200"
+                          className="w-full pl-11 pr-4 py-2 bg-input border border-border rounded-xl text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:border-primary/50 focus:bg-input/80 transition-all duration-200"
                         />
                       </div>
                     </div>
@@ -521,24 +515,24 @@ export default function PublishServerModal({
                   className="space-y-4"
                 >
                   <div className="flex items-center justify-center gap-3 mb-3">
-                    <div className="h-px flex-1 bg-white/10"></div>
-                    <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider whitespace-nowrap">
+                    <div className="h-px flex-1 bg-border"></div>
+                    <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap">
                       Pricing
                     </span>
-                    <div className="h-px flex-1 bg-white/10"></div>
+                    <div className="h-px flex-1 bg-border"></div>
                   </div>
 
                   <div className="space-y-4">
-                    <div className="flex items-center gap-3 p-4 bg-white/5 border border-white/10 rounded-xl">
+                    <div className="flex items-center gap-3 p-1 bg-muted border border-border rounded-xl">
                       <Button
                         type="button"
                         onClick={() => setIsFree(true)}
                         variant={isFree ? "default" : "ghost"}
                         size="default"
-                        className={`flex-1 py-2.5 rounded-full font-medium ${
+                        className={`flex-1 py-2.5 rounded-lg font-medium border-2 transition-all ${
                           isFree
-                            ? "bg-[var(--brand-red)] text-black hover:bg-[var(--brand-red)]/90"
-                            : "bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white"
+                            ? "bg-primary text-primary-foreground hover:bg-primary/90 border-primary shadow-sm"
+                            : "bg-transparent text-muted-foreground hover:bg-muted/50 hover:text-foreground border-transparent"
                         }`}
                       >
                         Free
@@ -548,10 +542,10 @@ export default function PublishServerModal({
                         onClick={() => setIsFree(false)}
                         variant={!isFree ? "default" : "ghost"}
                         size="default"
-                        className={`flex-1 py-2.5 rounded-full font-medium ${
+                        className={`flex-1 py-2.5 rounded-lg font-medium border-2 transition-all ${
                           !isFree
-                            ? "bg-[var(--brand-red)] text-black hover:bg-[var(--brand-red)]/90"
-                            : "bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white"
+                            ? "bg-primary text-primary-foreground hover:bg-primary/90 border-primary shadow-sm"
+                            : "bg-transparent text-muted-foreground hover:bg-muted/50 hover:text-foreground border-transparent"
                         }`}
                       >
                         Paid
@@ -567,9 +561,8 @@ export default function PublishServerModal({
                         className="grid grid-cols-2 gap-4"
                       >
                         <div>
-                          <label className="block text-sm font-medium text-white mb-2">
-                            Currency{" "}
-                            <span className="text-[var(--brand-red)]">*</span>
+                          <label className="block text-sm font-medium text-foreground mb-2">
+                            Currency <span className="text-primary">*</span>
                           </label>
                           <Select
                             required={!isFree}
@@ -584,7 +577,7 @@ export default function PublishServerModal({
                               })
                             }
                           >
-                            <SelectTrigger className="w-full bg-white/5 border-white/10 text-white hover:bg-white/[0.07] data-[placeholder]:text-gray-500">
+                            <SelectTrigger className="w-full">
                               <SelectValue>
                                 {formData.pricing.currency ? (
                                   <>
@@ -602,7 +595,7 @@ export default function PublishServerModal({
                                       "🦘 AUD"}
                                   </>
                                 ) : (
-                                  <span className="text-gray-500">
+                                  <span className="text-muted-foreground">
                                     Select currency
                                   </span>
                                 )}
@@ -620,9 +613,8 @@ export default function PublishServerModal({
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-white mb-2">
-                            Price{" "}
-                            <span className="text-[var(--brand-red)]">*</span>
+                          <label className="block text-sm font-medium text-foreground mb-2">
+                            Price <span className="text-primary">*</span>
                           </label>
                           <input
                             type="number"
@@ -640,7 +632,7 @@ export default function PublishServerModal({
                               })
                             }
                             placeholder="0.00"
-                            className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[var(--brand-red)]/50 focus:bg-white/[0.07] transition-all duration-200"
+                            className="w-full px-4 py-2 bg-input border border-border rounded-xl text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:border-primary/50 focus:bg-input/80 transition-all duration-200"
                           />
                         </div>
                       </motion.div>
@@ -651,23 +643,23 @@ export default function PublishServerModal({
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 }}
+                  transition={{ delay: 0.35 }}
                   className="space-y-4"
                 >
                   <div className="flex items-center justify-center gap-3 mb-3">
-                    <div className="h-px flex-1 bg-white/10"></div>
-                    <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider whitespace-nowrap">
+                    <div className="h-px flex-1 bg-border"></div>
+                    <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap">
                       Optional
                     </span>
-                    <div className="h-px flex-1 bg-white/10"></div>
+                    <div className="h-px flex-1 bg-border"></div>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-white mb-2">
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       Homepage URL
                     </label>
                     <div className="relative">
-                      <Globe className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                      <Globe className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                       <input
                         type="url"
                         value={formData.metadata?.homepage || ""}
@@ -681,7 +673,7 @@ export default function PublishServerModal({
                           })
                         }
                         placeholder="https://yoursite.com"
-                        className="w-full pl-11 pr-4 py-2 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[var(--brand-red)]/50 focus:bg-white/[0.07] transition-all duration-200"
+                        className="w-full pl-11 pr-4 py-2 bg-input border border-border rounded-xl text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:border-primary/50 focus:bg-input/80 transition-all duration-200"
                       />
                     </div>
                   </div>
@@ -689,9 +681,9 @@ export default function PublishServerModal({
               </div>
             </form>
 
-            <div className="sticky bottom-0 flex items-center justify-between px-6 py-3 bg-black/60 backdrop-blur-xl">
-              <div className="flex items-center gap-2 text-xs text-gray-400">
-                <Check className="w-3.5 h-3.5 text-green-400" />
+            <div className="sticky bottom-0 flex items-center justify-between px-6 py-3 bg-card/80 backdrop-blur-xl border-t border-border">
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <Check className="w-3.5 h-3.5 text-green-600 dark:text-green-400" />
                 <span>All changes are saved locally</span>
               </div>
               <div className="flex gap-2.5">
@@ -708,7 +700,7 @@ export default function PublishServerModal({
                   onClick={handleSubmit}
                   variant="default"
                   size="default"
-                  className="px-5 py-2 rounded-full bg-[var(--brand-red)] hover:bg-[var(--brand-red)]/90 text-black font-semibold"
+                  className="px-5 py-2 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
                 >
                   <Upload className="w-4 h-4" />
                   {editingServer ? "Update Server" : "Publish Server"}

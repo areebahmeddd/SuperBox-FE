@@ -171,7 +171,7 @@ export default function PaywallModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="bg-black/40 border-white/10 max-w-md">
+      <DialogContent className="max-w-md">
         <DialogTitle className="sr-only">
           {server.name} - Premium Server
         </DialogTitle>
@@ -181,9 +181,9 @@ export default function PaywallModal({
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gradient-to-r from-[var(--brand-red)]/20 to-[var(--brand-red)]/10 border border-[var(--brand-red)]/30 mb-4"
+              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gradient-to-r from-primary/20 to-primary/10 border border-primary/30 mb-4"
             >
-              <span className="text-xs font-semibold text-[var(--brand-red)]">
+              <span className="text-xs font-semibold text-primary">
                 PREMIUM SERVER
               </span>
             </motion.div>
@@ -192,7 +192,7 @@ export default function PaywallModal({
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15 }}
-              className="text-2xl font-bold text-white mb-2"
+              className="text-2xl font-bold text-foreground mb-2"
             >
               {server.name}
             </motion.h2>
@@ -201,7 +201,7 @@ export default function PaywallModal({
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="text-sm text-white/60 mb-6"
+              className="text-sm text-muted-foreground mb-6"
             >
               Unlock premium features and capabilities
             </motion.p>
@@ -210,14 +210,14 @@ export default function PaywallModal({
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.25 }}
-              className="mb-6 p-6 rounded-xl bg-white/5 border border-white/10 w-full"
+              className="mb-6 p-6 rounded-xl bg-card border border-border w-full"
             >
               <div className="flex items-baseline justify-center gap-1">
-                <span className="text-4xl font-bold text-white">
+                <span className="text-4xl font-bold text-foreground">
                   {getCurrencySymbol(server.pricing.currency)}
                   {server.pricing.amount}
                 </span>
-                <span className="text-white/40 text-sm">/month</span>
+                <span className="text-muted-foreground text-sm">/month</span>
               </div>
             </motion.div>
 
@@ -235,10 +235,10 @@ export default function PaywallModal({
                   transition={{ delay: 0.35 + index * 0.05 }}
                   className="flex items-center gap-3 text-left"
                 >
-                  <div className="flex-shrink-0 w-5 h-5 rounded-full bg-[var(--brand-red)]/20 border border-[var(--brand-red)]/30 flex items-center justify-center">
-                    <Check className="w-3 h-3 text-[var(--brand-red)]" />
+                  <div className="flex-shrink-0 w-5 h-5 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center">
+                    <Check className="w-3 h-3 text-primary" />
                   </div>
-                  <span className="text-sm text-white/80">{feature}</span>
+                  <span className="text-sm text-foreground">{feature}</span>
                 </motion.div>
               ))}
             </motion.div>
@@ -254,7 +254,7 @@ export default function PaywallModal({
                 disabled={isProcessing}
                 variant="default"
                 size="lg"
-                className="w-full py-3 rounded-xl bg-[var(--brand-red)] text-white font-semibold hover:bg-[var(--brand-red)]/90"
+                className="w-full py-3 rounded-xl"
               >
                 {isProcessing ? "Processing..." : "Unlock Access"}
               </Button>
@@ -269,7 +269,7 @@ export default function PaywallModal({
                 onClick={onClose}
                 variant="ghost"
                 size="sm"
-                className="mt-4 text-white/40 hover:text-white/60"
+                className="mt-4 text-muted-foreground hover:text-foreground"
               >
                 Maybe later
               </Button>

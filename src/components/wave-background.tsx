@@ -6,7 +6,7 @@ export default function WaveBackground() {
   return (
     <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
       <svg
-        className="absolute w-full h-full opacity-[0.08]"
+        className="absolute w-full h-full opacity-[0.12] dark:opacity-[0.08]"
         style={{ filter: "blur(2px)" }}
         viewBox="0 0 1440 800"
         preserveAspectRatio="xMidYMid slice"
@@ -14,7 +14,7 @@ export default function WaveBackground() {
         <defs>
           <linearGradient id="wave1" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#ff5252" stopOpacity="0.2" />
-            <stop offset="50%" stopColor="#ff5252" stopOpacity="0.8" />
+            <stop offset="50%" stopColor="#ff5252" stopOpacity="0.7" />
             <stop offset="100%" stopColor="#ff5252" stopOpacity="0.2" />
           </linearGradient>
         </defs>
@@ -34,16 +34,31 @@ export default function WaveBackground() {
       </svg>
 
       <svg
-        className="absolute w-full h-full opacity-[0.1]"
+        className="absolute w-full h-full opacity-[0.1] dark:opacity-[0.1]"
         style={{ filter: "blur(2.5px)" }}
         viewBox="0 0 1440 800"
         preserveAspectRatio="xMidYMid slice"
       >
         <defs>
           <linearGradient id="wave2" x1="100%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#ff5252" stopOpacity="0.3" />
-            <stop offset="50%" stopColor="#ff5252" stopOpacity="0.9" />
-            <stop offset="100%" stopColor="#ff5252" stopOpacity="0.3" />
+            <stop
+              offset="0%"
+              stopColor="#ff5252"
+              stopOpacity="0.2"
+              className="dark:stop-opacity-[0.3]"
+            />
+            <stop
+              offset="50%"
+              stopColor="#ff5252"
+              stopOpacity="0.7"
+              className="dark:stop-opacity-[0.9]"
+            />
+            <stop
+              offset="100%"
+              stopColor="#ff5252"
+              stopOpacity="0.2"
+              className="dark:stop-opacity-[0.3]"
+            />
           </linearGradient>
         </defs>
         <path
@@ -62,16 +77,16 @@ export default function WaveBackground() {
       </svg>
 
       <svg
-        className="absolute w-full h-full opacity-[0.12]"
+        className="absolute w-full h-full opacity-[0.18] dark:opacity-[0.12]"
         style={{ filter: "blur(3px)" }}
         viewBox="0 0 1440 800"
         preserveAspectRatio="xMidYMid slice"
       >
         <defs>
           <linearGradient id="wave3" x1="50%" y1="0%" x2="50%" y2="100%">
-            <stop offset="0%" stopColor="#ff5252" stopOpacity="0.4" />
-            <stop offset="50%" stopColor="#ff5252" stopOpacity="1" />
-            <stop offset="100%" stopColor="#ff5252" stopOpacity="0.4" />
+            <stop offset="0%" stopColor="#ff5252" stopOpacity="0.35" />
+            <stop offset="50%" stopColor="#ff5252" stopOpacity="0.9" />
+            <stop offset="100%" stopColor="#ff5252" stopOpacity="0.35" />
           </linearGradient>
         </defs>
         <path
@@ -100,10 +115,10 @@ export default function WaveBackground() {
           ease: "easeInOut",
         }}
       >
-        <div className="absolute inset-0 bg-gradient-radial from-[#ff5252]/5 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-radial from-primary/5 via-transparent to-transparent" />
       </motion.div>
 
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/10" />
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/5 dark:to-background/10" />
     </div>
   );
 }

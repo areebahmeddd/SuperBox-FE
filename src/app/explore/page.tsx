@@ -106,7 +106,7 @@ function ExploreContent() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="min-h-screen bg-black overflow-x-hidden"
+      className="min-h-screen bg-background overflow-x-hidden"
     >
       <Header />
       <main className="pt-28 px-6 pb-20">
@@ -121,7 +121,7 @@ function ExploreContent() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="text-4xl md:text-5xl font-bold text-white mb-3"
+              className="text-4xl md:text-5xl font-bold text-foreground mb-3"
             >
               Explore MCP Servers
             </motion.h1>
@@ -129,7 +129,7 @@ function ExploreContent() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.3 }}
-              className="text-gray-400 text-base"
+              className="text-muted-foreground text-base"
             >
               Find and connect tools for your LLMs
             </motion.p>
@@ -146,17 +146,15 @@ function ExploreContent() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search by name, author or description"
-              className="w-full pl-12 pr-12 py-3 bg-white/5 border border-white/10 rounded-full text-white placeholder-gray-500 outline-none transition-all duration-200 focus:border-[var(--brand-red)]/60 focus:bg-white/[0.06]"
+              className="w-full pl-12 pr-12 py-3 bg-input border border-border rounded-full text-foreground placeholder-muted-foreground outline-none transition-all duration-200 focus:border-primary/60 focus:bg-input/80"
             />
-            <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+            <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground pointer-events-none" />
             <button
               onClick={toggleMic}
               aria-label="Voice search"
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
             >
-              <Mic
-                className={`w-5 h-5 ${isListening ? "text-[var(--brand-red)]" : ""}`}
-              />
+              <Mic className={`w-5 h-5 ${isListening ? "text-primary" : ""}`} />
             </button>
           </motion.div>
 
@@ -167,7 +165,7 @@ function ExploreContent() {
               transition={{ duration: 0.4, delay: 0.5 }}
               className="flex items-center justify-start mb-8"
             >
-              <p className="text-sm font-medium text-gray-400">
+              <p className="text-sm font-medium text-muted-foreground">
                 {filteredTools.length}{" "}
                 {filteredTools.length === 1 ? "server" : "servers"} found
               </p>
@@ -180,7 +178,7 @@ function ExploreContent() {
               animate={{ opacity: 1 }}
               className="flex items-center justify-center py-24"
             >
-              <div className="animate-spin rounded-full h-10 w-10 border-2 border-white/10 border-t-[var(--brand-red)]" />
+              <div className="animate-spin rounded-full h-10 w-10 border-2 border-border border-t-primary" />
             </motion.div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 justify-items-center">
@@ -195,6 +193,7 @@ function ExploreContent() {
                       delay: index * 0.15,
                       ease: [0.22, 1, 0.36, 1],
                     }}
+                    className="h-full w-full"
                   >
                     <ToolCard tool={tool} />
                   </motion.div>
@@ -206,11 +205,13 @@ function ExploreContent() {
                   transition={{ duration: 0.4 }}
                   className="col-span-full text-center py-24"
                 >
-                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white/5 mb-4">
-                    <Search className="w-8 h-8 text-gray-500" />
+                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-muted mb-4">
+                    <Search className="w-8 h-8 text-muted-foreground" />
                   </div>
-                  <p className="text-xl text-gray-400 mb-2">No servers found</p>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-xl text-muted-foreground mb-2">
+                    No servers found
+                  </p>
+                  <p className="text-sm text-muted-foreground/70">
                     Try searching with different keywords
                   </p>
                 </motion.div>
@@ -227,14 +228,8 @@ export default function ExplorePage() {
   return (
     <Suspense
       fallback={
-        <div
-          className="min-h-screen bg-black overflow-x-hidden flex items-center justify-center"
-          style={{
-            backgroundImage:
-              "linear-gradient(135deg, #000000 0%, #0a1e35 100%)",
-          }}
-        >
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--brand-red)]" />
+        <div className="min-h-screen bg-background overflow-x-hidden flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
         </div>
       }
     >

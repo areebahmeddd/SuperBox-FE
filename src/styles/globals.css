@@ -8,11 +8,31 @@
   :root {
     /* Brand Colors */
     --brand-red: #ff5252;
-    --brand-red-light: #ffbaba;
-    --brand-black: #000000;
-    --brand-accent: var(--brand-red);
 
-    /* Shadcn/UI Theme Colors */
+    /* Shadcn/UI Theme Colors - Light Mode */
+    --background: oklch(0.99 0 0);
+    --foreground: oklch(0.145 0 0);
+    --card: oklch(0.995 0 0);
+    --card-foreground: oklch(0.145 0 0);
+    --popover: oklch(0.995 0 0);
+    --popover-foreground: oklch(0.145 0 0);
+    --primary: oklch(0.704 0.191 22.216);
+    --primary-foreground: oklch(0.99 0 0);
+    --secondary: oklch(0.96 0 0);
+    --secondary-foreground: oklch(0.145 0 0);
+    --muted: oklch(0.94 0 0);
+    --muted-foreground: oklch(0.35 0 0);
+    --accent: oklch(0.704 0.191 22.216);
+    --accent-foreground: oklch(0.99 0 0);
+    --destructive: oklch(0.704 0.191 22.216);
+    --border: oklch(0.88 0 0 / 50%);
+    --input: oklch(0.97 0 0);
+    --ring: oklch(0.704 0.191 22.216);
+    --radius: 0.625rem;
+  }
+
+  .dark {
+    /* Shadcn/UI Theme Colors - Dark Mode */
     --background: oklch(0.145 0 0);
     --foreground: oklch(0.985 0 0);
     --card: oklch(0.205 0 0);
@@ -31,7 +51,6 @@
     --border: oklch(1 0 0 / 10%);
     --input: oklch(1 0 0 / 15%);
     --ring: oklch(0.704 0.191 22.216);
-    --radius: 0.625rem;
   }
 }
 
@@ -80,17 +99,17 @@
     display: none;
   }
 
-  body {
-    @apply bg-background text-foreground;
-    overflow-x: hidden;
-  }
-
   html {
     scroll-behavior: auto;
   }
 
   html[data-scroll-behavior="smooth"] {
     scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    overflow-x: hidden;
   }
 }
 
@@ -119,21 +138,50 @@
 .overflow-y-scroll:hover::-webkit-scrollbar-track,
 .overflow-x-auto:hover::-webkit-scrollbar-track,
 .overflow-x-scroll:hover::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(0, 0, 0, 0.02);
   border-radius: 3px;
+}
+
+.dark .overflow-y-auto:hover::-webkit-scrollbar-track,
+.dark .overflow-y-scroll:hover::-webkit-scrollbar-track,
+.dark .overflow-x-auto:hover::-webkit-scrollbar-track,
+.dark .overflow-x-scroll:hover::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
 }
 
 .overflow-y-auto:hover::-webkit-scrollbar-thumb,
 .overflow-y-scroll:hover::-webkit-scrollbar-thumb,
 .overflow-x-auto:hover::-webkit-scrollbar-thumb,
 .overflow-x-scroll:hover::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.1);
   border-radius: 3px;
+}
+
+.dark .overflow-y-auto:hover::-webkit-scrollbar-thumb,
+.dark .overflow-y-scroll:hover::-webkit-scrollbar-thumb,
+.dark .overflow-x-auto:hover::-webkit-scrollbar-thumb,
+.dark .overflow-x-scroll:hover::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .overflow-y-auto:hover::-webkit-scrollbar-thumb:hover,
 .overflow-y-scroll:hover::-webkit-scrollbar-thumb:hover,
 .overflow-x-auto:hover::-webkit-scrollbar-thumb:hover,
 .overflow-x-scroll:hover::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.dark .overflow-y-auto:hover::-webkit-scrollbar-thumb:hover,
+.dark .overflow-y-scroll:hover::-webkit-scrollbar-thumb:hover,
+.dark .overflow-x-auto:hover::-webkit-scrollbar-thumb:hover,
+.dark .overflow-x-scroll:hover::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.15);
+}
+
+/* Toast theme styles */
+.toast-theme {
+  background: var(--card) !important;
+  backdrop-filter: blur(24px);
+  border: 1px solid var(--border) !important;
+  color: var(--foreground) !important;
 }

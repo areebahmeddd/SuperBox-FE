@@ -132,20 +132,20 @@ export default function ServerDetail({ server }: ServerDetailProps) {
       >
         <Link
           href="/"
-          className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors group"
+          className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors group"
         >
           <Home className="w-4 h-4" />
           <span>Home</span>
         </Link>
-        <ChevronRight className="w-4 h-4 text-gray-600" />
+        <ChevronRight className="w-4 h-4 text-muted-foreground" />
         <Link
           href="/explore"
-          className="text-gray-400 hover:text-white transition-colors"
+          className="text-muted-foreground hover:text-foreground transition-colors"
         >
           Explore
         </Link>
-        <ChevronRight className="w-4 h-4 text-gray-600" />
-        <span className="text-white/95 font-medium">{server.name}</span>
+        <ChevronRight className="w-4 h-4 text-muted-foreground" />
+        <span className="text-foreground font-medium">{server.name}</span>
       </motion.nav>
 
       <motion.div
@@ -158,23 +158,25 @@ export default function ServerDetail({ server }: ServerDetailProps) {
           <motion.div
             whileHover={{ scale: 1.05, rotate: 5 }}
             transition={{ duration: 0.3 }}
-            className="w-24 h-24 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center flex-shrink-0"
+            className="w-24 h-24 rounded-2xl bg-muted border border-border flex items-center justify-center flex-shrink-0"
           >
-            <Package className="w-12 h-12 text-[var(--brand-red)]" />
+            <Package className="w-12 h-12 text-primary" />
           </motion.div>
 
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-2">
-              <h1 className="text-4xl font-bold text-white/95">
+              <h1 className="text-4xl font-bold text-foreground">
                 {server.name}
               </h1>
               {server.pricing.amount > 0 && (
-                <span className="px-3 py-1.5 bg-[var(--brand-red)]/15 text-[var(--brand-red)] text-sm font-semibold rounded-lg">
+                <span className="px-3 py-1.5 bg-primary/15 text-primary text-sm font-semibold rounded-lg">
                   ${server.pricing.amount}/mo
                 </span>
               )}
             </div>
-            <p className="text-gray-400 text-lg mb-4">{server.handle}</p>
+            <p className="text-muted-foreground text-lg mb-4">
+              {server.handle}
+            </p>
 
             <div className="flex items-start gap-2 px-3 py-2 bg-amber-500/10 border border-amber-500/20 rounded-lg max-w-2xl">
               <svg
@@ -188,7 +190,7 @@ export default function ServerDetail({ server }: ServerDetailProps) {
                   clipRule="evenodd"
                 />
               </svg>
-              <p className="text-xs text-amber-200/90">
+              <p className="text-xs text-amber-700 dark:text-amber-200">
                 <span className="font-semibold">Note:</span> First 100 tool
                 calls are free. After that, ₹10 will be charged for every 100
                 tool calls.
@@ -204,7 +206,7 @@ export default function ServerDetail({ server }: ServerDetailProps) {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.3, delay: 0.2 + index * 0.05 }}
-              className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-sm text-gray-400"
+              className="px-3 py-1.5 bg-muted border border-border rounded-lg text-sm text-muted-foreground"
             >
               {tag}
             </motion.span>
@@ -234,52 +236,54 @@ export default function ServerDetail({ server }: ServerDetailProps) {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: 0.35 }}
-                className="border border-[var(--brand-red)]/30 rounded-2xl bg-gradient-to-br from-[var(--brand-red)]/10 to-[var(--brand-red)]/5 p-6"
+                className="border border-primary/30 rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 p-6"
               >
                 <div className="flex items-start gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-full bg-[var(--brand-red)]/20 border border-[var(--brand-red)]/30 flex items-center justify-center flex-shrink-0">
-                    <Lock className="w-5 h-5 text-[var(--brand-red)]" />
+                  <div className="w-10 h-10 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center flex-shrink-0">
+                    <Lock className="w-5 h-5 text-primary" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-white mb-1">
+                    <h3 className="text-lg font-semibold text-foreground mb-1">
                       Premium Server
                     </h3>
-                    <p className="text-sm text-white/60">
+                    <p className="text-sm text-muted-foreground">
                       Unlock advanced features and capabilities
                     </p>
                   </div>
                 </div>
 
-                <div className="mb-4 p-4 bg-black/20 rounded-xl border border-white/10">
+                <div className="mb-4 p-4 bg-card rounded-xl border border-border">
                   <div className="flex items-baseline justify-center gap-1">
-                    <span className="text-3xl font-bold text-white">
+                    <span className="text-3xl font-bold text-foreground">
                       ${server.pricing.amount}
                     </span>
-                    <span className="text-white/40 text-sm">/month</span>
+                    <span className="text-muted-foreground text-sm">
+                      /month
+                    </span>
                   </div>
                 </div>
 
                 <button
                   onClick={() => setShowPaywall(true)}
-                  className="w-full py-3 rounded-xl bg-[var(--brand-red)] text-white font-semibold text-sm hover:bg-[var(--brand-red)]/90 transition-colors"
+                  className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:bg-primary/90 transition-colors"
                 >
                   Unlock Premium Access
                 </button>
 
-                <p className="text-xs text-white/40 text-center mt-3">
+                <p className="text-xs text-muted-foreground text-center mt-3">
                   Includes unlimited API calls & priority support
                 </p>
               </motion.div>
             ) : (
               <>
-                <div className="border border-white/10 rounded-2xl bg-white/[0.02] p-6">
-                  <h3 className="text-lg font-semibold text-white/95 mb-4">
+                <div className="border border-border rounded-2xl bg-card p-6">
+                  <h3 className="text-lg font-semibold text-foreground mb-4">
                     Quick Install
                   </h3>
 
                   <div className="relative">
-                    <div className="bg-black/40 border border-white/10 rounded-xl p-4 pr-12">
-                      <code className="text-[var(--brand-red)] font-mono text-sm break-all">
+                    <div className="bg-muted border border-border rounded-xl p-4 pr-12">
+                      <code className="text-primary font-mono text-sm break-all">
                         {pullCommand}
                       </code>
                     </div>
@@ -287,10 +291,10 @@ export default function ServerDetail({ server }: ServerDetailProps) {
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
                       onClick={copyCommand}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 p-2 bg-white/5 hover:bg-white/10 rounded-lg transition-all"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 p-2 bg-muted hover:bg-muted/80 rounded-lg transition-all"
                       title="Copy command"
                     >
-                      <Copy className="w-4 h-4 text-gray-400" />
+                      <Copy className="w-4 h-4 text-muted-foreground" />
                     </motion.button>
                   </div>
 
@@ -298,23 +302,23 @@ export default function ServerDetail({ server }: ServerDetailProps) {
                     <motion.p
                       initial={{ opacity: 0, y: -5 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="text-xs text-[var(--brand-red)] mt-2"
+                      className="text-xs text-primary mt-2"
                     >
                       ✓ Copied to clipboard!
                     </motion.p>
                   )}
 
                   <div className="flex items-center gap-3 my-6">
-                    <div className="flex-1 h-px bg-white/10" />
-                    <span className="text-xs text-gray-500 uppercase tracking-wider">
+                    <div className="flex-1 h-px bg-border" />
+                    <span className="text-xs text-muted-foreground uppercase tracking-wider">
                       Or add to your client
                     </span>
-                    <div className="flex-1 h-px bg-white/10" />
+                    <div className="flex-1 h-px bg-border" />
                   </div>
 
                   <div>
-                    <div className="bg-black/40 border border-white/10 rounded-xl p-4 mb-3">
-                      <pre className="text-xs text-gray-300 font-mono overflow-x-auto">
+                    <div className="bg-muted border border-border rounded-xl p-4 mb-3">
+                      <pre className="text-xs text-foreground font-mono overflow-x-auto">
                         <code>{`{
   "mcpServers": {
     "${server.name}": {
@@ -329,15 +333,15 @@ export default function ServerDetail({ server }: ServerDetailProps) {
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={copyJsonConfig}
-                      className="w-full px-4 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-sm text-gray-300 font-medium transition-all"
+                      className="w-full px-4 py-2.5 bg-muted hover:bg-muted/80 border border-border rounded-xl text-sm text-foreground font-medium transition-all"
                     >
                       Copy JSON Config
                     </motion.button>
                   </div>
                 </div>
 
-                <div className="border border-white/10 rounded-2xl bg-white/[0.02] p-6">
-                  <h3 className="text-lg font-semibold text-white/95 mb-4">
+                <div className="border border-border rounded-2xl bg-card p-6">
+                  <h3 className="text-lg font-semibold text-foreground mb-4">
                     Compatible Clients
                   </h3>
 
@@ -348,7 +352,7 @@ export default function ServerDetail({ server }: ServerDetailProps) {
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.3, delay: index * 0.05 }}
-                        className="flex items-center justify-between p-3 bg-white/5 rounded-xl hover:bg-white/10 transition-all group cursor-pointer"
+                        className="flex items-center justify-between p-3 bg-muted rounded-xl hover:bg-muted/80 transition-all group cursor-pointer"
                       >
                         <div className="flex items-center gap-3">
                           <Image
@@ -358,11 +362,11 @@ export default function ServerDetail({ server }: ServerDetailProps) {
                             height={20}
                             className="w-5 h-5"
                           />
-                          <span className="text-sm text-gray-300">
+                          <span className="text-sm text-foreground">
                             {client.name}
                           </span>
                         </div>
-                        <ChevronRight className="w-4 h-4 text-gray-500 group-hover:text-gray-300 transition-colors" />
+                        <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors" />
                       </motion.div>
                     ))}
                   </div>

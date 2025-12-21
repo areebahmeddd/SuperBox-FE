@@ -73,7 +73,7 @@ export default function ServerDetailTabs({ server }: ServerDetailTabsProps) {
 
   return (
     <div>
-      <div className="border-b border-white/10 mb-8">
+      <div className="border-b border-border mb-8">
         <div className="flex gap-1">
           {tabs.map((tab) => (
             <motion.button
@@ -81,8 +81,8 @@ export default function ServerDetailTabs({ server }: ServerDetailTabsProps) {
               onClick={() => setActiveTab(tab.id)}
               className={`relative px-6 py-4 text-sm font-semibold transition-all duration-200 ${
                 activeTab === tab.id
-                  ? "text-white/95"
-                  : "text-gray-400 hover:text-gray-300"
+                  ? "text-foreground"
+                  : "text-muted-foreground hover:text-foreground"
               }`}
             >
               <div className="flex items-center gap-2">
@@ -92,7 +92,7 @@ export default function ServerDetailTabs({ server }: ServerDetailTabsProps) {
               {activeTab === tab.id && (
                 <motion.div
                   layoutId="activeTab"
-                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-[var(--brand-red)]"
+                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"
                   transition={{ type: "spring", stiffness: 380, damping: 30 }}
                 />
               )}
@@ -109,8 +109,8 @@ export default function ServerDetailTabs({ server }: ServerDetailTabsProps) {
       >
         {activeTab === "overview" && (
           <div className="space-y-6">
-            <section className="border border-white/10 rounded-2xl bg-white/[0.02] p-6">
-              <h3 className="text-lg font-semibold text-white/95 mb-4">
+            <section className="border-2 border-border rounded-2xl bg-card p-6">
+              <h3 className="text-lg font-semibold text-foreground mb-4">
                 About
               </h3>
               <p className="text-gray-300 leading-relaxed">{server.about}</p>
@@ -132,7 +132,7 @@ export default function ServerDetailTabs({ server }: ServerDetailTabsProps) {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3, delay: index * 0.05 }}
-                    className="border border-white/10 rounded-2xl bg-white/[0.02] p-5 hover:bg-white/[0.04] hover:border-white/15 transition-all"
+                    className="border-2 border-border rounded-2xl bg-card p-5"
                   >
                     <h4 className="text-base font-semibold text-white/95 mb-2">
                       {tool.name}
@@ -152,19 +152,19 @@ export default function ServerDetailTabs({ server }: ServerDetailTabsProps) {
                               key={idx}
                               className="flex items-center gap-2 text-sm flex-wrap"
                             >
-                              <code className="px-2 py-1 bg-white/5 border border-white/10 rounded text-[var(--brand-red)] font-mono text-xs">
+                              <code className="px-2 py-1 bg-muted border border-border rounded text-primary font-mono text-xs">
                                 {param.name}
                               </code>
                               <span
                                 className={`px-2 py-1 rounded text-xs font-medium ${
                                   param.required
-                                    ? "bg-[var(--brand-red)]/15 text-[var(--brand-red)]"
-                                    : "bg-white/5 text-gray-400"
+                                    ? "bg-primary/15 text-primary"
+                                    : "bg-muted text-muted-foreground"
                                 }`}
                               >
                                 {param.required ? "required" : "optional"}
                               </span>
-                              <span className="px-2 py-1 bg-white/5 rounded text-gray-400 text-xs">
+                              <span className="px-2 py-1 bg-muted rounded text-muted-foreground text-xs">
                                 {param.type}
                               </span>
                             </div>
@@ -184,19 +184,19 @@ export default function ServerDetailTabs({ server }: ServerDetailTabsProps) {
                   className="mt-6 relative"
                 >
                   {!showAllTools && (
-                    <div className="absolute -top-12 left-0 right-0 h-12 bg-gradient-to-t from-black to-transparent pointer-events-none" />
+                    <div className="absolute -top-12 left-0 right-0 h-12 bg-gradient-to-t from-background to-transparent pointer-events-none" />
                   )}
 
                   <div className="flex items-center justify-center">
                     <button
                       onClick={() => setShowAllTools(!showAllTools)}
-                      className="group flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors"
+                      className="group flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
                     >
                       <span className="relative">
                         {showAllTools
                           ? "Show less"
                           : `Show ${server.tools.length - 3} more tools`}
-                        <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-white/50 group-hover:w-full transition-all duration-300" />
+                        <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-foreground/50 group-hover:w-full transition-all duration-300" />
                       </span>
                       <svg
                         className={`w-3.5 h-3.5 transition-transform duration-300 ${showAllTools ? "rotate-180" : ""}`}

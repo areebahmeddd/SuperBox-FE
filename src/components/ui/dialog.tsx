@@ -30,7 +30,7 @@ function DialogOverlay({
     <DialogPrimitive.Backdrop
       data-slot="dialog-overlay"
       className={cn(
-        "data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 bg-black/70 backdrop-blur-sm duration-100 fixed inset-0 isolate z-50",
+        "data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 bg-background/80 dark:bg-black/70 backdrop-blur-sm duration-100 fixed inset-0 isolate z-50",
         className,
       )}
       {...props}
@@ -49,14 +49,14 @@ function DialogContent({
       <DialogPrimitive.Popup
         data-slot="dialog-content"
         className={cn(
-          "data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95 bg-background ring-foreground/10 gap-4 rounded-xl p-4 ring-1 duration-100 group/dialog-content fixed top-1/2 left-1/2 z-50 grid w-full max-w-lg -translate-x-1/2 -translate-y-1/2 outline-none",
+          "data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95 bg-card ring-foreground/10 gap-4 rounded-xl p-4 ring-1 duration-100 group/dialog-content fixed top-1/2 left-1/2 z-50 grid w-full max-w-lg -translate-x-1/2 -translate-y-1/2 outline-none",
           className,
         )}
         {...props}
       >
         {children}
         <DialogPrimitive.Close className="rounded-md p-1 opacity-70 transition-all outline-hidden hover:opacity-100 focus:opacity-100 disabled:pointer-events-none absolute top-4 right-4 group">
-          <XIcon className="w-4 h-4 text-gray-400 group-hover:text-[var(--brand-red)] transition-colors" />
+          <XIcon className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
           <span className="sr-only">Close</span>
         </DialogPrimitive.Close>
       </DialogPrimitive.Popup>

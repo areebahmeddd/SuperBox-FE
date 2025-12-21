@@ -213,7 +213,7 @@ export default function MyServersPage() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="min-h-screen bg-black overflow-x-hidden"
+      className="min-h-screen bg-background overflow-x-hidden"
     >
       <Header />
       <AuthModal
@@ -243,10 +243,10 @@ export default function MyServersPage() {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="mb-10 text-center"
           >
-            <h1 className="text-4xl md:text-5xl font-bold text-white/95 mb-3">
+            <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-3">
               My Servers
             </h1>
-            <p className="text-gray-400/80 text-base">
+            <p className="text-muted-foreground text-base">
               Manage and publish your MCP servers
             </p>
           </motion.div>
@@ -258,7 +258,7 @@ export default function MyServersPage() {
               transition={{ duration: 0.5, delay: 0.3 }}
               className="flex items-center justify-between mb-8"
             >
-              <p className="text-sm font-medium text-gray-400">
+              <p className="text-sm font-medium text-muted-foreground">
                 {userServers.length}{" "}
                 {userServers.length === 1 ? "server" : "servers"}
               </p>
@@ -275,7 +275,7 @@ export default function MyServersPage() {
                 transition={{ duration: 0.4, delay: 0.4 }}
                 className="text-center py-12"
               >
-                <p className="text-gray-400 text-sm">
+                <p className="text-muted-foreground text-sm">
                   No servers published yet. Click "Add New Server" to get
                   started.
                 </p>
@@ -294,28 +294,28 @@ export default function MyServersPage() {
                   >
                     <Link
                       href={`/server/${encodeURIComponent(server.name)}`}
-                      className="block group"
+                      className="block group h-full"
                     >
                       <motion.div
                         whileHover={{ y: -4 }}
                         transition={{ duration: 0.2 }}
-                        className="relative p-6 rounded-2xl bg-white/[0.02] border border-white/10 group-hover:border-[var(--brand-red)] transition-all duration-300 cursor-pointer"
+                        className="relative p-6 rounded-2xl bg-card border border-border group-hover:border-primary transition-all duration-300 cursor-pointer h-full flex flex-col"
                       >
-                        <div className="relative flex items-start gap-4">
+                        <div className="relative flex items-start gap-4 flex-1">
                           <motion.div
                             whileHover={{ rotate: 5 }}
-                            className="w-14 h-14 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center flex-shrink-0 transition-colors"
+                            className="w-14 h-14 rounded-xl bg-muted border border-border flex items-center justify-center flex-shrink-0 transition-colors"
                           >
-                            <Package className="w-7 h-7 text-[var(--brand-red)]" />
+                            <Package className="w-7 h-7 text-primary" />
                           </motion.div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-start justify-between gap-4 mb-2">
                               <div className="flex items-center gap-3 flex-wrap">
-                                <h3 className="text-xl font-semibold text-white/95 group-hover:text-white transition-colors">
+                                <h3 className="text-xl font-semibold text-foreground group-hover:text-foreground transition-colors">
                                   {server.name}
                                 </h3>
                                 {server.pricing && (
-                                  <span className="px-2.5 py-1 bg-[var(--brand-red)]/15 text-[var(--brand-red)] text-xs font-semibold rounded-lg border border-[var(--brand-red)]/20">
+                                  <span className="px-2.5 py-1 bg-primary/15 text-primary text-xs font-semibold rounded-lg border border-primary/20">
                                     ${server.pricing.amount}/mo
                                   </span>
                                 )}
@@ -329,7 +329,7 @@ export default function MyServersPage() {
                                     e.stopPropagation();
                                     handleEditClick(server);
                                   }}
-                                  className="p-1.5 text-gray-400 hover:text-[var(--brand-red)] transition-colors group/edit"
+                                  className="p-1.5 text-muted-foreground hover:text-primary transition-colors group/edit"
                                   aria-label="Edit server"
                                 >
                                   <Edit className="w-4 h-4" />
@@ -342,7 +342,7 @@ export default function MyServersPage() {
                                     e.stopPropagation();
                                     handleDeleteServer(server.name);
                                   }}
-                                  className="p-1.5 text-gray-400 hover:text-[var(--brand-red)] transition-colors group/delete"
+                                  className="p-1.5 text-muted-foreground hover:text-primary transition-colors group/delete"
                                   aria-label="Delete server"
                                 >
                                   <Trash2 className="w-4 h-4" />
@@ -350,26 +350,21 @@ export default function MyServersPage() {
                               </div>
                             </div>
 
-                            <p className="text-gray-400 text-sm leading-relaxed mb-4">
+                            <p className="text-muted-foreground text-sm leading-relaxed mb-4">
                               {server.description}
                             </p>
 
-                            <div className="flex items-center gap-4 text-xs text-gray-500">
+                            <div className="flex items-center gap-4 text-xs text-muted-foreground">
                               <span className="flex items-center gap-1.5">
-                                <span
-                                  className="w-2 h-2 rounded-full"
-                                  style={{
-                                    backgroundColor: "var(--brand-red)",
-                                  }}
-                                />
+                                <span className="w-2 h-2 rounded-full bg-primary" />
                                 {server.lang}
                               </span>
-                              <span className="px-2 py-0.5 bg-white/5 rounded">
+                              <span className="px-2 py-0.5 bg-muted rounded">
                                 {server.license}
                               </span>
                               <span>⭐ {server.stars}</span>
                               <span>📥 {server.downloads}</span>
-                              <span className="text-gray-600">
+                              <span className="text-muted-foreground/70">
                                 • Updated {server.lastUpdated}
                               </span>
                             </div>

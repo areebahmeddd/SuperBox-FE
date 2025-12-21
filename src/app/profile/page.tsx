@@ -58,10 +58,10 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-black">
+      <div className="min-h-screen bg-background">
         <Header />
         <div className="min-h-screen flex items-center justify-center">
-          <Loader2 className="w-8 h-8 animate-spin text-white" />
+          <Loader2 className="w-8 h-8 animate-spin text-foreground" />
         </div>
       </div>
     );
@@ -70,31 +70,29 @@ export default function ProfilePage() {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen bg-background">
       <Header />
 
       <main className="pt-32 pb-20 px-4">
         <div className="max-w-4xl mx-auto">
-          {/* Page Header */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
             className="mb-8 text-center"
           >
-            <h1 className="text-4xl font-bold text-white mb-2">Profile</h1>
-            <p className="text-gray-400 text-sm">
+            <h1 className="text-4xl font-bold text-foreground mb-2">Profile</h1>
+            <p className="text-muted-foreground text-sm">
               Manage your account settings and preferences
             </p>
           </motion.div>
 
           <div className="space-y-6">
-            {/* Profile Card */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: 0.1 }}
-              className="bg-white/[0.02] rounded-2xl border border-white/10 p-8"
+              className="bg-card rounded-2xl border border-border p-8"
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
@@ -102,26 +100,24 @@ export default function ProfilePage() {
                     <img
                       src={user.photoURL}
                       alt={user.displayName || "Profile"}
-                      className="w-20 h-20 rounded-full border-2 border-white/10"
+                      className="w-20 h-20 rounded-full border-2 border-border"
                     />
                   ) : (
-                    <div className="w-20 h-20 rounded-full bg-white/5 border-2 border-white/10 flex items-center justify-center text-white text-3xl font-bold">
+                    <div className="w-20 h-20 rounded-full bg-muted border-2 border-border flex items-center justify-center text-foreground text-3xl font-bold">
                       {(user.displayName || user.email || "U")[0].toUpperCase()}
                     </div>
                   )}
                   <div>
-                    <h2 className="text-2xl font-bold text-white">
+                    <h2 className="text-2xl font-bold text-foreground">
                       {user.displayName || "User"}
                     </h2>
-                    <p className="text-gray-400/70 text-sm flex items-center gap-2">
+                    <p className="text-muted-foreground text-sm flex items-center gap-2">
                       <Mail className="w-4 h-4" />
                       {user.email}
                     </p>
                   </div>
                 </div>
-
-                {/* Sign-in Method Badge */}
-                <div className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-full border border-white/10">
+                <div className="flex items-center gap-2 px-4 py-2 bg-muted rounded-full border border-border">
                   {user.providerData[0]?.providerId === "google.com" ? (
                     <Image
                       src="https://www.google.com/favicon.ico"
@@ -131,11 +127,11 @@ export default function ProfilePage() {
                       className="w-4 h-4"
                     />
                   ) : user.providerData[0]?.providerId === "github.com" ? (
-                    <Github className="w-4 h-4 text-white" />
+                    <Github className="w-4 h-4 text-foreground" />
                   ) : (
-                    <Mail className="w-4 h-4 text-white" />
+                    <Mail className="w-4 h-4 text-foreground" />
                   )}
-                  <span className="text-sm font-medium text-white">
+                  <span className="text-sm font-medium text-foreground">
                     {user.providerData[0]?.providerId === "google.com"
                       ? "Google"
                       : user.providerData[0]?.providerId === "github.com"
@@ -146,15 +142,14 @@ export default function ProfilePage() {
               </div>
             </motion.div>
 
-            {/* Account Information */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: 0.2 }}
-              className="bg-white/[0.02] rounded-2xl border border-white/10 p-8"
+              className="bg-card rounded-2xl border border-border p-8"
             >
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-xl font-semibold text-white">
+                <h3 className="text-xl font-semibold text-foreground">
                   Account Information
                 </h3>
                 {!isEditing && (
@@ -167,11 +162,11 @@ export default function ProfilePage() {
 
               <form onSubmit={handleUpdateProfile} className="space-y-6">
                 <div>
-                  <Label className={isEditing ? "" : "text-gray-400/70"}>
+                  <Label className={isEditing ? "" : "text-muted-foreground"}>
                     Full Name
                   </Label>
                   {!isEditing ? (
-                    <div className="mt-2 bg-white/5 text-white px-4 py-3 rounded-xl border border-white/10 h-[42px] flex items-center">
+                    <div className="mt-2 bg-muted text-foreground px-4 py-3 rounded-xl border border-border h-[42px] flex items-center">
                       {user.displayName || "Not set"}
                     </div>
                   ) : (
@@ -186,11 +181,11 @@ export default function ProfilePage() {
                 </div>
 
                 <div>
-                  <Label className={isEditing ? "" : "text-gray-400/70"}>
+                  <Label className={isEditing ? "" : "text-muted-foreground"}>
                     Email Address
                   </Label>
                   {!isEditing ? (
-                    <div className="mt-2 bg-white/5 text-white px-4 py-3 rounded-xl border border-white/10 h-[42px] flex items-center">
+                    <div className="mt-2 bg-muted text-foreground px-4 py-3 rounded-xl border border-border h-[42px] flex items-center">
                       {user.email}
                     </div>
                   ) : (

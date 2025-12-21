@@ -43,11 +43,13 @@ export default function ServerPage() {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="min-h-screen bg-black flex items-center justify-center"
+        className="min-h-screen bg-background flex items-center justify-center"
       >
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-2 border-white/10 border-t-[var(--brand-red)] mx-auto mb-4" />
-          <p className="text-gray-400 text-sm">Loading server details...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-2 border-border border-t-primary mx-auto mb-4" />
+          <p className="text-muted-foreground text-sm">
+            Loading server details...
+          </p>
         </div>
       </motion.div>
     );
@@ -59,7 +61,7 @@ export default function ServerPage() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="min-h-screen bg-black"
+          className="min-h-screen bg-background"
         >
           <Header />
           <main className="pt-24 flex items-center justify-center min-h-[calc(100vh-6rem)]">
@@ -73,15 +75,15 @@ export default function ServerPage() {
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-                className="w-20 h-20 mx-auto mb-6 rounded-full bg-white/5 border border-white/10 flex items-center justify-center"
+                className="w-20 h-20 mx-auto mb-6 rounded-full bg-muted border border-border flex items-center justify-center"
               >
-                <Box className="w-10 h-10 text-gray-400" />
+                <Box className="w-10 h-10 text-muted-foreground" />
               </motion.div>
               <motion.h1
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
-                className="text-2xl font-bold text-white mb-3"
+                className="text-2xl font-bold text-foreground mb-3"
               >
                 Server not found
               </motion.h1>
@@ -89,7 +91,7 @@ export default function ServerPage() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.35 }}
-                className="text-white/60 text-sm mb-8"
+                className="text-muted-foreground text-sm mb-8"
               >
                 The server you're looking for doesn't exist or has been removed.
               </motion.p>
@@ -198,7 +200,7 @@ export default function ServerPage() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="min-h-screen bg-black overflow-x-hidden"
+      className="min-h-screen bg-background overflow-x-hidden"
     >
       <Header />
       <main className="pt-24">
