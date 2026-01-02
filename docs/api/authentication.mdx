@@ -16,7 +16,7 @@ SuperBox uses **Firebase Authentication** with **JWT (JSON Web Tokens)** for sec
 
 <Steps>
   <Step title="Create an Account">
-    Sign up at [SuperBox](https://superbox-ai.vercel.app) using one of our supported providers:
+    Sign up at [SuperBox](https://superbox.1mindlabs.org) using one of our supported providers:
     
     <CardGroup cols={3}>
       <Card title="Google" icon="google">
@@ -32,7 +32,7 @@ SuperBox uses **Firebase Authentication** with **JWT (JSON Web Tokens)** for sec
   </Step>
 
   <Step title="Navigate to Settings">
-    Go to your [Profile Settings](https://superbox-ai.vercel.app/settings) page.
+    Go to your [Profile Settings](https://superbox.1mindlabs.org/settings) page.
   </Step>
 
   <Step title="Generate API Token">
@@ -344,9 +344,7 @@ class SuperBoxClient:
     <ResponseField name="DELETE /servers/:name" type="authenticated" required>
       Delete a server
     </ResponseField>
-    <ResponseField name="POST /execute/:name" type="authenticated" required>
-      Execute a server in sandbox
-    </ResponseField>
+    <Note>MCP execution happens via WebSocket API (not HTTP endpoints). Use `superbox pull` to configure AI clients.</Note>
     <Info>Authenticated endpoints have higher rate limits (1000 req/hour)</Info>
   </Tab>
 </Tabs>

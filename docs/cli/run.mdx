@@ -1,101 +1,63 @@
 ---
 title: "superbox run"
-description: "Interactive terminal session to test MCP server via Lambda executor"
-icon: "play"
+description: "[DEPRECATED] Use VS Code/Cursor integration via superbox pull instead"
+icon: "ban"
 ---
 
-## Usage
+<Warning>
+  **DEPRECATED** - This command is no longer supported. Use `superbox pull` to configure MCP servers in your AI client instead.
+</Warning>
+
+## Recommended Alternative
+
+Instead of using `superbox run`, configure your MCP server in VS Code, Cursor, or other AI clients:
 
 ```bash
-superbox run --name NAME
+superbox pull --name weather-mcp --client vscode
 ```
 
-## Description
+Then interact with the server through your AI client's MCP panel or chat interface.
 
-Start an interactive terminal session to test an MCP server through the Lambda executor. Send requests and view responses in real-time.
+## Why Was This Deprecated?
 
-## Options
+The `run` command provided a terminal-based interactive session with MCP servers. However, the primary use case for MCP servers is integration with AI clients like VS Code, Cursor, Claude Desktop, etc.
 
-<ParamField path="--name" type="string" required>
-  MCP server name to run (must exist in registry)
-</ParamField>
+The WebSocket-based architecture is optimized for stdio transport (which AI clients use), not HTTP-based terminal interactions.
 
-## What It Does
+## Migration Guide
 
 <Steps>
-  <Step title="Connect to Executor">
-    Connects to the Lambda executor endpoint
+  <Step title="Old Workflow">
+    ```bash
+    superbox run --name weather-mcp
+    > What tools are available?
+    ```
   </Step>
 
-  <Step title="Interactive Prompt">
-    Provides interactive prompt for sending requests
-  </Step>
-
-  <Step title="Send Requests">
-    Type prompts and send to MCP server
-  </Step>
-
-  <Step title="View Responses">
-    Displays JSON responses from the server
+  <Step title="New Workflow">
+    ```bash
+    # Configure in your AI client
+    superbox pull --name weather-mcp --client vscode
+    
+    # Then use the MCP panel in VS Code or ask in chat:
+    # "What tools are available in weather-mcp?"
+    ```
   </Step>
 </Steps>
 
-## Interactive Session
-
-```bash
-$ superbox run --name weather-mcp
-Connecting to MCP executor: https://lambda-url/weather-mcp
-Type 'exit' or 'quit' to end. Press Enter on empty line to continue.
-
-> What tools are available?
-{
-  "tools": [
-    "get_weather",
-    "get_forecast",
-    "get_historical"
-  ]
-}
-
-> Get weather for London
-{
-  "result": {
-    "location": "London",
-    "temperature": "15°C",
-    "conditions": "Cloudy"
-  }
-}
-
-> exit
-Goodbye!
-```
-
-## Commands
-
-Within the interactive session:
-
-- Type your prompt and press Enter to send request
-- Type `exit` or `quit` to end session
-- Press Enter on empty line to continue
-
-## Example
-
-```bash
-$ superbox run --name my-mcp
-Connecting to MCP executor: https://lambda-url/my-mcp
-Type 'exit' or 'quit' to end. Press Enter on empty line to continue.
-> What's the weather today?
-{
-  "response": "Weather data retrieved successfully"
-}
-```
-
-## Next Steps
+## See Also
 
 <CardGroup cols={2}>
-  <Card title="Push Server" icon="upload" href="/cli/push">
-    Publish to SuperBox
+  <Card title="Pull Command" icon="download" href="/cli/pull">
+    Configure MCP servers in AI clients
   </Card>
-  <Card title="Run Tests" icon="vial" href="/cli/test">
-    Execute test suite
+  <Card title="Test Command" icon="flask" href="/cli/test">
+    Test servers during development
+  </Card>
+  <Card title="Push Command" icon="upload" href="/cli/push">
+    Publish to SuperBox registry
+  </Card>
+  <Card title="Inspect Command" icon="eye" href="/cli/inspect">
+    View server details
   </Card>
 </CardGroup>

@@ -1,4 +1,5 @@
 ﻿import type { ServerResponse } from "./types";
+
 export type Review = {
   id: string;
   author: string;
@@ -7,6 +8,41 @@ export type Review = {
   comment: string;
   helpful: number;
 };
+
+function generateMockMetrics(serverName: string) {
+  const seed = serverName
+    .split("")
+    .reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  const random = (min: number, max: number) => {
+    const x = Math.sin(seed) * 10000;
+    return Math.floor((x - Math.floor(x)) * (max - min + 1)) + min;
+  };
+
+  const daysAgo = random(30, 365);
+  const createdDate = new Date();
+  createdDate.setDate(createdDate.getDate() - daysAgo);
+
+  const updatedDaysAgo = random(1, 30);
+  const updatedDate = new Date();
+  updatedDate.setDate(updatedDate.getDate() - updatedDaysAgo);
+
+  return {
+    monthlyToolCalls: random(50000, 500000),
+    totalPulls: random(10000, 200000),
+    uptime: random(95, 100) + Math.random().toFixed(1),
+    latency: {
+      p50: random(50, 150),
+      p95: random(150, 300),
+      p99: random(300, 500),
+    },
+    qualityScore: random(75, 98),
+    meta: {
+      created_at: createdDate.toISOString(),
+      updated_at: updatedDate.toISOString(),
+    },
+  };
+}
+
 const INDIAN_NAMES = [
   "Rajesh Kumar",
   "Priya Sharma",
@@ -102,6 +138,7 @@ export const MOCK_SERVERS: ServerResponse[] = [
       ],
     },
     pricing: { currency: "USD", amount: 0 },
+    ...generateMockMetrics("github-mcp"),
     security_report: {
       metadata: {
         repository: "modelcontextprotocol/servers",
@@ -194,6 +231,7 @@ export const MOCK_SERVERS: ServerResponse[] = [
       ],
     },
     pricing: { currency: "USD", amount: 0 },
+    ...generateMockMetrics("supabase-mcp"),
     security_report: {
       metadata: {
         repository: "supabase/mcp-server-supabase",
@@ -268,6 +306,7 @@ export const MOCK_SERVERS: ServerResponse[] = [
       ],
     },
     pricing: { currency: "USD", amount: 9.99 },
+    ...generateMockMetrics("google-search-mcp"),
     security_report: {
       metadata: {
         repository: "google/mcp-google-search",
@@ -395,6 +434,7 @@ export const MOCK_SERVERS: ServerResponse[] = [
       ],
     },
     pricing: { currency: "USD", amount: 0 },
+    ...generateMockMetrics("slack-mcp"),
     security_report: {
       metadata: {
         repository: "slackapi/mcp-server-slack",
@@ -488,6 +528,7 @@ export const MOCK_SERVERS: ServerResponse[] = [
       ],
     },
     pricing: { currency: "USD", amount: 0 },
+    ...generateMockMetrics("notion-mcp"),
     security_report: {
       metadata: {
         repository: "notionhq/mcp-server-notion",
@@ -561,6 +602,7 @@ export const MOCK_SERVERS: ServerResponse[] = [
       ],
     },
     pricing: { currency: "USD", amount: 0 },
+    ...generateMockMetrics("postgres-mcp"),
     security_report: {
       metadata: {
         repository: "postgresql/mcp-server-postgres",
@@ -698,6 +740,7 @@ export const MOCK_SERVERS: ServerResponse[] = [
       ],
     },
     pricing: { currency: "USD", amount: 19.99 },
+    ...generateMockMetrics("aws-mcp"),
     security_report: {
       metadata: {
         repository: "aws/mcp-server-aws",
@@ -786,6 +829,7 @@ export const MOCK_SERVERS: ServerResponse[] = [
       ],
     },
     pricing: { currency: "USD", amount: 0 },
+    ...generateMockMetrics("openai-mcp"),
     security_report: {
       metadata: {
         repository: "openai/mcp-server-openai",

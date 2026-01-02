@@ -28,95 +28,85 @@ SuperBox uses **AWS Lambda** to execute MCP servers in completely isolated sandb
 <Frame>
   ```mermaid
   graph TD
-      A[User Request] --> B[API Gateway]
-      B --> C[Go API Server]
-      C --> D[Lambda Invocation]
+      A[AI Client] --> B[Local Proxy - stdio]
+      B --> C[WebSocket API Gateway]
+      C --> D[Lambda Function]
       D --> E[Sandbox Environment]
       
       subgraph E[Lambda Sandbox]
-          F[Container Init]
-          G[Load MCP Server from S3]
+          F[Fetch Metadata from S3]
+          G[Clone GitHub Repository]
           H[Install Dependencies]
-          I[Execute Tool]
-          J[Return Result]
+          I[Execute MCP Server]
+          J[Stream Response]
           
           F --> G --> H --> I --> J
       end
       
       E --> K[CloudWatch Logs]
       J --> C
-      C --> A
+      C --> B
+      B --> A
   ```
 </Frame>
 
 ## Lambda Execution Flow
 
 <Steps>
-  <Step title="Request Reception">
-    API server receives tool execution request:
+  <Step title="Client Connection">
+    AI client connects through local proxy:
     
-    ```json
-    POST /execute/weather-mcp-123
-    {
-      "tool": "get_weather",
-      "parameters": {
-        "city": "San Francisco",
-        "units": "metric"
-      }
-    }
+    ```bash
+    # User runs: superbox pull weather-mcp --client cursor
+    # This configures cursor to use:
+    python -m superbox.aws.proxy --url wss://api-gateway-url?server_name=weather-mcp
     ```
   </Step>
 
-  <Step title="Lambda Invocation">
-    API server invokes Lambda function:
+  <Step title="WebSocket Communication">
+    Proxy bridges stdio to WebSocket:
     
-    ```go
-    executionReq := &ExecutionRequest{
-        ServerID:   "weather-mcp-123",
-        ToolName:   "get_weather",
-        Parameters: map[string]interface{}{
-            "city":  "San Francisco",
-            "units": "metric",
-        },
-        Timeout: 30,
-    }
+    ```python
+    # Local proxy reads JSON-RPC from AI client stdin
+    message = await read_stdin()
     
-    payload, _ := json.Marshal(executionReq)
+    # Forward to WebSocket API Gateway
+    await websocket.send(json.dumps(message))
     
-    result, err := lambdaClient.Invoke(ctx, &lambda.InvokeInput{
-        FunctionName: aws.String("superbox-executor"),
-        Payload:      payload,
-        LogType:      types.LogTypeTail,
-    })
+    # Lambda receives WebSocket message
+    # event = {'requestContext': {'connectionId': '...'},
+    #          'body': message}
     ```
   </Step>
 
-<Step title="Sandbox Bootstrap">
-  Lambda container initializes: 1. Download MCP server code from S3 2. Extract
-  to `/tmp` directory 3. Install Python/Node.js dependencies 4. Load MCP server
-  configuration 5. Initialize server instance
-</Step>
+  <Step title="Sandbox Bootstrap">
+    Lambda initializes execution environment:
+    
+    1. Fetch server metadata from S3
+    2. Clone GitHub repository to `/tmp`
+    3. Install Python/Node.js dependencies
+    4. Start MCP server process
+    5. Forward JSON-RPC messages
+  </Step>
 
   <Step title="Tool Execution">
-    Execute requested tool in sandbox:
+    Execute requested tools through MCP protocol:
     
     ```python
     # Inside Lambda handler
-    async def execute_tool(server_id, tool_name, parameters):
-        # Load server
-        server = await load_mcp_server(server_id)
-        
-        # Call tool
-        result = await server.call_tool(
-            name=tool_name,
-            arguments=parameters
+    async def handle_message(event, context):
+        # Clone repo and start MCP server
+        server_process = await clone_and_start_server(
+            repo_url=metadata['repository']['url'],
+            entrypoint=metadata['entrypoint']
         )
         
-        return result
+        # Forward JSON-RPC messages
+        await forward_jsonrpc(server_process, event['body'])
     ```
   </Step>
 
-  <Step title="Response Return">
+  <Step title="Response Streaming">
     Return execution result:
     
     ```json
@@ -164,28 +154,29 @@ SuperBox uses **AWS Lambda** to execute MCP servers in completely isolated sandb
     - HTTPS (443) to approved APIs only
     - DNS (53) for name resolution
 
-Blocked: - All inbound connections - Internal AWS service access - Cross-VPC communication - Direct database access
+  Blocked:
+    - All inbound connections
+    - Internal AWS service access
+    - Cross-VPC communication
+    - Direct database access
+  ```
 
-```
-
-<Warning>MCP servers cannot access internal AWS infrastructure</Warning>
+  <Warning>MCP servers cannot access internal AWS infrastructure</Warning>
 </Tab>
 
 <Tab title="File System Access">
-Limited file system access:
+  Limited file system access:
 
-```
+  ```
+  /tmp/         # Read/Write (512MB max)
+  /var/task/    # Read-only (Lambda code)
+  /opt/         # Read-only (Lambda layers)
 
-/tmp/ # Read/Write (512MB max)
-/var/task/ # Read-only (Lambda code)
-/opt/ # Read-only (Lambda layers)
-
-Inaccessible:
-/ # Root filesystem
-/proc/ # Process information
-/sys/ # System information
-
-````
+  Inaccessible:
+  /             # Root filesystem
+  /proc/        # Process information
+  /sys/         # System information
+  ```
 </Tab>
 
 <Tab title="Resource Limits">

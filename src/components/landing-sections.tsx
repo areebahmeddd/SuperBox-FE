@@ -37,7 +37,11 @@ export default function LandingSections() {
     setIsPublishModalOpen(true);
   };
 
-  const handlePublishServer = async (data: ServerFormData) => {
+  const handlePublishServer = async (
+    data: ServerFormData,
+    setIsScanning?: (val: boolean) => void,
+    setScanProgress?: (val: string) => void,
+  ) => {
     if (!user) {
       showToast.error("Please sign in to publish servers");
       return;
@@ -46,6 +50,11 @@ export default function LandingSections() {
     try {
       const token = await user.getIdToken();
       const API_URL = process.env.NEXT_PUBLIC_API_URL!;
+
+      if (setIsScanning) setIsScanning(true);
+      if (setScanProgress) setScanProgress("Running security scans...");
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       const response = await fetch(`${API_URL}/servers`, {
         method: "POST",
@@ -72,6 +81,9 @@ export default function LandingSections() {
       const errorMessage =
         err instanceof Error ? err.message : "Failed to publish server";
       showToast.error(errorMessage);
+    } finally {
+      if (setIsScanning) setIsScanning(false);
+      if (setScanProgress) setScanProgress("");
     }
   };
 

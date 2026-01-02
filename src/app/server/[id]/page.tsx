@@ -4,7 +4,8 @@ import Header from "@/components/header";
 import ServerDetail from "@/components/server-detail";
 import { Button } from "@/components/ui/button";
 import { getUserServers } from "@/lib/local-storage";
-import { getMockServerByName, getReviewsForServer } from "@/lib/mock-data";
+import { getMockServerByName } from "@/lib/mock-data";
+import { showToast } from "@/lib/toast-utils";
 import type { ServerResponse } from "@/lib/types";
 import { motion } from "framer-motion";
 import { Box } from "lucide-react";
@@ -21,28 +22,20 @@ export default function ServerPage() {
   useEffect(() => {
     const loadServer = async () => {
       try {
-        const API_URL = process.env.NEXT_PUBLIC_API_URL!;
-        const res = await fetch(`${API_URL}/servers`);
-        if (!res.ok) throw new Error("Failed to fetch server");
-        const json = await res.json();
-        const servers: ServerResponse[] = json?.servers || [];
-        const found = servers.find((s) => s.name === serverName) || null;
-        setServer(found);
-      } catch {
-        console.log("API unavailable, using mock data");
-        const mockServer = getMockServerByName(serverName);
+        await new Promise((resolve) => setTimeout(resolve, 500));
 
-        if (!mockServer) {
+        let foundServer = getMockServerByName(serverName);
+
+        if (!foundServer) {
           const userServers = getUserServers();
-          const userServer = userServers.find((s) => s.name === serverName);
-          if (userServer) {
-            setServer(userServer);
-          } else {
-            setServer(null);
-          }
-        } else {
-          setServer(mockServer);
+          foundServer = userServers.find((s) => s.name === serverName);
         }
+
+        setServer(foundServer || null);
+      } catch (error) {
+        console.error("Error loading server:", error);
+        showToast.error("Failed to load server. Please try again.");
+        setServer(null);
       } finally {
         setLoading(false);
       }
@@ -124,24 +117,11 @@ export default function ServerPage() {
     );
   }
 
-  const reviews = getReviewsForServer(server.name);
-  const averageRating =
-    reviews.length > 0
-      ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
-      : undefined;
-
   const transformedServer = {
-    id: Math.abs(
-      server.name.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0),
-    ),
     name: server.name,
-    handle: server.author,
-    lastDeployed: "Recently",
-    icon: "",
-    about: server.description,
-    downloads: undefined,
-    rating: averageRating,
-    reviewCount: reviews.length,
+    author: server.author,
+    description: server.description,
+    version: server.version,
     tools: server.tools?.names
       ? server.tools.names.map((toolName) => ({
           name: toolName,
@@ -153,65 +133,23 @@ export default function ServerPage() {
             description: `Entry point: ${server.entrypoint}`,
           },
         ],
-    connectionUrl: server.repository.url,
-    tags: [
-      server.lang,
-      server.license,
-      `v${server.version}`,
-      ...(server.tools?.count ? [`${server.tools.count} tools`] : []),
-    ],
-    clients: {
-      auto: [],
-      json: [],
-      typescript: [],
-      python: [],
-    },
-    qualityScore: server.security_report
-      ? Math.max(
-          0,
-          100 -
-            server.security_report.summary.total_issues_all_scanners * 3 -
-            server.security_report.summary.critical_issues * 10,
-        )
-      : undefined,
-    monthlyToolCalls: server.tools?.count
-      ? server.tools.count * 125000
-      : undefined,
-    totalPulls: server.security_report
-      ? Math.floor(Math.random() * 50000) + 10000
-      : undefined,
-    uptime: server.security_report
-      ? server.security_report.summary.scan_passed
-        ? 99.9
-        : server.security_report.summary.critical_issues === 0
-          ? 99.5
-          : 95.0
-      : undefined,
-    latency: server.security_report
-      ? {
-          p95:
-            server.security_report.sonarqube.lines_of_code > 1000 ? 250 : 150,
-        }
-      : undefined,
+    repository: server.repository,
     license: server.license,
-    isLocal: false,
-    publishedDate: server.security_report
-      ? new Date(server.security_report.metadata.scan_date).toLocaleDateString()
-      : undefined,
-    pricing: server.pricing,
-    sourceCode: {
-      platform: server.repository.type,
-      url: server.repository.url,
-      repo: server.repository.url.replace("https://github.com/", ""),
-    },
-    homepage: {
-      url: server.repository.url,
-      domain: server.repository.url
-        .replace("https://", "")
-        .replace("http://", "")
-        .split("/")[0],
-    },
-    security: server.security_report || undefined,
+    meta: server.meta,
+    pricing: server.pricing || { currency: "", amount: 0 },
+    homepage: server.homepage,
+    security_report: server.security_report,
+    ...((server as any).monthlyToolCalls && {
+      monthlyToolCalls: (server as any).monthlyToolCalls,
+    }),
+    ...((server as any).totalPulls && {
+      totalPulls: (server as any).totalPulls,
+    }),
+    ...((server as any).uptime && { uptime: (server as any).uptime }),
+    ...((server as any).latency && { latency: (server as any).latency }),
+    ...((server as any).qualityScore && {
+      qualityScore: (server as any).qualityScore,
+    }),
   };
 
   return (

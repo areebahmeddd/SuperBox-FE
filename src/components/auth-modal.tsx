@@ -151,6 +151,7 @@ export default function AuthModal({
         error.code === "auth/popup-closed-by-user" ||
         error.code === "auth/cancelled-popup-request"
       ) {
+        setIsLoading(false);
         return;
       }
 
@@ -159,7 +160,6 @@ export default function AuthModal({
       } else {
         showToast.error("Google sign-in failed. Please try again.");
       }
-    } finally {
       setIsLoading(false);
     }
   };
@@ -175,6 +175,7 @@ export default function AuthModal({
         error.code === "auth/popup-closed-by-user" ||
         error.code === "auth/cancelled-popup-request"
       ) {
+        setIsLoading(false);
         return;
       }
 
@@ -189,7 +190,6 @@ export default function AuthModal({
       } else {
         showToast.error("GitHub sign-in failed. Please try again.");
       }
-    } finally {
       setIsLoading(false);
     }
   };
@@ -245,6 +245,7 @@ export default function AuthModal({
                   <Button
                     variant="outline"
                     onClick={() => setAuthStep("signin")}
+                    disabled={isLoading}
                     className="w-full"
                   >
                     <Mail className="w-4 h-4" />

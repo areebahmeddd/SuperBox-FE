@@ -17,30 +17,20 @@ import {
 
 interface ServerDetailsCardProps {
   server: {
-    qualityScore?: number;
-    monthlyToolCalls?: number;
-    totalPulls?: number;
-    uptime?: number;
-    latency?: {
-      p95: number;
+    license: string;
+    repository: {
+      type: string;
+      url: string;
     };
-    license?: string;
-    isLocal?: boolean;
-    publishedDate?: string;
-    lastDeployed?: string;
-    pricing: {
+    meta?: {
+      created_at: string;
+      updated_at: string;
+    };
+    pricing?: {
       currency: string;
       amount: number;
     };
-    sourceCode?: {
-      platform: string;
-      url: string;
-      repo: string;
-    };
-    homepage?: {
-      url: string;
-      domain: string;
-    };
+    homepage?: string;
   };
 }
 
@@ -61,6 +51,8 @@ export default function ServerDetailsCard({ server }: ServerDetailsCardProps) {
     return "text-orange-600 dark:text-orange-400";
   };
 
+  const serverData = server as any;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -74,7 +66,7 @@ export default function ServerDetailsCard({ server }: ServerDetailsCardProps) {
       </div>
 
       <div className="grid grid-cols-2 gap-6">
-        {server.qualityScore !== undefined && (
+        {serverData.qualityScore !== undefined && (
           <div className="col-span-2">
             <div className="flex items-center gap-2 mb-3">
               <Award className="w-4 h-4 text-muted-foreground" />
@@ -86,67 +78,73 @@ export default function ServerDetailsCard({ server }: ServerDetailsCardProps) {
               <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
                 <div
                   className={`h-full transition-all duration-500 ${
-                    server.qualityScore >= 80
+                    serverData.qualityScore >= 80
                       ? "bg-green-600 dark:bg-green-400"
-                      : server.qualityScore >= 60
+                      : serverData.qualityScore >= 60
                         ? "bg-yellow-600 dark:bg-yellow-400"
                         : "bg-orange-600 dark:bg-orange-400"
                   }`}
-                  style={{ width: `${server.qualityScore}%` }}
+                  style={{ width: `${serverData.qualityScore}%` }}
                 />
               </div>
               <span
-                className={`text-xl font-bold ${getQualityColor(server.qualityScore)}`}
+                className={`text-xl font-bold ${getQualityColor(serverData.qualityScore)}`}
               >
-                {server.qualityScore}
+                {serverData.qualityScore}
               </span>
             </div>
           </div>
         )}
 
-        {server.monthlyToolCalls !== undefined && (
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <TrendingUp className="w-4 h-4 text-muted-foreground" />
-              <p className="text-xs text-muted-foreground uppercase tracking-wider">
-                Monthly Calls
-              </p>
-            </div>
-            <div className="text-lg font-bold text-foreground">
-              {formatNumber(server.monthlyToolCalls)}
-            </div>
+        <div>
+          <div className="flex items-center gap-2 mb-3">
+            <TrendingUp className="w-4 h-4 text-muted-foreground" />
+            <p className="text-xs text-muted-foreground uppercase tracking-wider">
+              Monthly Calls
+            </p>
           </div>
-        )}
-
-        {server.totalPulls !== undefined && (
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <Download className="w-4 h-4 text-muted-foreground" />
-              <p className="text-xs text-muted-foreground uppercase tracking-wider">
-                Total Pulls
-              </p>
-            </div>
-            <div className="text-lg font-bold text-foreground">
-              {formatNumber(server.totalPulls)}
-            </div>
+          <div className="text-lg font-bold text-foreground">
+            {serverData.monthlyToolCalls !== undefined
+              ? formatNumber(serverData.monthlyToolCalls)
+              : "Not measured"}
           </div>
-        )}
+        </div>
 
-        {server.uptime !== undefined && (
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <Activity className="w-4 h-4 text-muted-foreground" />
-              <p className="text-xs text-muted-foreground uppercase tracking-wider">
-                Uptime
-              </p>
-            </div>
-            <div className="text-lg font-bold text-green-600 dark:text-green-400">
-              {server.uptime}%
-            </div>
+        <div>
+          <div className="flex items-center gap-2 mb-3">
+            <Download className="w-4 h-4 text-muted-foreground" />
+            <p className="text-xs text-muted-foreground uppercase tracking-wider">
+              Total Pulls
+            </p>
           </div>
-        )}
+          <div className="text-lg font-bold text-foreground">
+            {serverData.totalPulls !== undefined
+              ? formatNumber(serverData.totalPulls)
+              : "Not measured"}
+          </div>
+        </div>
 
-        {server.latency && (
+        <div>
+          <div className="flex items-center gap-2 mb-3">
+            <Activity className="w-4 h-4 text-muted-foreground" />
+            <p className="text-xs text-muted-foreground uppercase tracking-wider">
+              Uptime
+            </p>
+          </div>
+          <div
+            className={
+              serverData.uptime !== undefined
+                ? "text-lg font-bold text-green-600 dark:text-green-400"
+                : "text-base font-semibold text-muted-foreground"
+            }
+          >
+            {serverData.uptime !== undefined
+              ? `${serverData.uptime}%`
+              : "Not measured"}
+          </div>
+        </div>
+
+        {serverData.latency !== undefined ? (
           <div>
             <div className="flex items-center gap-2 mb-3">
               <Clock className="w-4 h-4 text-muted-foreground" />
@@ -155,7 +153,19 @@ export default function ServerDetailsCard({ server }: ServerDetailsCardProps) {
               </p>
             </div>
             <div className="text-base font-semibold text-foreground">
-              {server.latency.p95}ms
+              {serverData.latency.p95}ms
+            </div>
+          </div>
+        ) : (
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <Clock className="w-4 h-4 text-muted-foreground" />
+              <p className="text-xs text-muted-foreground uppercase tracking-wider">
+                Latency (P95)
+              </p>
+            </div>
+            <div className="text-base font-semibold text-muted-foreground">
+              Not measured
             </div>
           </div>
         )}
@@ -174,7 +184,7 @@ export default function ServerDetailsCard({ server }: ServerDetailsCardProps) {
           </div>
         )}
 
-        {server.publishedDate && (
+        {serverData.publishedDate && (
           <div>
             <div className="flex items-center gap-2 mb-3">
               <Calendar className="w-4 h-4 text-muted-foreground" />
@@ -183,12 +193,12 @@ export default function ServerDetailsCard({ server }: ServerDetailsCardProps) {
               </p>
             </div>
             <div className="text-base font-semibold text-foreground">
-              {server.publishedDate}
+              {serverData.publishedDate}
             </div>
           </div>
         )}
 
-        {server.lastDeployed && (
+        {serverData.lastDeployed && (
           <div className="col-span-2">
             <div className="flex items-center gap-2 mb-3">
               <Clock className="w-4 h-4 text-muted-foreground" />
@@ -197,7 +207,7 @@ export default function ServerDetailsCard({ server }: ServerDetailsCardProps) {
               </p>
             </div>
             <div className="text-base font-semibold text-foreground">
-              {server.lastDeployed}
+              {serverData.lastDeployed}
             </div>
           </div>
         )}
@@ -221,45 +231,47 @@ export default function ServerDetailsCard({ server }: ServerDetailsCardProps) {
           </div>
         </div>
 
-        {server.sourceCode && (
-          <div className="col-span-2 pt-4 border-t border-border">
-            <div className="flex items-center gap-2 mb-3">
-              <Code className="w-4 h-4 text-muted-foreground" />
-              <p className="text-xs text-muted-foreground uppercase tracking-wider">
-                Source Code
-              </p>
-            </div>
-            <a
-              href={server.sourceCode.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 text-sm font-medium text-primary hover:text-primary/80 transition-colors group"
-            >
-              <span className="truncate">{server.sourceCode.repo}</span>
-              <ExternalLink className="w-3.5 h-3.5 opacity-70 flex-shrink-0 group-hover:opacity-100" />
-            </a>
+        <div className="col-span-2">
+          <div className="flex items-center gap-2 mb-3">
+            <Code className="w-4 h-4 text-muted-foreground" />
+            <p className="text-xs text-muted-foreground uppercase tracking-wider">
+              Source Code
+            </p>
           </div>
-        )}
+          <a
+            href={server.repository.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 text-sm font-medium text-primary hover:text-primary/80 transition-colors group"
+          >
+            <span className="truncate">
+              {server.repository.url.replace("https://github.com/", "")}
+            </span>
+            <ExternalLink className="w-3.5 h-3.5 opacity-70 flex-shrink-0 group-hover:opacity-100" />
+          </a>
+        </div>
 
-        {server.homepage && (
-          <div className="col-span-2">
-            <div className="flex items-center gap-2 mb-3">
-              <Home className="w-4 h-4 text-muted-foreground" />
-              <p className="text-xs text-muted-foreground uppercase tracking-wider">
-                Homepage
-              </p>
-            </div>
+        <div className="col-span-2">
+          <div className="flex items-center gap-2 mb-3">
+            <Home className="w-4 h-4 text-muted-foreground" />
+            <p className="text-xs text-muted-foreground uppercase tracking-wider">
+              Homepage
+            </p>
+          </div>
+          {server.homepage ? (
             <a
-              href={server.homepage.url}
+              href={server.homepage}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 text-sm font-medium text-primary hover:text-primary/80 transition-colors group"
             >
-              <span className="truncate">{server.homepage.domain}</span>
+              <span className="truncate">{server.homepage}</span>
               <ExternalLink className="w-3.5 h-3.5 opacity-70 flex-shrink-0 group-hover:opacity-100" />
             </a>
-          </div>
-        )}
+          ) : (
+            <span className="text-sm text-muted-foreground">Not available</span>
+          )}
+        </div>
       </div>
     </motion.div>
   );

@@ -1,5 +1,6 @@
 "use client";
 
+import { getReviewsForServer } from "@/lib/mock-data";
 import { motion } from "framer-motion";
 import { Code, Info, Shield, Star } from "lucide-react";
 import { useState } from "react";
@@ -21,38 +22,23 @@ interface Tool {
 interface ServerDetailTabsProps {
   server: {
     name: string;
-    about: string;
+    description: string;
     tools: Tool[];
-    qualityScore?: number;
-    monthlyToolCalls?: number;
-    deployedFrom?: {
-      branch: string;
-      commit: string;
-    };
-    uptime?: number;
-    latency?: {
-      p95: number;
-    };
-    license?: string;
-    isLocal?: boolean;
-    publishedDate?: string;
-    downloads?: number;
-    rating?: number;
-    reviewCount?: number;
-    sourceCode?: {
-      platform: string;
+    license: string;
+    repository: {
+      type: string;
       url: string;
-      repo: string;
     };
-    homepage?: {
-      url: string;
-      domain: string;
+    meta?: {
+      created_at: string;
+      updated_at: string;
     };
-    security?: any;
-    pricing: {
+    pricing?: {
       currency: string;
       amount: number;
     };
+    homepage?: string;
+    security_report?: any;
   };
 }
 
@@ -61,6 +47,13 @@ type TabType = "overview" | "security" | "reviews";
 export default function ServerDetailTabs({ server }: ServerDetailTabsProps) {
   const [activeTab, setActiveTab] = useState<TabType>("overview");
   const [showAllTools, setShowAllTools] = useState(false);
+
+  const mockReviews = getReviewsForServer(server.name);
+  const averageRating =
+    mockReviews.length > 0
+      ? mockReviews.reduce((sum, r) => sum + r.rating, 0) / mockReviews.length
+      : 4.5;
+  const totalReviews = mockReviews.length;
 
   const tabs = [
     { id: "overview" as TabType, label: "Overview", icon: Info },
@@ -113,7 +106,9 @@ export default function ServerDetailTabs({ server }: ServerDetailTabsProps) {
               <h3 className="text-lg font-semibold text-foreground mb-4">
                 About
               </h3>
-              <p className="text-foreground leading-relaxed">{server.about}</p>
+              <p className="text-muted-foreground leading-relaxed">
+                {server.description}
+              </p>
             </section>
 
             <section>
@@ -143,7 +138,7 @@ export default function ServerDetailTabs({ server }: ServerDetailTabsProps) {
 
                     {tool.parameters && tool.parameters.length > 0 && (
                       <div className="mt-4 pt-4 border-t border-white/5">
-                        <p className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
+                        <p className="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wider">
                           Parameters
                         </p>
                         <div className="space-y-2">
@@ -224,14 +219,14 @@ export default function ServerDetailTabs({ server }: ServerDetailTabsProps) {
         )}
 
         {activeTab === "security" && (
-          <SecurityReport security={server.security} />
+          <SecurityReport security={server.security_report} />
         )}
 
         {activeTab === "reviews" && (
           <ReviewsSection
             serverName={server.name}
-            averageRating={server.rating}
-            totalReviews={server.reviewCount}
+            averageRating={averageRating}
+            totalReviews={totalReviews}
           />
         )}
       </motion.div>

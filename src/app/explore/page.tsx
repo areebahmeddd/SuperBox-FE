@@ -4,6 +4,7 @@ import Header from "@/components/header";
 import ToolCard from "@/components/tool-card";
 import { getUserServers } from "@/lib/local-storage";
 import { getAllMockServers } from "@/lib/mock-data";
+import { showToast } from "@/lib/toast-utils";
 import type { ServerListItem, ServerResponse } from "@/lib/types";
 import { motion } from "framer-motion";
 import { Mic, Search } from "lucide-react";
@@ -24,26 +25,9 @@ function ExploreContent() {
     const loadServers = async () => {
       setLoading(true);
       try {
-        const API_URL = process.env.NEXT_PUBLIC_API_URL!;
-        const res = await fetch(`${API_URL}/servers`);
-        if (!res.ok) throw new Error("Failed to fetch servers");
-        const json = await res.json();
-        const servers: ServerResponse[] = json?.data || json?.servers || [];
-        const userServers = getUserServers();
-        const allServers = [...servers, ...userServers];
-        const list: ServerListItem[] = allServers.map((s) => ({
-          name: s.name,
-          author: s.author,
-          description: s.description,
-          lang: s.lang,
-          license: s.license,
-          pricing: s.pricing,
-        }));
-        setAllTools(list);
-      } catch (error) {
-        console.log("API unavailable, using mock data");
-        const mockServers = getAllMockServers();
-        const userServers = getUserServers();
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        const mockServers: ServerResponse[] = getAllMockServers();
+        const userServers: ServerResponse[] = getUserServers();
         const allServers = [...mockServers, ...userServers];
         const list: ServerListItem[] = allServers.map((s) => ({
           name: s.name,
@@ -51,9 +35,13 @@ function ExploreContent() {
           description: s.description,
           lang: s.lang,
           license: s.license,
+          tools: s.tools,
           pricing: s.pricing,
         }));
         setAllTools(list);
+      } catch (error) {
+        console.error("Error loading servers:", error);
+        showToast.error("Failed to load servers. Please retry in a moment.");
       } finally {
         setLoading(false);
       }

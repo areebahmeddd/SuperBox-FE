@@ -25,10 +25,17 @@ export function getUserServers(): UserServer[] {
 export function saveUserServer(
   server: ServerResponse,
   userId?: string,
+  existingServerId?: string,
 ): UserServer {
   const userServers = getUserServers();
 
-  const existingIndex = userServers.findIndex((s) => s.name === server.name);
+  let existingIndex = -1;
+
+  if (existingServerId) {
+    existingIndex = userServers.findIndex((s) => s.id === existingServerId);
+  } else {
+    existingIndex = userServers.findIndex((s) => s.name === server.name);
+  }
 
   const userServer: UserServer = {
     ...server,

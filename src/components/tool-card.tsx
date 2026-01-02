@@ -1,21 +1,12 @@
 "use client";
 
+import type { ServerListItem } from "@/lib/types";
 import { motion } from "framer-motion";
 import { Package } from "lucide-react";
 import Link from "next/link";
 
 interface ToolCardProps {
-  tool: {
-    name: string;
-    author: string;
-    description: string;
-    lang: string;
-    license: string;
-    pricing?: {
-      currency: string;
-      amount: number;
-    };
-  };
+  tool: ServerListItem;
 }
 
 const getCurrencySymbol = (currency: string): string => {
@@ -74,9 +65,11 @@ export default function ToolCard({ tool }: ToolCardProps) {
                 <h3 className="text-lg font-semibold text-foreground mb-1 truncate">
                   {tool.name}
                 </h3>
-                <p className="text-xs text-muted-foreground truncate">
-                  {tool.author}
-                </p>
+                {tool.author && (
+                  <p className="text-xs text-muted-foreground truncate">
+                    {tool.author}
+                  </p>
+                )}
               </div>
             </div>
 
@@ -90,9 +83,7 @@ export default function ToolCard({ tool }: ToolCardProps) {
                   <span className="w-1.5 h-1.5 rounded-full bg-primary" />
                   {tool.lang}
                 </span>
-                {tool.pricing &&
-                tool.pricing.currency &&
-                tool.pricing.amount ? (
+                {tool.pricing && tool.pricing.amount > 0 ? (
                   <span className="px-2 py-1 bg-primary/15 text-primary text-xs font-semibold rounded">
                     {getCurrencySymbol(tool.pricing.currency)}
                     {tool.pricing.amount}
@@ -103,9 +94,11 @@ export default function ToolCard({ tool }: ToolCardProps) {
                   </span>
                 )}
               </div>
-              <span className="text-xs font-medium text-muted-foreground">
-                {tool.license}
-              </span>
+              {tool.license && (
+                <span className="text-xs font-medium text-muted-foreground">
+                  {tool.license}
+                </span>
+              )}
             </div>
           </div>
         </motion.div>
