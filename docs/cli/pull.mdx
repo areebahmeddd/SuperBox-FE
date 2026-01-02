@@ -12,7 +12,7 @@ superbox pull --name NAME --client CLIENT
 
 ## Description
 
-Pull an MCP server from the S3 registry and configure it for your AI client. Automatically writes the correct MCP configuration file for the specified client.
+Pull an MCP server from the S3 registry and configure it for your AI client. Automatically writes the correct MCP configuration file for the specified client using WebSocket cloud execution.
 
 ## Options
 
@@ -28,10 +28,10 @@ Pull an MCP server from the S3 registry and configure it for your AI client. Aut
 
 <CardGroup cols={3}>
   <Card title="VS Code" icon="code">
-    Configures `.vscode/mcp.json`
+    Configures VS Code MCP settings
   </Card>
   <Card title="Cursor" icon="mouse-pointer">
-    Configures `~/.cursor/mcp.json`
+    Configures Cursor MCP settings
   </Card>
   <Card title="Windsurf" icon="wind">
     Configures Windsurf MCP settings
@@ -44,25 +44,38 @@ Pull an MCP server from the S3 registry and configure it for your AI client. Aut
   </Card>
 </CardGroup>
 
-## What It Does
+## How It Works
 
 <Steps>
   <Step title="Fetch from S3">
-    Retrieves server metadata from S3 registry
+    Retrieves server metadata from S3 registry (entrypoint, language, repo URL)
   </Step>
 
   <Step title="Generate Config">
-    Creates client-specific MCP configuration
+    Creates client-specific MCP configuration with local proxy bridge
   </Step>
 
-  <Step title="Configure Endpoint">
-    Points client to Lambda executor endpoint
+  <Step title="Configure WebSocket">
+    Points client to WebSocket API via local stdio-WebSocket proxy module
   </Step>
 
   <Step title="Save Config">
-    Writes configuration to client's config file
+    Writes configuration to client's config file location
   </Step>
 </Steps>
+
+## Architecture
+
+```mermaid
+graph LR
+    A[superbox pull] --> B[S3 Registry]
+    B --> C[Write mcp.json]
+    C --> D[AI Client]
+    D --> E[Local Proxy Module]
+    E --> F[WebSocket API]
+    F --> G[Lambda Executor]
+    G --> H[MCP Server]
+```
 
 ## Examples
 
@@ -92,20 +105,36 @@ Location: ~/.cursor/mcp.json
 
 ## Configuration Format
 
-The generated configuration points to the Lambda executor:
+The generated configuration uses a local proxy that bridges stdio to WebSocket:
 
 ```json
 {
   "mcpServers": {
     "my-mcp": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-proxy"],
-      "env": {
-        "MCP_PROXY_URL": "https://lambda-url/my-mcp"
-      }
+      "command": "python",
+      "args": [
+        "-m",
+        "superbox.aws.proxy",
+        "--url",
+        "wss://3f382zdysa.execute-api.ap-south-1.amazonaws.com/production?server_name=my-mcp"
+      ]
     }
   }
 }
+```
+
+<Note>
+  **Local Proxy Module**: Runs `python -m superbox.aws.proxy` on your machine to bridge stdio (required by AI clients) to WebSocket (cloud executor).
+</Note>
+
+## Platform Support
+
+| Client | Config Location |
+|--------|----------------|
+| VS Code | `~/Library/Application Support/Code/User/mcp.json` (macOS)<br/>`%APPDATA%/Code/User/mcp.json` (Windows)<br/>`~/.config/Code/User/mcp.json` (Linux) |
+| Cursor | `~/.cursor/mcp.json` (macOS/Linux)<br/>`%USERPROFILE%/.cursor/mcp.json` (Windows) |
+| Windsurf | `~/Library/Application Support/Windsurf/User/mcp.json` (macOS)<br/>`%APPDATA%/Windsurf/User/mcp.json` (Windows)<br/>`~/.config/Windsurf/User/mcp.json` (Linux) |
+| Claude Desktop | `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS)<br/>`%APPDATA%/Claude/claude_desktop_config.json` (Windows)<br/>`~/.config/Claude/claude_desktop_config.json` (Linux) |
 
 ## Next Steps
 
@@ -113,7 +142,7 @@ The generated configuration points to the Lambda executor:
   <Card title="Inspect Server" icon="eye" href="/cli/inspect">
     View server details
   </Card>
-  <Card title="Run Locally" icon="play" href="/cli/run">
-    Test server execution
+  <Card title="Test Mode" icon="flask" href="/cli/test">
+    Test without registry
   </Card>
 </CardGroup>

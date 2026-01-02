@@ -46,7 +46,7 @@ icon: "bolt"
 
 <Steps>
   <Step title="Browse Servers">
-    Visit [SuperBox](https://superbox-ai.vercel.app/explore) to browse available MCP servers.
+    Visit [SuperBox](https://superbox.1mindlabs.org/explore) to browse available MCP servers.
   </Step>
 
   <Step title="Install CLI">
@@ -90,13 +90,13 @@ icon: "bolt"
   </Step>
 
   <Step title="Execute MCP Server">
-    Send JSON-RPC requests to the Lambda endpoint:
+    Configure your AI client (VS Code, Cursor, Claude Desktop) using:
     
     ```bash
-    curl -X POST https://{lambda-url}/weather-server \
-      -H "Content-Type: application/json" \
-      -d '{"method": "tools/call", "params": {"name": "get_weather", "arguments": {"city": "NYC"}}}'
+    superbox pull --name weather-server --client vscode
     ```
+    
+    The server will be available in your AI client's MCP tools list.
   </Step>
 </Steps>
 

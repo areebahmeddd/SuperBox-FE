@@ -138,7 +138,6 @@ export default function PaywallModal({
               );
             }
           } catch (error) {
-            console.error("Payment verification error:", error);
             showToast.error(
               error instanceof Error
                 ? error.message
@@ -161,7 +160,6 @@ export default function PaywallModal({
       const rzp = new window.Razorpay(options);
       rzp.open();
     } catch (error) {
-      console.error("Payment error:", error);
       showToast.error(
         error instanceof Error ? error.message : "Failed to initiate payment",
       );

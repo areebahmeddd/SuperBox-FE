@@ -10,12 +10,10 @@ import ServerDetailTabs from "./server-tabs";
 
 interface ServerDetailProps {
   server: {
-    id: number;
     name: string;
-    handle: string;
-    lastDeployed: string;
-    icon: string;
-    about: string;
+    author: string;
+    description: string;
+    version: string;
     tools: Array<{
       name: string;
       description: string;
@@ -26,36 +24,21 @@ interface ServerDetailProps {
         description: string;
       }>;
     }>;
-    connectionUrl: string;
-    tags: string[];
-    clients: {
-      auto: string[];
-      json: string[];
-    };
-    qualityScore?: number;
-    monthlyToolCalls?: number;
-    totalPulls?: number;
-    uptime?: number;
-    latency?: {
-      p95: number;
-    };
-    license?: string;
-    isLocal?: boolean;
-    publishedDate?: string;
-    sourceCode?: {
-      platform: string;
+    repository: {
+      type: string;
       url: string;
-      repo: string;
     };
-    homepage?: {
-      url: string;
-      domain: string;
+    license: string;
+    meta?: {
+      created_at: string;
+      updated_at: string;
     };
-    security?: any;
-    pricing: {
+    pricing?: {
       currency: string;
       amount: number;
     };
+    homepage?: string;
+    security_report?: any;
   };
 }
 
@@ -168,14 +151,14 @@ export default function ServerDetail({ server }: ServerDetailProps) {
               <h1 className="text-4xl font-bold text-foreground">
                 {server.name}
               </h1>
-              {server.pricing.amount > 0 && (
-                <span className="px-3 py-1.5 bg-primary/15 text-primary text-sm font-semibold rounded-lg">
+              {server.pricing && server.pricing.amount > 0 && (
+                <span className="px-2.5 py-1 bg-primary/15 text-primary text-xs font-semibold rounded-lg border border-primary/20">
                   ${server.pricing.amount}/mo
                 </span>
               )}
             </div>
-            <p className="text-muted-foreground text-lg mb-4">
-              {server.handle}
+            <p className="text-muted-foreground text-sm mt-1">
+              {server.author}
             </p>
 
             <div className="flex items-start gap-2 px-3 py-2 bg-amber-500/10 border border-amber-500/20 rounded-lg max-w-2xl">
@@ -190,27 +173,13 @@ export default function ServerDetail({ server }: ServerDetailProps) {
                   clipRule="evenodd"
                 />
               </svg>
-              <p className="text-xs text-amber-700 dark:text-amber-200">
+              <p className="text-xs text-amber-800 dark:text-amber-200">
                 <span className="font-semibold">Note:</span> First 100 tool
                 calls are free. After that, ₹10 will be charged for every 100
                 tool calls.
               </p>
             </div>
           </div>
-        </div>
-
-        <div className="flex items-center gap-2 flex-wrap">
-          {server.tags.map((tag, index) => (
-            <motion.span
-              key={tag}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.3, delay: 0.2 + index * 0.05 }}
-              className="px-3 py-1.5 bg-muted border border-border rounded-lg text-sm text-muted-foreground"
-            >
-              {tag}
-            </motion.span>
-          ))}
         </div>
       </motion.div>
 
@@ -255,7 +224,7 @@ export default function ServerDetail({ server }: ServerDetailProps) {
                 <div className="mb-4 p-4 bg-card rounded-xl border border-border">
                   <div className="flex items-baseline justify-center gap-1">
                     <span className="text-3xl font-bold text-foreground">
-                      ${server.pricing.amount}
+                      ${server.pricing!.amount}
                     </span>
                     <span className="text-muted-foreground text-sm">
                       /month
@@ -322,7 +291,7 @@ export default function ServerDetail({ server }: ServerDetailProps) {
                         <code>{`{
   "mcpServers": {
     "${server.name}": {
-      "command": "npx",
+      "command": "python",
       "args": ["-y", "${server.name}"]
     }
   }
@@ -383,7 +352,7 @@ export default function ServerDetail({ server }: ServerDetailProps) {
           onClose={() => setShowPaywall(false)}
           server={{
             name: server.name,
-            pricing: server.pricing,
+            pricing: server.pricing!,
           }}
         />
       )}

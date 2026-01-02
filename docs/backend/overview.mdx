@@ -92,7 +92,8 @@ SuperBox backend has three main components:
 **Test Mode:**
 
 ```bash
-POST https://lambda-url/test?test_mode=true&repo_url=https://github.com/user/repo&entrypoint=main.py
+# WebSocket connection with query parameters
+wss://api-gateway.execute-api.region.amazonaws.com/production?test_mode=true&repo_url=https://github.com/user/repo&entrypoint=main.py&lang=python
 ```
 
 ## Data Flow
@@ -104,11 +105,11 @@ graph LR
     C --> D["Tool discovery"]
     D --> E["Upload <server>.json to S3"]
 
-    F["User request"] --> G["Lambda URL /<server>"]
-    G --> H["Fetch metadata from S3"]
-    H --> I["Clone GitHub repo"]
-    I --> J["Install deps"]
-    J --> K["Execute MCP server"]
+    F["User: superbox pull"] --> G["Fetch S3 metadata"]
+    G --> H["Write mcp.json config"]
+    H --> I["AI Client connects"]
+    I --> J["Local Proxy: stdio → WebSocket"]
+    J --> K["Lambda: fetch + execute server"]
     K --> L["Return JSON-RPC response"]
 ```
 
@@ -225,9 +226,9 @@ my-mcp-server/
   /servers/:id
 </Card>
 
-  <Card title="Execution" icon="play" href="/backend/architecture">
-    - POST /execute/:serverId - GET /execution/:id/logs - GET
-    /execution/:id/status
+  <Card title="Execution" icon="play" href="/cli/pull">
+    MCP execution via WebSocket API (separate from Go API) - Use `superbox pull` to
+    configure AI clients
   </Card>
 </CardGroup>
 

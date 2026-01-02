@@ -367,7 +367,7 @@ func main() {
     "status": "scanning",
     "securityScanId": "scan_abc123def456",
     "estimatedTime": 90,
-    "url": "https://superbox-ai.vercel.app/server/weather-mcp",
+    "url": "https://superbox.1mindlabs.org/server/weather-mcp",
     "message": "Server created successfully. Security scanning in progress."
   },
   "meta": {
@@ -499,14 +499,12 @@ After creating a server, SuperBox follows this workflow:
   <Warning>Servers with critical security issues will be rejected</Warning>
 </Step>
 
-<Step title="Container Building">
-  - Build Docker container image - Install dependencies - Configure runtime
-  environment
+<Step title="Registry Storage">
+  - Upload metadata to S3 registry - Store repository URL and configuration - Generate server manifest
 </Step>
 
-<Step title="Lambda Deployment">
-  - Push image to Amazon ECR - Create Lambda function - Configure execution
-  settings
+<Step title="Execution Setup">
+  - Lambda fetches metadata on-demand - Clones repository at runtime - No pre-deployment needed
 </Step>
 
   <Step title="Registry Update">

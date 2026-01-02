@@ -21,13 +21,15 @@ export default function ServerPage() {
     const loadServer = async () => {
       try {
         const API_URL = process.env.NEXT_PUBLIC_API_URL!;
-        const res = await fetch(`${API_URL}/servers`);
+        const res = await fetch(
+          `${API_URL}/servers/${encodeURIComponent(serverName)}`,
+        );
         if (!res.ok) throw new Error("Failed to fetch server");
         const json = await res.json();
-        const servers: ServerResponse[] = json?.servers || [];
-        const found = servers.find((s) => s.name === serverName) || null;
-        setServer(found);
-      } catch {
+        // console.log('Backend API Response:', json);
+        setServer(json?.server || null);
+      } catch (error) {
+        console.error("Backend API Error:", error);
         showToast.error("Failed to load server. Please try again.");
         setServer(null);
       } finally {
@@ -112,17 +114,10 @@ export default function ServerPage() {
   }
 
   const transformedServer = {
-    id: Math.abs(
-      server.name.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0),
-    ),
     name: server.name,
-    handle: server.author,
-    lastDeployed: "Recently",
-    icon: "",
-    about: server.description,
-    downloads: undefined,
-    rating: undefined,
-    reviewCount: undefined,
+    author: server.author,
+    description: server.description,
+    version: server.version,
     tools: server.tools?.names
       ? server.tools.names.map((toolName) => ({
           name: toolName,
@@ -134,65 +129,12 @@ export default function ServerPage() {
             description: `Entry point: ${server.entrypoint}`,
           },
         ],
-    connectionUrl: server.repository.url,
-    tags: [
-      server.lang,
-      server.license,
-      `v${server.version}`,
-      ...(server.tools?.count ? [`${server.tools.count} tools`] : []),
-    ],
-    clients: {
-      auto: [],
-      json: [],
-      typescript: [],
-      python: [],
-    },
-    qualityScore: server.security_report
-      ? Math.max(
-          0,
-          100 -
-            server.security_report.summary.total_issues_all_scanners * 3 -
-            server.security_report.summary.critical_issues * 10,
-        )
-      : undefined,
-    monthlyToolCalls: server.tools?.count
-      ? server.tools.count * 125000
-      : undefined,
-    totalPulls: server.security_report
-      ? Math.floor(Math.random() * 50000) + 10000
-      : undefined,
-    uptime: server.security_report
-      ? server.security_report.summary.scan_passed
-        ? 99.9
-        : server.security_report.summary.critical_issues === 0
-          ? 99.5
-          : 95.0
-      : undefined,
-    latency: server.security_report
-      ? {
-          p95:
-            server.security_report.sonarqube.lines_of_code > 1000 ? 250 : 150,
-        }
-      : undefined,
+    repository: server.repository,
     license: server.license,
-    isLocal: false,
-    publishedDate: server.security_report
-      ? new Date(server.security_report.metadata.scan_date).toLocaleDateString()
-      : undefined,
-    pricing: server.pricing,
-    sourceCode: {
-      platform: server.repository.type,
-      url: server.repository.url,
-      repo: server.repository.url.replace("https://github.com/", ""),
-    },
-    homepage: {
-      url: server.repository.url,
-      domain: server.repository.url
-        .replace("https://", "")
-        .replace("http://", "")
-        .split("/")[0],
-    },
-    security: server.security_report || undefined,
+    meta: server.meta,
+    pricing: server.pricing || { currency: "", amount: 0 },
+    homepage: server.homepage,
+    security_report: server.security_report,
   };
 
   return (

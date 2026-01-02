@@ -73,8 +73,8 @@ export default function MyServersPage() {
 
         if (response.ok) {
           const result = await response.json();
-          setUserServers(result.data || []);
-          setShowEmptyState(result.data?.length === 0);
+          setUserServers(result.servers || []);
+          setShowEmptyState(result.servers?.length === 0);
         } else {
           setShowEmptyState(true);
         }
@@ -86,7 +86,11 @@ export default function MyServersPage() {
     fetchUserServers();
   }, [user]);
 
-  const handlePublishServer = async (data: ServerFormData) => {
+  const handlePublishServer = async (
+    data: ServerFormData,
+    setIsScanning?: (val: boolean) => void,
+    setScanProgress?: (val: string) => void,
+  ) => {
     if (!user) {
       showToast.error("Please sign in to publish servers");
       return;
@@ -101,6 +105,12 @@ export default function MyServersPage() {
         ? `${API_URL}/servers/${editingServer.name}`
         : `${API_URL}/servers`;
       const method = isEditing ? "PUT" : "POST";
+
+      if (setIsScanning && !isEditing) setIsScanning(true);
+      if (setScanProgress && !isEditing)
+        setScanProgress("Running security scans...");
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       const response = await fetch(endpoint, {
         method,
@@ -137,8 +147,8 @@ export default function MyServersPage() {
 
       if (listResponse.ok) {
         const listResult = await listResponse.json();
-        setUserServers(listResult.data || []);
-        setShowEmptyState(listResult.data?.length === 0);
+        setUserServers(listResult.servers || []);
+        setShowEmptyState(listResult.servers?.length === 0);
       }
 
       setIsModalOpen(false);
@@ -147,6 +157,9 @@ export default function MyServersPage() {
       const errorMessage =
         err instanceof Error ? err.message : "Failed to publish server";
       showToast.error(errorMessage);
+    } finally {
+      if (setIsScanning) setIsScanning(false);
+      if (setScanProgress) setScanProgress("");
     }
   };
 
@@ -198,8 +211,8 @@ export default function MyServersPage() {
 
       if (listResponse.ok) {
         const listResult = await listResponse.json();
-        setUserServers(listResult.data || []);
-        setShowEmptyState(listResult.data?.length === 0);
+        setUserServers(listResult.servers || []);
+        setShowEmptyState(listResult.servers?.length === 0);
       }
     } catch (err) {
       const errorMessage =
@@ -284,7 +297,7 @@ export default function MyServersPage() {
               <div className="grid grid-cols-1 gap-5">
                 {userServers.map((server, index) => (
                   <motion.div
-                    key={server.id}
+                    key={server.name || `server-${index}`}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{
@@ -316,7 +329,9 @@ export default function MyServersPage() {
                                 </h3>
                                 {server.pricing && (
                                   <span className="px-2.5 py-1 bg-primary/15 text-primary text-xs font-semibold rounded-lg border border-primary/20">
-                                    ${server.pricing.amount}/mo
+                                    {server.pricing.amount > 0
+                                      ? `$${server.pricing.amount}/mo`
+                                      : "Free"}
                                   </span>
                                 )}
                               </div>
@@ -361,11 +376,6 @@ export default function MyServersPage() {
                               </span>
                               <span className="px-2 py-0.5 bg-muted rounded">
                                 {server.license}
-                              </span>
-                              <span>⭐ {server.stars}</span>
-                              <span>📥 {server.downloads}</span>
-                              <span className="text-muted-foreground/70">
-                                • Updated {server.lastUpdated}
                               </span>
                             </div>
                           </div>

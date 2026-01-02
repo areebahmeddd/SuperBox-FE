@@ -9,7 +9,7 @@ icon: "terminal"
 The SuperBox CLI is a Python (Click) tool for managing MCP servers from initialization to deployment. Commands map directly to the backend implementation in `superbox.ai/src/superbox/cli`.
 
 <Info>
-  All CLI documentation matches the actual backend implementation. For detailed setup and usage, visit [https://superbox.mintlify.app](https://acm-aa28ebf6.mintlify.app/)
+  All CLI documentation matches the actual backend implementation. For detailed setup and usage, visit [https://superbox.1mindlabs.org/docs](https://acm-aa28ebf6.mintlify.app)
 </Info>
 
 ## Installation
@@ -152,8 +152,8 @@ AWS_ACCESS_KEY_ID=your_key
 AWS_SECRET_ACCESS_KEY=your_secret
 S3_BUCKET_NAME=your-bucket
 
-# Lambda executor
-LAMBDA_BASE_URL=https://your-api.example.com/run
+# WebSocket API (for pull/test commands)
+WEBSOCKET_URL=wss://api-gateway-id.execute-api.region.amazonaws.com/production
 
 # Scanners (for push command)
 SONAR_TOKEN=your_token
@@ -224,5 +224,5 @@ superbox inspect --name weather-mcp
 </CardGroup>
 
 <Info>
-  For complete documentation, visit [https://superbox.mintlify.app](https://acm-aa28ebf6.mintlify.app/)
+  For complete documentation, visit [https://superbox.1mindlabs.org/docs](https://acm-aa28ebf6.mintlify.app)
 </Info>

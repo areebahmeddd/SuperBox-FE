@@ -10,15 +10,15 @@ export interface ServerResponse {
     type: string;
     url: string;
   };
-  tools?: {
+  tools: {
     count: number;
     names: string[];
   };
-  pricing: {
+  pricing?: {
     currency: string;
     amount: number;
   };
-  security_report?: {
+  security_report: {
     metadata: {
       repository: string;
       repo_url: string;
@@ -74,9 +74,14 @@ export interface ServerResponse {
     };
     recommendations: string[];
   };
+  meta: {
+    created_at: string;
+    updated_at: string;
+  };
+  homepage?: string;
 }
 
 export type ServerListItem = Pick<
   ServerResponse,
-  "name" | "author" | "description" | "lang" | "license" | "pricing"
+  "name" | "description" | "lang" | "author" | "license" | "pricing" | "tools"
 >;

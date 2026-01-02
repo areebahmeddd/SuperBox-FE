@@ -170,9 +170,9 @@ Each JSON file contains:
       value       = module.s3.bucket_name
     }
     
-    output "lambda_function_url" {
-      description = "Lambda function URL for MCP execution"
-      value       = module.lambda.function_url
+    output "websocket_url" {
+      description = "WebSocket API URL for MCP connections"
+      value       = module.websocket.websocket_url
     }
     
     output "lambda_function_arn" {

@@ -16,7 +16,11 @@ import {
 interface PublishServerModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: ServerFormData) => void;
+  onSubmit: (
+    data: ServerFormData,
+    setIsScanning?: (val: boolean) => void,
+    setScanProgress?: (val: string) => void,
+  ) => void;
   editingServer?: any | null;
 }
 
@@ -37,7 +41,6 @@ export interface ServerFormData {
     amount: number;
   };
   metadata?: {
-    tags?: string[];
     homepage?: string;
   };
 }
@@ -49,6 +52,8 @@ export default function PublishServerModal({
   editingServer,
 }: PublishServerModalProps) {
   const [isFree, setIsFree] = useState(true);
+  const [isScanning, setIsScanning] = useState(false);
+  const [scanProgress, setScanProgress] = useState("");
   const [formData, setFormData] = useState<ServerFormData>({
     name: "",
     version: "",
@@ -66,7 +71,6 @@ export default function PublishServerModal({
       amount: 0,
     },
     metadata: {
-      tags: [],
       homepage: "",
     },
   });
@@ -90,7 +94,6 @@ export default function PublishServerModal({
           amount: editingServer.pricing?.amount || 0,
         },
         metadata: {
-          tags: editingServer.metadata?.tags || [],
           homepage: editingServer.metadata?.homepage || "",
         },
       });
@@ -113,7 +116,6 @@ export default function PublishServerModal({
           amount: 0,
         },
         metadata: {
-          tags: [],
           homepage: "",
         },
       });
@@ -123,7 +125,7 @@ export default function PublishServerModal({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
+    onSubmit(formData, setIsScanning, setScanProgress);
   };
 
   const handleReadmeUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -179,6 +181,28 @@ export default function PublishServerModal({
             onClick={(e) => e.stopPropagation()}
             className="relative bg-card border border-border rounded-2xl w-full max-w-2xl max-h-[85vh] overflow-hidden backdrop-blur-xl shadow-2xl z-10"
           >
+            {isScanning && (
+              <div className="absolute inset-0 bg-background/90 backdrop-blur-sm z-50 flex flex-col items-center justify-center gap-4">
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{
+                    duration: 1,
+                    repeat: Infinity,
+                    ease: "linear",
+                  }}
+                  className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full"
+                />
+                <div className="text-center">
+                  <p className="text-lg font-semibold text-foreground">
+                    {scanProgress || "Running security scans..."}
+                  </p>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    This may take a few moments
+                  </p>
+                </div>
+              </div>
+            )}
+
             <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-3.5 bg-card/80 backdrop-blur-xl border-b border-border">
               <div className="flex-1 text-left">
                 <h2 className="text-lg font-bold text-foreground">
@@ -207,7 +231,7 @@ export default function PublishServerModal({
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 }}
-                  className="p-3.5 bg-muted border border-border rounded-xl flex items-start gap-3 -mt-1"
+                  className="p-3.5 bg-muted border border-border rounded-xl flex items-start gap-3 mt-2"
                 >
                   <AlertCircle className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
                   <div className="text-sm text-foreground">
@@ -693,6 +717,7 @@ export default function PublishServerModal({
                   variant="outline"
                   size="default"
                   className="px-5 py-2 rounded-full"
+                  disabled={isScanning}
                 >
                   Cancel
                 </Button>
@@ -701,9 +726,27 @@ export default function PublishServerModal({
                   variant="default"
                   size="default"
                   className="px-5 py-2 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
+                  disabled={isScanning}
                 >
-                  <Upload className="w-4 h-4" />
-                  {editingServer ? "Update Server" : "Publish Server"}
+                  {isScanning ? (
+                    <div className="flex items-center gap-2">
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{
+                          duration: 1,
+                          repeat: Infinity,
+                          ease: "linear",
+                        }}
+                        className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full"
+                      />
+                      <span>{scanProgress || "Scanning..."}</span>
+                    </div>
+                  ) : (
+                    <>
+                      <Upload className="w-4 h-4" />
+                      {editingServer ? "Update Server" : "Publish Server"}
+                    </>
+                  )}
                 </Button>
               </div>
             </div>

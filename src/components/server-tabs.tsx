@@ -21,38 +21,23 @@ interface Tool {
 interface ServerDetailTabsProps {
   server: {
     name: string;
-    about: string;
+    description: string;
     tools: Tool[];
-    qualityScore?: number;
-    monthlyToolCalls?: number;
-    deployedFrom?: {
-      branch: string;
-      commit: string;
-    };
-    uptime?: number;
-    latency?: {
-      p95: number;
-    };
-    license?: string;
-    isLocal?: boolean;
-    publishedDate?: string;
-    downloads?: number;
-    rating?: number;
-    reviewCount?: number;
-    sourceCode?: {
-      platform: string;
+    license: string;
+    repository: {
+      type: string;
       url: string;
-      repo: string;
     };
-    homepage?: {
-      url: string;
-      domain: string;
+    meta?: {
+      created_at: string;
+      updated_at: string;
     };
-    security?: any;
-    pricing: {
+    pricing?: {
       currency: string;
       amount: number;
     };
+    homepage?: string;
+    security_report?: any;
   };
 }
 
@@ -113,13 +98,15 @@ export default function ServerDetailTabs({ server }: ServerDetailTabsProps) {
               <h3 className="text-lg font-semibold text-foreground mb-4">
                 About
               </h3>
-              <p className="text-gray-300 leading-relaxed">{server.about}</p>
+              <p className="text-muted-foreground leading-relaxed">
+                {server.description}
+              </p>
             </section>
 
             <section>
               <div className="flex items-center gap-3 mb-4">
                 <Code className="w-5 h-5 text-[var(--brand-red)]" />
-                <h3 className="text-lg font-semibold text-white/95">Tools</h3>
+                <h3 className="text-lg font-semibold text-foreground">Tools</h3>
                 <span className="px-2.5 py-0.5 bg-[var(--brand-red)]/15 text-[var(--brand-red)] text-xs font-semibold rounded-lg">
                   {server.tools.length}
                 </span>
@@ -134,10 +121,10 @@ export default function ServerDetailTabs({ server }: ServerDetailTabsProps) {
                     transition={{ duration: 0.3, delay: index * 0.05 }}
                     className="border-2 border-border rounded-2xl bg-card p-5"
                   >
-                    <h4 className="text-base font-semibold text-white/95 mb-2">
+                    <h4 className="text-base font-semibold text-foreground mb-2">
                       {tool.name}
                     </h4>
-                    <p className="text-gray-400 text-sm leading-relaxed">
+                    <p className="text-muted-foreground text-sm leading-relaxed">
                       {tool.description}
                     </p>
 
@@ -224,14 +211,14 @@ export default function ServerDetailTabs({ server }: ServerDetailTabsProps) {
         )}
 
         {activeTab === "security" && (
-          <SecurityReport security={server.security} />
+          <SecurityReport security={server.security_report} />
         )}
 
         {activeTab === "reviews" && (
           <ReviewsSection
             serverName={server.name}
-            averageRating={server.rating}
-            totalReviews={server.reviewCount}
+            averageRating={undefined}
+            totalReviews={undefined}
           />
         )}
       </motion.div>

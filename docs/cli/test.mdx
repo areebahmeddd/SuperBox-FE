@@ -1,6 +1,6 @@
 ---
 title: "superbox test"
-description: "Test MCP server directly from repository without registry"
+description: "Test MCP server directly from repository without registry (development mode)"
 icon: "flask"
 ---
 
@@ -12,20 +12,20 @@ superbox test --url URL --client CLIENT [--entrypoint FILE] [--lang LANGUAGE]
 
 ## Description
 
-Test an MCP server directly from a repository URL without registry registration or security checks. Useful for quick testing before publishing.
+Test an MCP server directly from a GitHub repository URL without registry registration or security checks. Perfect for rapid development and testing before publishing to the platform.
 
 <Warning>
-  **TEST MODE** - Bypasses security scanning. Use only for testing your own servers.
+  **TEST MODE** - Bypasses security scanning and S3 registration. Use only for testing your own servers during development.
 </Warning>
 
 ## Options
 
 <ParamField path="--url" type="string" required>
-  Repository URL of the MCP server
+  GitHub repository URL of the MCP server
 </ParamField>
 
 <ParamField path="--client" type="string" required>
-  Target client: `vscode`, `cursor`, `windsurf`, `claude`, or `chatgpt`
+  Target AI client: `vscode`, `cursor`, `windsurf`, `claude`, or `chatgpt`
 </ParamField>
 
 <ParamField path="--entrypoint" type="string" default="main.py">
@@ -33,24 +33,43 @@ Test an MCP server directly from a repository URL without registry registration 
 </ParamField>
 
 <ParamField path="--lang" type="string" default="python">
-  Programming language (python/node)
+  Programming language (currently supports Python)
 </ParamField>
 
-## What It Does
+## How It Works
 
 <Steps>
   <Step title="Skip Registry">
-    Bypasses S3 registry and security scanning
+    Bypasses S3 registry lookup and security scanning pipeline
   </Step>
 
   <Step title="Configure Client">
-    Configures client to use Lambda executor with direct repo URL
+    Writes MCP config with test mode WebSocket URL pointing directly to your repo
   </Step>
 
-  <Step title="Test Execution">
-    Enables immediate testing without publishing
+  <Step title="Lambda Clones Repo">
+    Lambda executor clones your repo from GitHub on-demand (no S3 storage)
+  </Step>
+
+  <Step title="Test in Client">
+    Use the server immediately in your AI client (appears as `your-repo-test`)
   </Step>
 </Steps>
+
+## Architecture
+
+```mermaid
+graph LR
+    A[superbox test] --> B[Write mcp.json]
+    B --> C[VS Code/Cursor]
+    C --> D[Local Proxy]
+    D --> E[WebSocket API]
+    E --> F[Lambda]
+    F --> G[Clone GitHub Repo]
+    G --> H[Run MCP Server]
+```
+
+The test mode uses the same WebSocket infrastructure as production but tells Lambda to clone directly from your repo URL instead of fetching from S3.
 
 ## Security Notice
 
@@ -60,7 +79,7 @@ This command skips:
 - Quality checks
 - Registry validation
 
-Use only for testing your own servers before publishing.
+**Only test servers you trust or own.**
 </Warning>
 
 ## Examples

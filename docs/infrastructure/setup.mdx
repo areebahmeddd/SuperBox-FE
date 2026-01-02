@@ -218,19 +218,22 @@ terraform plan -out=tfplan
 **Expected Resources:**
 
 ```
-Plan: 6 to add, 0 to change, 0 to destroy.
+Plan: 10+ to add, 0 to change, 0 to destroy.
 
 Resources to create:
   + aws_s3_bucket.registry
   + aws_iam_role.lambda_execution
   + aws_iam_role_policy.lambda_s3_access
   + aws_lambda_function.mcp_executor
-  + aws_lambda_function_url.mcp_executor
+  + aws_apigatewayv2_api.websocket
+  + aws_apigatewayv2_integration.lambda
+  + aws_apigatewayv2_route (connect, disconnect, default)
+  + aws_apigatewayv2_stage.production
   + aws_cloudwatch_log_group.lambda_logs
 ```
 
 <Tip>
-  Review the plan carefully. Verify bucket names, IAM permissions, and Lambda
+  Review the plan carefully. Verify bucket names, IAM permissions, WebSocket API Gateway, and Lambda
   configuration match your requirements.
 </Tip>
 
@@ -255,10 +258,16 @@ aws_s3_bucket.registry: Creation complete [10s]
 aws_iam_role.lambda_execution: Creation complete [5s]
 aws_lambda_function.mcp_executor: Creating...
 aws_lambda_function.mcp_executor: Creation complete [30s]
-aws_lambda_function_url.mcp_executor: Creating...
-aws_lambda_function_url.mcp_executor: Creation complete [2s]
+aws_apigatewayv2_api.websocket: Creating...
+aws_apigatewayv2_api.websocket: Creation complete [5s]
+aws_apigatewayv2_integration.lambda: Creating...
+aws_apigatewayv2_route.connect: Creating...
+aws_apigatewayv2_route.disconnect: Creating...
+aws_apigatewayv2_route.default: Creating...
+aws_apigatewayv2_stage.production: Creating...
+aws_apigatewayv2_stage.production: Creation complete [2s]
 
-Apply complete! Resources: 6 added, 0 changed, 0 destroyed.
+Apply complete! Resources: 10+ added, 0 changed, 0 destroyed.
 ```
 
 ⏱️ **Estimated Time:** 2-3 minutes
@@ -278,15 +287,16 @@ terraform output
 **Example Output:**
 
 ```hcl
-lambda_function_arn = "arn:aws:lambda:ap-south-1:123456789:function:superbox-mcp-executor"
-lambda_function_url = "https://abc123.lambda-url.ap-south-1.on.aws/"
+websocket_url = "wss://abc123xyz.execute-api.ap-south-1.amazonaws.com/production"
 s3_bucket_name = "superbox-mcp-registry"
-s3_bucket_arn = "arn:aws:s3:::superbox-mcp-registry"
+lambda_function_name = "superbox-mcp-executor"
+lambda_function_arn = "arn:aws:lambda:ap-south-1:123456789:function:superbox-mcp-executor"
+cloudwatch_log_group = "/aws/lambda/superbox-mcp-executor"
+aws_region = "ap-south-1"
 ```
 
 <Note>
-  Save the `lambda_function_url` - you'll need it for the backend API and CLI
-  configuration.
+  Save the `websocket_url` - you'll need it for the backend CLI configuration as `WEBSOCKET_URL`.
 </Note>
 
 ## Step 8: Test Deployment
@@ -294,23 +304,21 @@ s3_bucket_arn = "arn:aws:s3:::superbox-mcp-registry"
 Verify infrastructure is working:
 
 <Tabs>
-  <Tab title="Test Lambda Function">
+  <Tab title="Test WebSocket Connection">
     ```bash
-# Get function URL from outputs
-    LAMBDA_URL=$(tofu output -raw lambda_function_url)
+    # Get WebSocket URL from outputs
+    WS_URL=$(tofu output -raw websocket_url)
     
-    # Test with curl (should return 404 - no servers yet)
-    curl -X POST "$LAMBDA_URL/test-server" \
-      -H "Content-Type: application/json" \
-      -d '{"test": "hello"}'
-```
+    # Test using wscat (install: npm i -g wscat)
+    wscat -c "$WS_URL?test_mode=true&repo_url=https://github.com/user/test-mcp&entrypoint=main.py&lang=python"
+    ```
     
-    **Expected:** 404 error (server not found in S3)
+    **Expected:** WebSocket connection established, Lambda logs show connection
   </Tab>
   
   <Tab title="Test S3 Bucket">
     ```bash
-# Get bucket name
+    # Get bucket name
     BUCKET=$(tofu output -raw s3_bucket_name)
     
     # List objects (should be empty)
@@ -346,9 +354,9 @@ Update backend `.env` file with deployed infrastructure:
 # AWS Configuration
 AWS_REGION=ap-south-1
 S3_BUCKET_NAME=superbox-mcp-registry
-LAMBDA_BASE_URL=https://abc123.lambda-url.ap-south-1.on.aws
+WEBSOCKET_URL=wss://abc123xyz.execute-api.ap-south-1.amazonaws.com/production
 
-# AWS Credentials (for Go API server)
+# AWS Credentials (for S3 access)
 AWS_ACCESS_KEY_ID=YOUR_ACCESS_KEY
 AWS_SECRET_ACCESS_KEY=YOUR_SECRET_KEY
 ```

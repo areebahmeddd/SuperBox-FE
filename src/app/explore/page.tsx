@@ -27,17 +27,20 @@ function ExploreContent() {
         const res = await fetch(`${API_URL}/servers`);
         if (!res.ok) throw new Error("Failed to fetch servers");
         const json = await res.json();
-        const servers: ServerResponse[] = json?.data || json?.servers || [];
+        // console.log('Backend API Response:', json);
+        const servers: ServerResponse[] = json?.servers || [];
         const list: ServerListItem[] = servers.map((s) => ({
           name: s.name,
           author: s.author,
           description: s.description,
           lang: s.lang,
           license: s.license,
+          tools: s.tools,
           pricing: s.pricing,
         }));
         setAllTools(list);
       } catch (error) {
+        console.error("Backend API Error:", error);
         showToast.error("Failed to load servers. Please retry in a moment.");
       } finally {
         setLoading(false);

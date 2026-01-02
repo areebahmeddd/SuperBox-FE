@@ -29,8 +29,8 @@ graph TB
     end
 
     subgraph "Execution Layer"
-        I[AWS Lambda]
-        J[Container Runtime]
+        I[WebSocket API Gateway]
+        J[AWS Lambda]
     end
 
     subgraph "Security Layer"
@@ -48,8 +48,8 @@ graph TB
     E --> F
     F --> G
     F --> H
-    F --> I
     I --> J
+    J --> G
     E --> K
     E --> L
     E --> M
@@ -58,6 +58,7 @@ graph TB
     style A fill:#ef4444
     style E fill:#00ADD8
     style I fill:#FF9900
+    style J fill:#FF9900
     style G fill:#569A31
 ```
 
@@ -198,34 +199,38 @@ Amazon S3 serves as the registry backend, storing server metadata, code bundles,
   </Card>
 </CardGroup>
 
-### Execution Layer (AWS Lambda)
+### Execution Layer (AWS Lambda + WebSocket API)
 
-MCP servers run in isolated AWS Lambda functions, providing secure sandboxed execution with automatic scaling.
+MCP servers run in isolated AWS Lambda functions via WebSocket connections, providing secure sandboxed execution with automatic scaling.
 
 <Accordion title="Lambda Architecture">
-  **Container Image Approach:**
+  **On-Demand Execution Approach:**
   
-  1. Server code is packaged into a container image
-  2. Image is stored in Amazon ECR (Elastic Container Registry)
-  3. Lambda function uses the container image
-  4. Each execution runs in an isolated environment
+  1. AI client connects to local proxy (stdio interface)
+  2. Proxy bridges to WebSocket API Gateway
+  3. Lambda fetches server metadata from S3
+  4. Lambda clones GitHub repository on-demand
+  5. Lambda installs dependencies and executes MCP server
+  6. Results stream back through WebSocket to client
   
   **Key Features:**
   - 15-minute execution timeout
   - Up to 10GB memory allocation
   - Automatic scaling and load balancing
-  - VPC isolation for enhanced security
   - CloudWatch logging and monitoring
+  - Real-time bidirectional communication
   
   **Execution Flow:**
   ```mermaid
   graph LR
-      A[API Request] --> B[Lambda Invoke]
-      B --> C[Container Start]
-      C --> D[Run MCP Server]
-      D --> E[Capture Output]
-      E --> F[Return Response]
-      F --> G[Container Cleanup]
+      A[AI Client] --> B[Local Proxy]
+      B --> C[WebSocket API]
+      C --> D[Lambda Function]
+      D --> E[Clone GitHub Repo]
+      E --> F[Install Dependencies]
+      F --> G[Run MCP Server]
+      G --> H[Stream Response]
+      H --> C --> B --> A
   ```
 </Accordion>
 
@@ -263,7 +268,6 @@ sequenceDiagram
     participant G as GitHub
     participant SC as Security Scanners
     participant S as S3
-    participant L as Lambda
 
     U->>F: Create Server Request
     F->>A: POST /api/v1/servers
@@ -271,9 +275,8 @@ sequenceDiagram
     G-->>A: Source Code
     A->>SC: Run Security Scans
     SC-->>A: Security Reports
-    A->>S: Store Metadata + Bundle
-    A->>L: Deploy Function
-    L-->>A: Deployment Success
+    A->>S: Store Metadata
+    S-->>A: Storage Confirmed
     A-->>F: Server Created
     F-->>U: Success Message
 ```
@@ -282,21 +285,25 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
-    participant U as User
-    participant F as Frontend
-    participant A as API
+    participant U as User (AI Client)
+    participant P as Local Proxy
+    participant W as WebSocket API
     participant L as Lambda
     participant S as S3
+    participant G as GitHub
 
-    U->>F: Test Server
-    F->>A: POST /api/v1/execute/:name
-    A->>S: Fetch Server Bundle
-    S-->>A: Code Bundle
-    A->>L: Invoke Lambda
-    L->>L: Execute in Sandbox
-    L-->>A: Execution Results
-    A-->>F: JSON Response
-    F-->>U: Display Results
+    U->>P: MCP Request (stdio)
+    P->>W: WebSocket Connection
+    W->>L: Invoke Lambda
+    L->>S: Fetch Server Metadata
+    S-->>L: metadata.json
+    L->>G: Clone Repository
+    G-->>L: Source Code
+    L->>L: Install Dependencies
+    L->>L: Execute MCP Server
+    L-->>W: Stream Response
+    W-->>P: WebSocket Message
+    P-->>U: JSON-RPC Response (stdio)
 ```
 
 ## Authentication Flow
@@ -362,8 +369,8 @@ Razorpay handles all payment processing for paid MCP servers.
 </Card>
 
   <Card title="Execution Optimization" icon="server">
-    - Lambda provisioned concurrency - Container image caching - Warm start
-    optimization - Auto-scaling policies - Cost optimization
+    - Lambda provisioned concurrency - Warm start optimization - Dependency
+    layer caching - Auto-scaling policies - Cost optimization
   </Card>
 </CardGroup>
 
