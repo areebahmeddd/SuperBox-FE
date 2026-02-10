@@ -72,6 +72,7 @@ const supportedClients = [
 export default function ServerDetail({ server }: ServerDetailProps) {
   const [copied, setCopied] = useState(false);
   const [showPaywall, setShowPaywall] = useState(false);
+  const [copiedClient, setCopiedClient] = useState<string | null>(null);
   const isPaid = server.pricing && server.pricing.amount > 0;
 
   const pullCommand = `superbox pull --name ${server.name}`;
@@ -82,22 +83,12 @@ export default function ServerDetail({ server }: ServerDetailProps) {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const copyJsonConfig = () => {
-    const jsonConfig = JSON.stringify(
-      {
-        mcpServers: {
-          [server.name]: {
-            command: "npx",
-            args: ["-y", server.name],
-          },
-        },
-      },
-      null,
-      2,
-    );
-    navigator.clipboard.writeText(jsonConfig);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  const configureForClient = (clientName: string) => {
+    const clientKey = clientName.toLowerCase().replace(" ", "");
+    const command = `superbox pull --name ${server.name} --client ${clientKey}`;
+    navigator.clipboard.writeText(command);
+    setCopiedClient(clientName);
+    setTimeout(() => setCopiedClient(null), 2000);
   };
 
   return (
@@ -285,27 +276,20 @@ export default function ServerDetail({ server }: ServerDetailProps) {
                     <div className="flex-1 h-px bg-border" />
                   </div>
 
-                  <div>
-                    <div className="bg-muted border border-border rounded-xl p-4 mb-3">
-                      <pre className="text-xs text-foreground font-mono overflow-x-auto">
-                        <code>{`{
+                  <div className="bg-muted border border-border rounded-xl p-4">
+                    <pre className="text-xs text-foreground font-mono overflow-x-auto">
+                      <code>{`{
   "mcpServers": {
     "${server.name}": {
-      "command": "python",
-      "args": ["-y", "${server.name}"]
+      "type": "stdio",
+      "args": [
+        "superbox.aws.proxy",
+        "${server.name}"
+      ]
     }
   }
 }`}</code>
-                      </pre>
-                    </div>
-                    <motion.button
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={copyJsonConfig}
-                      className="w-full px-4 py-2.5 bg-muted hover:bg-muted/80 border border-border rounded-xl text-sm text-foreground font-medium transition-all"
-                    >
-                      Copy JSON Config
-                    </motion.button>
+                    </pre>
                   </div>
                 </div>
 
@@ -321,7 +305,10 @@ export default function ServerDetail({ server }: ServerDetailProps) {
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.3, delay: index * 0.05 }}
-                        className="flex items-center justify-between p-3 bg-muted rounded-xl hover:bg-muted/80 transition-all group cursor-pointer"
+                        whileHover={{ scale: 1.02, x: 4 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => configureForClient(client.name)}
+                        className="flex items-center justify-between p-3 bg-muted rounded-xl hover:bg-primary/10 hover:border-primary/20 border border-transparent transition-all group cursor-pointer"
                       >
                         <div className="flex items-center gap-3">
                           <Image
@@ -331,14 +318,67 @@ export default function ServerDetail({ server }: ServerDetailProps) {
                             height={20}
                             className="w-5 h-5"
                           />
-                          <span className="text-sm text-foreground">
+                          <span className="text-sm text-foreground font-medium">
                             {client.name}
                           </span>
                         </div>
-                        <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+                        {copiedClient === client.name ? (
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            className="flex items-center gap-1.5 text-xs text-green-600 dark:text-green-400 font-semibold"
+                          >
+                            <svg
+                              className="w-4 h-4"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                            <span>Copied!</span>
+                          </motion.div>
+                        ) : (
+                          <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                        )}
                       </motion.div>
                     ))}
                   </div>
+
+                  {copiedClient && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0 }}
+                      className="mt-4 p-3 bg-primary/10 border border-primary/20 rounded-xl"
+                    >
+                      <div className="flex items-start gap-2">
+                        <svg
+                          className="w-4 h-4 text-primary flex-shrink-0 mt-0.5"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                        <div className="flex-1">
+                          <p className="text-xs text-primary font-medium mb-1">
+                            Command copied to clipboard!
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            Run the command in your terminal to configure{" "}
+                            {copiedClient}.
+                          </p>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
                 </div>
               </>
             )}

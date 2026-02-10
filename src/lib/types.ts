@@ -45,6 +45,28 @@ export interface ServerResponse {
       duplications: number;
       lines_of_code: number;
     };
+    snyk: {
+      scan_passed: boolean;
+      total_vulnerabilities: number;
+      severity_counts: {
+        critical: number;
+        high: number;
+        medium: number;
+        low: number;
+      };
+      vulnerabilities: Array<{
+        title: string;
+        package: string;
+        version: string;
+        severity: string;
+        id: string;
+        cve: string[];
+        cvss_score: number;
+        is_upgradable: boolean;
+        is_patchable: boolean;
+      }>;
+      error: string | null;
+    };
     gitguardian: {
       scan_passed: boolean;
       total_secrets: number;

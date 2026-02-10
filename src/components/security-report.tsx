@@ -37,6 +37,28 @@ interface SecurityReportProps {
       duplications: number;
       lines_of_code: number;
     };
+    snyk: {
+      scan_passed: boolean;
+      total_vulnerabilities: number;
+      severity_counts: {
+        critical: number;
+        high: number;
+        medium: number;
+        low: number;
+      };
+      vulnerabilities: Array<{
+        title: string;
+        package: string;
+        version: string;
+        severity: string;
+        id: string;
+        cve: string[];
+        cvss_score: number;
+        is_upgradable: boolean;
+        is_patchable: boolean;
+      }>;
+      error: string | null;
+    };
     gitguardian: {
       scan_passed: boolean;
       total_secrets: number;
@@ -86,6 +108,8 @@ export default function SecurityReport({ security }: SecurityReportProps) {
 
   const getSeverityColor = (severity: string) => {
     switch (severity.toLowerCase()) {
+      case "critical":
+        return "bg-red-600/20 text-red-600 dark:text-red-400 border-red-600/40";
       case "high":
         return "bg-red-500/15 text-red-600 dark:text-red-400 border-red-500/30";
       case "medium":
@@ -241,11 +265,162 @@ export default function SecurityReport({ security }: SecurityReportProps) {
         </div>
       </motion.div>
 
-      {security.bandit.total_issues > 0 && (
+      {security.snyk && security.snyk.total_vulnerabilities > 0 && (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
+          className="border border-border rounded-2xl bg-card p-6"
+        >
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <Shield className="w-6 h-6 text-red-600 dark:text-red-400" />
+              <h4 className="text-lg font-semibold text-foreground">
+                Dependency Vulnerabilities
+              </h4>
+              <span className="px-2.5 py-0.5 bg-red-500/15 text-red-600 dark:text-red-400 text-sm font-semibold rounded-lg">
+                {security.snyk.total_vulnerabilities}
+              </span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-4 gap-4 mb-6">
+            <div className="text-center p-4 border border-red-500/40 bg-red-500/15 rounded-xl">
+              <p className="text-2xl font-bold text-red-600 dark:text-red-400 mb-1">
+                {security.snyk.severity_counts.critical}
+              </p>
+              <p className="text-sm text-muted-foreground">Critical</p>
+            </div>
+            <div className="text-center p-4 border border-red-500/30 bg-red-500/10 rounded-xl">
+              <p className="text-2xl font-bold text-red-600 dark:text-red-400 mb-1">
+                {security.snyk.severity_counts.high}
+              </p>
+              <p className="text-sm text-muted-foreground">High</p>
+            </div>
+            <div className="text-center p-4 border border-yellow-500/30 bg-yellow-500/10 rounded-xl">
+              <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-400 mb-1">
+                {security.snyk.severity_counts.medium}
+              </p>
+              <p className="text-sm text-muted-foreground">Medium</p>
+            </div>
+            <div className="text-center p-4 border border-border bg-muted rounded-xl">
+              <p className="text-2xl font-bold text-muted-foreground mb-1">
+                {security.snyk.severity_counts.low}
+              </p>
+              <p className="text-sm text-muted-foreground">Low</p>
+            </div>
+          </div>
+
+          {security.snyk.vulnerabilities.slice(0, 3).map((vuln, idx) => (
+            <div
+              key={idx}
+              className={`p-4 rounded-xl border mb-3 last:mb-0 ${getSeverityColor(vuln.severity)}`}
+            >
+              <div className="flex items-start justify-between mb-2">
+                <p className="text-sm font-medium flex-1">{vuln.title}</p>
+                <span
+                  className={`px-2 py-1 text-xs font-semibold rounded ${getSeverityColor(vuln.severity)}`}
+                >
+                  {vuln.severity.toUpperCase()}
+                </span>
+              </div>
+              <div className="flex items-center gap-4 text-xs text-muted-foreground mb-2">
+                <span>
+                  <strong>Package:</strong> {vuln.package}@{vuln.version}
+                </span>
+                {vuln.cvss_score > 0 && (
+                  <span>
+                    <strong>CVSS:</strong> {vuln.cvss_score}
+                  </span>
+                )}
+              </div>
+              {(vuln.is_upgradable || vuln.is_patchable) && (
+                <div className="mt-2 pt-2 border-t border-border/50">
+                  <div className="flex gap-2">
+                    {vuln.is_upgradable && (
+                      <span className="px-2 py-1 text-xs bg-green-500/15 text-green-600 dark:text-green-400 rounded">
+                        Upgradable
+                      </span>
+                    )}
+                    {vuln.is_patchable && (
+                      <span className="px-2 py-1 text-xs bg-blue-500/15 text-blue-600 dark:text-blue-400 rounded">
+                        Patchable
+                      </span>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+
+          {security.snyk.vulnerabilities.length > 3 && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3, delay: 0.2 }}
+              className="mt-6 relative"
+            >
+              <div className="flex items-center justify-center">
+                <button className="group flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  <span className="relative">
+                    Show {security.snyk.vulnerabilities.length - 3} more
+                    vulnerabilities
+                    <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-foreground/50 group-hover:w-full transition-all duration-300" />
+                  </span>
+                  <svg
+                    className="w-3.5 h-3.5 transition-transform duration-300"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </motion.div>
+      )}
+
+      {security.gitguardian.total_secrets > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.35 }}
+          className="border border-border rounded-2xl bg-card p-6"
+        >
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <AlertTriangle className="w-6 h-6 text-yellow-600 dark:text-yellow-400" />
+              <h4 className="text-lg font-semibold text-foreground">
+                Secrets Detected
+              </h4>
+              <span className="px-2.5 py-0.5 bg-yellow-500/15 text-yellow-600 dark:text-yellow-400 text-sm font-semibold rounded-lg">
+                {security.gitguardian.total_secrets}
+              </span>
+            </div>
+          </div>
+
+          <div className="p-4 rounded-xl border border-yellow-500/30 bg-yellow-500/10">
+            <p className="text-sm text-yellow-600 dark:text-yellow-400 font-medium">
+              {security.gitguardian.total_secrets} secret
+              {security.gitguardian.total_secrets > 1 ? "s" : ""} found in
+              repository. Rotate credentials immediately.
+            </p>
+          </div>
+        </motion.div>
+      )}
+
+      {security.bandit.total_issues > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
           className="border border-border rounded-2xl bg-card p-6"
         >
           <div className="flex items-center justify-between mb-6">
@@ -341,7 +516,7 @@ export default function SecurityReport({ security }: SecurityReportProps) {
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
+          transition={{ delay: 0.5 }}
           className="border border-border rounded-2xl bg-card p-6"
         >
           <div className="flex items-center gap-3 mb-4">

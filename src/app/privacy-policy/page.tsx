@@ -85,8 +85,8 @@ export default function PrivacyPage() {
                 payment processors).
               </li>
               <li>
-                Run security scans (SonarCloud, Bandit), generate reports, and
-                support the publish/push workflow.
+                Run security scans (SonarCloud, Bandit, Snyk), generate reports,
+                and support the publish/push workflow.
               </li>
               <li>
                 Monitor and improve platform performance, detect abuse, and
