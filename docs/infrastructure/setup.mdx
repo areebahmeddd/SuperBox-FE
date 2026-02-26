@@ -144,7 +144,6 @@ log_retention_days = 7          # CloudWatch retention
 
 **US:**
 
-- `ap-south-1` (Mumbai) - Recommended
 - `us-east-1` (N. Virginia)
 - `us-west-2` (Oregon)
 
@@ -436,7 +435,7 @@ tofu apply destroy.tfplan
     
     **Solution:**
     - Check `aws_region` in `terraform.tfvars`
-    - Use valid region code (e.g., `ap-south-1`, `us-east-1`)
+    - Use valid region code (e.g., `ap-south-1`)
     - Verify region supports Lambda Function URLs
   </Accordion>
 </AccordionGroup>

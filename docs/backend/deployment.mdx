@@ -462,7 +462,7 @@ CMD ["./main"]
 Create ECR Repository
 aws ecr create-repository \
   --repository-name superbox-api \
-  --region us-east-1
+  --region ap-south-1
 ```
 
 ```bash
@@ -472,14 +472,14 @@ docker build -t superbox-api:latest .
 
 ```bash
 Tag Image
-aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin <account-id>.dkr.ecr.us-east-1.amazonaws.com
+aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin <account-id>.dkr.ecr.ap-south-1.amazonaws.com
 
-docker tag superbox-api:latest <account-id>.dkr.ecr.us-east-1.amazonaws.com/superbox-api:latest
+docker tag superbox-api:latest <account-id>.dkr.ecr.ap-south-1.amazonaws.com/superbox-api:latest
 ```
 
 ```bash
 Push Image
-docker push <account-id>.dkr.ecr.us-east-1.amazonaws.com/superbox-api:latest
+docker push <account-id>.dkr.ecr.ap-south-1.amazonaws.com/superbox-api:latest
 ```
 
 </CodeGroup>
@@ -498,7 +498,7 @@ on:
     branches: [main]
 
 env:
-  AWS_REGION: us-east-1
+  AWS_REGION: ap-south-1
   ECR_REPOSITORY: superbox-api
   ECS_CLUSTER: superbox-cluster
   ECS_SERVICE: superbox-api

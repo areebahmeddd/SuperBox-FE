@@ -524,7 +524,7 @@ def execute_mcp_tool(server_path, tool_name, parameters, timeout):
         ],
         "period": 300,
         "stat": "Sum",
-        "region": "us-east-1",
+        "region": "ap-south-1",
         "title": "Lambda Executions"
       }
     },
@@ -536,7 +536,7 @@ def execute_mcp_tool(server_path, tool_name, parameters, timeout):
           ["...", { "stat": "p99" }]
         ],
         "period": 300,
-        "region": "us-east-1",
+        "region": "ap-south-1",
         "title": "Execution Duration"
       }
     }
@@ -548,10 +548,10 @@ def execute_mcp_tool(server_path, tool_name, parameters, timeout):
 
 <Tabs>
   <Tab title="Pricing Model">
-    AWS Lambda pricing:
+    AWS Lambda pricing (INR):
     
-    - **Requests:** $0.20 per 1M requests
-    - **Duration:** $0.0000166667 per GB-second
+    - **Requests:** ₹17 per 1M requests
+    - **Duration:** ₹0.0014 per GB-second
     - **Free tier:** 1M requests, 400,000 GB-seconds/month
     
     Example cost calculation:
@@ -560,10 +560,10 @@ def execute_mcp_tool(server_path, tool_name, parameters, timeout):
     Average duration: 250ms
     Memory: 1024 MB
     
-    Request cost: (10M - 1M) × $0.20 / 1M = $1.80
-    Duration cost: 10M × 0.25s × 1GB × $0.0000166667 = $41.67
+    Request cost: (10M - 1M) × ₹17 / 1M = ₹153
+    Duration cost: 10M × 0.25s × 1GB × ₹0.0014 = ₹3,500
     
-    Total: $43.47/month
+    Total: ₹3,653/month
     ```
   </Tab>
 
