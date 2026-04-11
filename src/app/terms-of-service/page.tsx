@@ -4,10 +4,10 @@ export default function TermsPage() {
   return (
     <>
       <Header />
-      <main className="min-h-screen bg-background text-foreground px-6 pt-32 md:pt-40 pb-12">
-        <div className="max-w-4xl mx-auto">
+      <main className="bg-background text-foreground min-h-screen px-6 pt-32 pb-12 md:pt-40">
+        <div className="mx-auto max-w-4xl">
           <h1 className="mb-4 text-4xl font-medium">Terms of Service</h1>
-          <p className="text-sm text-muted-foreground mb-6">
+          <p className="text-muted-foreground mb-6 text-sm">
             <strong>Last updated:</strong> December 31, 2025
           </p>
 
@@ -19,7 +19,7 @@ export default function TermsPage() {
               the Service.
             </p>
 
-            <h2 className="mb-3 text-2xl font-semibold text-foreground">
+            <h2 className="text-foreground mb-3 text-2xl font-semibold">
               1. Acceptance of Terms
             </h2>
             <p>
@@ -28,7 +28,7 @@ export default function TermsPage() {
               the capacity to enter into these Terms.
             </p>
 
-            <h2 className="mb-3 text-2xl font-semibold text-foreground">
+            <h2 className="text-foreground mb-3 text-2xl font-semibold">
               2. Account Registration and Security
             </h2>
             <ul className="ml-6 list-disc space-y-2">
@@ -47,10 +47,10 @@ export default function TermsPage() {
               </li>
             </ul>
 
-            <h2 className="mb-3 text-2xl font-semibold text-foreground">
+            <h2 className="text-foreground mb-3 text-2xl font-semibold">
               3. Use of the Service
             </h2>
-            <h3 className="mb-2 mt-4 text-lg font-semibold text-foreground">
+            <h3 className="text-foreground mt-4 mb-2 text-lg font-semibold">
               3.1 Permitted Use
             </h3>
             <p>
@@ -58,7 +58,7 @@ export default function TermsPage() {
               SuperBox provides tools for discovering, publishing, and running
               MCP servers in sandboxed environments.
             </p>
-            <h3 className="mb-2 mt-4 text-lg font-semibold text-foreground">
+            <h3 className="text-foreground mt-4 mb-2 text-lg font-semibold">
               3.2 Prohibited Activities
             </h3>
             <ul className="ml-6 list-disc space-y-2">
@@ -76,7 +76,7 @@ export default function TermsPage() {
               </li>
             </ul>
 
-            <h2 className="mb-3 text-2xl font-semibold text-foreground">
+            <h2 className="text-foreground mb-3 text-2xl font-semibold">
               4. Content and Intellectual Property
             </h2>
             <p>
@@ -86,7 +86,7 @@ export default function TermsPage() {
               Service. Do not upload content you do not have rights to.
             </p>
 
-            <h2 className="mb-3 text-2xl font-semibold text-foreground">
+            <h2 className="text-foreground mb-3 text-2xl font-semibold">
               5. Payments, Billing & Refunds
             </h2>
             <p>
@@ -95,7 +95,7 @@ export default function TermsPage() {
               <strong>support@superbox.ai</strong> for billing issues.
             </p>
 
-            <h2 className="mb-3 text-2xl font-semibold text-foreground">
+            <h2 className="text-foreground mb-3 text-2xl font-semibold">
               6. Third‑Party Services
             </h2>
             <p>
@@ -104,7 +104,7 @@ export default function TermsPage() {
               respective terms and policies.
             </p>
 
-            <h2 className="mb-3 text-2xl font-semibold text-foreground">
+            <h2 className="text-foreground mb-3 text-2xl font-semibold">
               7. Disclaimers & Limitation of Liability
             </h2>
             <p>
@@ -114,7 +114,7 @@ export default function TermsPage() {
               DAMAGES.
             </p>
 
-            <h2 className="mb-3 text-2xl font-semibold text-foreground">
+            <h2 className="text-foreground mb-3 text-2xl font-semibold">
               8. Indemnification
             </h2>
             <p>
@@ -123,7 +123,7 @@ export default function TermsPage() {
               or infringement of others' rights.
             </p>
 
-            <h2 className="mb-3 text-2xl font-semibold text-foreground">
+            <h2 className="text-foreground mb-3 text-2xl font-semibold">
               9. Termination
             </h2>
             <p>
@@ -132,7 +132,7 @@ export default function TermsPage() {
               may be retained as required by law.
             </p>
 
-            <h2 className="mb-3 text-2xl font-semibold text-foreground">
+            <h2 className="text-foreground mb-3 text-2xl font-semibold">
               10. Modifications to Terms
             </h2>
             <p>
@@ -141,7 +141,7 @@ export default function TermsPage() {
               date when Terms change.
             </p>
 
-            <h2 className="mb-3 text-2xl font-semibold text-foreground">
+            <h2 className="text-foreground mb-3 text-2xl font-semibold">
               11. Governing Law
             </h2>
             <p>
@@ -149,7 +149,7 @@ export default function TermsPage() {
               resolved in courts located in India.
             </p>
 
-            <h2 className="mb-3 text-2xl font-semibold text-foreground">
+            <h2 className="text-foreground mb-3 text-2xl font-semibold">
               12. Contact
             </h2>
             <p>

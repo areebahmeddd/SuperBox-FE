@@ -34,9 +34,9 @@ export default function ReviewsSection({
         {[1, 2, 3, 4, 5].map((star) => (
           <Star
             key={star}
-            className={`w-4 h-4 ${
+            className={`h-4 w-4 ${
               star <= rating
-                ? "text-yellow-500 dark:text-yellow-400 fill-yellow-500 dark:fill-yellow-400"
+                ? "fill-yellow-500 text-yellow-500 dark:fill-yellow-400 dark:text-yellow-400"
                 : "text-muted-foreground"
             }`}
           />
@@ -63,9 +63,9 @@ export default function ReviewsSection({
 
   if (totalReviews === 0) {
     return (
-      <div className="border border-border rounded-2xl bg-card p-12 text-center">
-        <Star className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-        <h3 className="text-xl font-semibold text-foreground mb-2">
+      <div className="border-border bg-card rounded-2xl border p-12 text-center">
+        <Star className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
+        <h3 className="text-foreground mb-2 text-xl font-semibold">
           No Reviews Yet
         </h3>
         <p className="text-muted-foreground">
@@ -80,43 +80,43 @@ export default function ReviewsSection({
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="border border-border rounded-2xl bg-card p-6"
+        className="border-border bg-card rounded-2xl border p-6"
       >
-        <h3 className="text-2xl font-bold text-foreground mb-6">
+        <h3 className="text-foreground mb-6 text-2xl font-bold">
           Reviews & Ratings
         </h3>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
           <div className="flex flex-col items-center justify-center text-center">
-            <div className="text-5xl font-bold text-foreground mb-3">
+            <div className="text-foreground mb-3 text-5xl font-bold">
               {averageRating.toFixed(1)}
             </div>
             {renderStars(Math.round(averageRating))}
-            <p className="text-sm text-muted-foreground mt-3">
+            <p className="text-muted-foreground mt-3 text-sm">
               {totalReviews} {totalReviews === 1 ? "review" : "reviews"}
             </p>
           </div>
 
-          <div className="lg:col-span-2 space-y-3">
+          <div className="space-y-3 lg:col-span-2">
             {[5, 4, 3, 2, 1].map((rating) => {
               const count = distribution[rating as keyof typeof distribution];
               const percentage =
                 totalReviews > 0 ? (count / totalReviews) * 100 : 0;
               return (
                 <div key={rating} className="flex items-center gap-4">
-                  <div className="flex items-center gap-2 w-16">
-                    <span className="text-sm text-foreground font-medium">
+                  <div className="flex w-16 items-center gap-2">
+                    <span className="text-foreground text-sm font-medium">
                       {rating}
                     </span>
-                    <Star className="w-3.5 h-3.5 text-yellow-500 dark:text-yellow-400 fill-yellow-500 dark:fill-yellow-400" />
+                    <Star className="h-3.5 w-3.5 fill-yellow-500 text-yellow-500 dark:fill-yellow-400 dark:text-yellow-400" />
                   </div>
-                  <div className="flex-1 h-2.5 bg-muted rounded-full overflow-hidden">
+                  <div className="bg-muted h-2.5 flex-1 overflow-hidden rounded-full">
                     <div
-                      className="h-full bg-yellow-500 dark:bg-yellow-400 transition-all duration-500"
+                      className="h-full bg-yellow-500 transition-all duration-500 dark:bg-yellow-400"
                       style={{ width: `${percentage}%` }}
                     />
                   </div>
-                  <span className="text-sm text-muted-foreground w-12 text-right font-medium">
+                  <span className="text-muted-foreground w-12 text-right text-sm font-medium">
                     {count}
                   </span>
                 </div>
@@ -130,23 +130,23 @@ export default function ReviewsSection({
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="border border-border rounded-2xl bg-card p-6"
+        className="border-border bg-card rounded-2xl border p-6"
       >
-        <div className="flex items-center justify-between mb-6">
-          <h4 className="text-lg font-semibold text-foreground">
+        <div className="mb-6 flex items-center justify-between">
+          <h4 className="text-foreground text-lg font-semibold">
             User Reviews ({totalReviews})
           </h4>
 
           <div className="relative">
             <button
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="flex items-center gap-2 bg-muted border border-border rounded-xl px-4 py-2.5 text-sm text-foreground hover:bg-muted/80 transition-all"
+              className="bg-muted border-border text-foreground hover:bg-muted/80 flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm transition-all"
             >
               <span>
                 {sortBy === "recent" ? "Most Recent" : "Most Helpful"}
               </span>
               <ChevronDown
-                className={`w-4 h-4 transition-transform duration-200 ${
+                className={`h-4 w-4 transition-transform duration-200 ${
                   isDropdownOpen ? "rotate-180" : ""
                 }`}
               />
@@ -157,7 +157,7 @@ export default function ReviewsSection({
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
-                className="absolute right-0 mt-2 w-48 bg-card border border-border rounded-xl overflow-hidden shadow-xl z-10 backdrop-blur-xl"
+                className="bg-card border-border absolute right-0 z-10 mt-2 w-48 overflow-hidden rounded-xl border shadow-xl backdrop-blur-xl"
               >
                 <button
                   onClick={() => {
@@ -197,20 +197,20 @@ export default function ReviewsSection({
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: index * 0.05 }}
-              className="border border-border rounded-xl p-5 bg-card/50 hover:bg-card transition-all"
+              className="border-border bg-card/50 hover:bg-card rounded-xl border p-5 transition-all"
             >
-              <div className="flex items-start gap-4 mb-4">
-                <div className="w-12 h-12 rounded-full bg-muted border border-border flex items-center justify-center flex-shrink-0">
-                  <User className="w-6 h-6 text-muted-foreground" />
+              <div className="mb-4 flex items-start gap-4">
+                <div className="bg-muted border-border flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full border">
+                  <User className="text-muted-foreground h-6 w-6" />
                 </div>
                 <div className="flex-1">
-                  <div className="flex items-center justify-between mb-1">
-                    <p className="font-semibold text-foreground">
+                  <div className="mb-1 flex items-center justify-between">
+                    <p className="text-foreground font-semibold">
                       {review.author}
                     </p>
                     {renderStars(review.rating)}
                   </div>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-muted-foreground text-xs">
                     {new Date(review.date).toLocaleDateString("en-US", {
                       year: "numeric",
                       month: "long",
@@ -220,12 +220,12 @@ export default function ReviewsSection({
                 </div>
               </div>
 
-              <p className="text-sm text-foreground/90 leading-relaxed mb-4">
+              <p className="text-foreground/90 mb-4 text-sm leading-relaxed">
                 {review.comment}
               </p>
 
-              <button className="flex items-center gap-2 text-xs text-muted-foreground hover:text-primary transition-colors">
-                <ThumbsUp className="w-4 h-4" />
+              <button className="text-muted-foreground hover:text-primary flex items-center gap-2 text-xs transition-colors">
+                <ThumbsUp className="h-4 w-4" />
                 <span>Helpful ({review.helpful})</span>
               </button>
             </motion.div>

@@ -179,9 +179,9 @@ export default function PaywallModal({
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gradient-to-r from-primary/20 to-primary/10 border border-primary/30 mb-4"
+              className="from-primary/20 to-primary/10 border-primary/30 mb-4 inline-flex items-center gap-2 rounded-full border bg-gradient-to-r px-3 py-1"
             >
-              <span className="text-xs font-semibold text-primary">
+              <span className="text-primary text-xs font-semibold">
                 PREMIUM SERVER
               </span>
             </motion.div>
@@ -190,7 +190,7 @@ export default function PaywallModal({
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15 }}
-              className="text-2xl font-bold text-foreground mb-2"
+              className="text-foreground mb-2 text-2xl font-bold"
             >
               {server.name}
             </motion.h2>
@@ -199,7 +199,7 @@ export default function PaywallModal({
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="text-sm text-muted-foreground mb-6"
+              className="text-muted-foreground mb-6 text-sm"
             >
               Unlock premium features and capabilities
             </motion.p>
@@ -208,10 +208,10 @@ export default function PaywallModal({
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.25 }}
-              className="mb-6 p-6 rounded-xl bg-card border border-border w-full"
+              className="bg-card border-border mb-6 w-full rounded-xl border p-6"
             >
               <div className="flex items-baseline justify-center gap-1">
-                <span className="text-4xl font-bold text-foreground">
+                <span className="text-foreground text-4xl font-bold">
                   {getCurrencySymbol(server.pricing.currency)}
                   {server.pricing.amount}
                 </span>
@@ -223,7 +223,7 @@ export default function PaywallModal({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3 }}
-              className="w-full mb-6 space-y-3"
+              className="mb-6 w-full space-y-3"
             >
               {features.map((feature, index) => (
                 <motion.div
@@ -233,10 +233,10 @@ export default function PaywallModal({
                   transition={{ delay: 0.35 + index * 0.05 }}
                   className="flex items-center gap-3 text-left"
                 >
-                  <div className="flex-shrink-0 w-5 h-5 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center">
-                    <Check className="w-3 h-3 text-primary" />
+                  <div className="bg-primary/20 border-primary/30 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full border">
+                    <Check className="text-primary h-3 w-3" />
                   </div>
-                  <span className="text-sm text-foreground">{feature}</span>
+                  <span className="text-foreground text-sm">{feature}</span>
                 </motion.div>
               ))}
             </motion.div>
@@ -252,7 +252,7 @@ export default function PaywallModal({
                 disabled={isProcessing}
                 variant="default"
                 size="lg"
-                className="w-full py-3 rounded-xl"
+                className="w-full rounded-xl py-3"
               >
                 {isProcessing ? "Processing..." : "Unlock Access"}
               </Button>
@@ -267,7 +267,7 @@ export default function PaywallModal({
                 onClick={onClose}
                 variant="ghost"
                 size="sm"
-                className="mt-4 text-muted-foreground hover:text-foreground"
+                className="text-muted-foreground hover:text-foreground mt-4"
               >
                 Maybe later
               </Button>

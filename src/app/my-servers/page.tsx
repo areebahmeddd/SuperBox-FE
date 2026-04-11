@@ -226,7 +226,7 @@ export default function MyServersPage() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="min-h-screen bg-background overflow-x-hidden"
+      className="bg-background min-h-screen overflow-x-hidden"
     >
       <Header />
       <AuthModal
@@ -243,12 +243,12 @@ export default function MyServersPage() {
         onSubmit={handlePublishServer}
         editingServer={editingServer}
       />
-      <main className="pt-28 px-6 pb-20">
+      <main className="px-6 pt-28 pb-20">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="py-8 max-w-4xl mx-auto"
+          className="mx-auto max-w-4xl py-8"
         >
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -256,7 +256,7 @@ export default function MyServersPage() {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="mb-10 text-center"
           >
-            <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-3">
+            <h1 className="text-foreground mb-3 text-4xl font-bold md:text-5xl">
               My Servers
             </h1>
             <p className="text-muted-foreground text-base">
@@ -264,19 +264,19 @@ export default function MyServersPage() {
             </p>
           </motion.div>
 
-          <div className="max-w-5xl mx-auto">
+          <div className="mx-auto max-w-5xl">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.3 }}
-              className="flex items-center justify-between mb-8"
+              className="mb-8 flex items-center justify-between"
             >
-              <p className="text-sm font-medium text-muted-foreground">
+              <p className="text-muted-foreground text-sm font-medium">
                 {userServers.length}{" "}
                 {userServers.length === 1 ? "server" : "servers"}
               </p>
               <Button onClick={handlePublishClick}>
-                <Plus className="w-4 h-4" />
+                <Plus className="h-4 w-4" />
                 Add New Server
               </Button>
             </motion.div>
@@ -286,7 +286,7 @@ export default function MyServersPage() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.4, delay: 0.4 }}
-                className="text-center py-12"
+                className="py-12 text-center"
               >
                 <p className="text-muted-foreground text-sm">
                   No servers published yet. Click "Add New Server" to get
@@ -307,28 +307,28 @@ export default function MyServersPage() {
                   >
                     <Link
                       href={`/server/${encodeURIComponent(server.name)}`}
-                      className="block group h-full"
+                      className="group block h-full"
                     >
                       <motion.div
                         whileHover={{ y: -4 }}
                         transition={{ duration: 0.2 }}
-                        className="relative p-6 rounded-2xl bg-card border border-border group-hover:border-primary transition-all duration-300 cursor-pointer h-full flex flex-col"
+                        className="bg-card border-border group-hover:border-primary relative flex h-full cursor-pointer flex-col rounded-2xl border p-6 transition-all duration-300"
                       >
-                        <div className="relative flex items-start gap-4 flex-1">
+                        <div className="relative flex flex-1 items-start gap-4">
                           <motion.div
                             whileHover={{ rotate: 5 }}
-                            className="w-14 h-14 rounded-xl bg-muted border border-border flex items-center justify-center flex-shrink-0 transition-colors"
+                            className="bg-muted border-border flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-xl border transition-colors"
                           >
-                            <Package className="w-7 h-7 text-primary" />
+                            <Package className="text-primary h-7 w-7" />
                           </motion.div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-start justify-between gap-4 mb-2">
-                              <div className="flex items-center gap-3 flex-wrap">
-                                <h3 className="text-xl font-semibold text-foreground group-hover:text-foreground transition-colors">
+                          <div className="min-w-0 flex-1">
+                            <div className="mb-2 flex items-start justify-between gap-4">
+                              <div className="flex flex-wrap items-center gap-3">
+                                <h3 className="text-foreground group-hover:text-foreground text-xl font-semibold transition-colors">
                                   {server.name}
                                 </h3>
                                 {server.pricing && (
-                                  <span className="px-2.5 py-1 bg-primary/15 text-primary text-xs font-semibold rounded-lg border border-primary/20">
+                                  <span className="bg-primary/15 text-primary border-primary/20 rounded-lg border px-2.5 py-1 text-xs font-semibold">
                                     {server.pricing.amount > 0
                                       ? `$${server.pricing.amount}/mo`
                                       : "Free"}
@@ -344,10 +344,10 @@ export default function MyServersPage() {
                                     e.stopPropagation();
                                     handleEditClick(server);
                                   }}
-                                  className="p-1.5 text-muted-foreground hover:text-primary transition-colors group/edit"
+                                  className="text-muted-foreground hover:text-primary group/edit p-1.5 transition-colors"
                                   aria-label="Edit server"
                                 >
-                                  <Edit className="w-4 h-4" />
+                                  <Edit className="h-4 w-4" />
                                 </motion.button>
                                 <motion.button
                                   whileHover={{ scale: 1.1 }}
@@ -357,24 +357,24 @@ export default function MyServersPage() {
                                     e.stopPropagation();
                                     handleDeleteServer(server.name);
                                   }}
-                                  className="p-1.5 text-muted-foreground hover:text-primary transition-colors group/delete"
+                                  className="text-muted-foreground hover:text-primary group/delete p-1.5 transition-colors"
                                   aria-label="Delete server"
                                 >
-                                  <Trash2 className="w-4 h-4" />
+                                  <Trash2 className="h-4 w-4" />
                                 </motion.button>
                               </div>
                             </div>
 
-                            <p className="text-muted-foreground text-sm leading-relaxed mb-4">
+                            <p className="text-muted-foreground mb-4 text-sm leading-relaxed">
                               {server.description}
                             </p>
 
-                            <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                            <div className="text-muted-foreground flex items-center gap-4 text-xs">
                               <span className="flex items-center gap-1.5">
-                                <span className="w-2 h-2 rounded-full bg-primary" />
+                                <span className="bg-primary h-2 w-2 rounded-full" />
                                 {server.lang}
                               </span>
-                              <span className="px-2 py-0.5 bg-muted rounded">
+                              <span className="bg-muted rounded px-2 py-0.5">
                                 {server.license}
                               </span>
                             </div>

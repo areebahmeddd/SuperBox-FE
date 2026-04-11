@@ -2,6 +2,7 @@
 
 import Header from "@/components/header";
 import { Button } from "@/components/ui/button";
+import { GithubIcon } from "@/components/ui/github-icon";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { auth } from "@/lib/firebase";
@@ -9,7 +10,7 @@ import { showToast } from "@/lib/toast-utils";
 import type { User } from "firebase/auth";
 import { onAuthStateChanged, updateProfile } from "firebase/auth";
 import { motion } from "framer-motion";
-import { Edit2, Github, Loader2, Mail } from "lucide-react";
+import { Edit2, Loader2, Mail } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -58,10 +59,10 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="bg-background min-h-screen">
         <Header />
-        <div className="min-h-screen flex items-center justify-center">
-          <Loader2 className="w-8 h-8 animate-spin text-foreground" />
+        <div className="flex min-h-screen items-center justify-center">
+          <Loader2 className="text-foreground h-8 w-8 animate-spin" />
         </div>
       </div>
     );
@@ -70,18 +71,18 @@ export default function ProfilePage() {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="bg-background min-h-screen">
       <Header />
 
-      <main className="pt-32 pb-20 px-4">
-        <div className="max-w-4xl mx-auto">
+      <main className="px-4 pt-32 pb-20">
+        <div className="mx-auto max-w-4xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
             className="mb-8 text-center"
           >
-            <h1 className="text-4xl font-bold text-foreground mb-2">Profile</h1>
+            <h1 className="text-foreground mb-2 text-4xl font-bold">Profile</h1>
             <p className="text-muted-foreground text-sm">
               Manage your account settings and preferences
             </p>
@@ -92,7 +93,7 @@ export default function ProfilePage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: 0.1 }}
-              className="bg-card rounded-2xl border border-border p-8"
+              className="bg-card border-border rounded-2xl border p-8"
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
@@ -100,38 +101,38 @@ export default function ProfilePage() {
                     <img
                       src={user.photoURL}
                       alt={user.displayName || "Profile"}
-                      className="w-20 h-20 rounded-full border-2 border-border"
+                      className="border-border h-20 w-20 rounded-full border-2"
                     />
                   ) : (
-                    <div className="w-20 h-20 rounded-full bg-muted border-2 border-border flex items-center justify-center text-foreground text-3xl font-bold">
+                    <div className="bg-muted border-border text-foreground flex h-20 w-20 items-center justify-center rounded-full border-2 text-3xl font-bold">
                       {(user.displayName || user.email || "U")[0].toUpperCase()}
                     </div>
                   )}
                   <div>
-                    <h2 className="text-2xl font-bold text-foreground">
+                    <h2 className="text-foreground text-2xl font-bold">
                       {user.displayName || "User"}
                     </h2>
-                    <p className="text-muted-foreground text-sm flex items-center gap-2">
-                      <Mail className="w-4 h-4" />
+                    <p className="text-muted-foreground flex items-center gap-2 text-sm">
+                      <Mail className="h-4 w-4" />
                       {user.email}
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 px-4 py-2 bg-muted rounded-full border border-border">
+                <div className="bg-muted border-border flex items-center gap-2 rounded-full border px-4 py-2">
                   {user.providerData[0]?.providerId === "google.com" ? (
                     <Image
                       src="https://www.google.com/favicon.ico"
                       alt="Google"
                       width={16}
                       height={16}
-                      className="w-4 h-4"
+                      className="h-4 w-4"
                     />
                   ) : user.providerData[0]?.providerId === "github.com" ? (
-                    <Github className="w-4 h-4 text-foreground" />
+                    <GithubIcon className="text-foreground h-4 w-4" />
                   ) : (
-                    <Mail className="w-4 h-4 text-foreground" />
+                    <Mail className="text-foreground h-4 w-4" />
                   )}
-                  <span className="text-sm font-medium text-foreground">
+                  <span className="text-foreground text-sm font-medium">
                     {user.providerData[0]?.providerId === "google.com"
                       ? "Google"
                       : user.providerData[0]?.providerId === "github.com"
@@ -146,15 +147,15 @@ export default function ProfilePage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: 0.2 }}
-              className="bg-card rounded-2xl border border-border p-8"
+              className="bg-card border-border rounded-2xl border p-8"
             >
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-xl font-semibold text-foreground">
+              <div className="mb-6 flex items-center justify-between">
+                <h3 className="text-foreground text-xl font-semibold">
                   Account Information
                 </h3>
                 {!isEditing && (
                   <Button onClick={() => setIsEditing(true)} variant="ghost">
-                    <Edit2 className="w-4 h-4" />
+                    <Edit2 className="h-4 w-4" />
                     Edit
                   </Button>
                 )}
@@ -166,7 +167,7 @@ export default function ProfilePage() {
                     Full Name
                   </Label>
                   {!isEditing ? (
-                    <div className="mt-2 bg-muted text-foreground px-4 py-3 rounded-xl border border-border h-[42px] flex items-center">
+                    <div className="bg-muted text-foreground border-border mt-2 flex h-[42px] items-center rounded-xl border px-4 py-3">
                       {user.displayName || "Not set"}
                     </div>
                   ) : (
@@ -185,7 +186,7 @@ export default function ProfilePage() {
                     Email Address
                   </Label>
                   {!isEditing ? (
-                    <div className="mt-2 bg-muted text-foreground px-4 py-3 rounded-xl border border-border h-[42px] flex items-center">
+                    <div className="bg-muted text-foreground border-border mt-2 flex h-[42px] items-center rounded-xl border px-4 py-3">
                       {user.email}
                     </div>
                   ) : (
@@ -193,13 +194,13 @@ export default function ProfilePage() {
                       type="email"
                       value={user.email || ""}
                       disabled
-                      className="mt-2 opacity-50 cursor-not-allowed"
+                      className="mt-2 cursor-not-allowed opacity-50"
                     />
                   )}
                 </div>
 
                 {isEditing && (
-                  <div className="flex gap-3 pt-4 justify-end">
+                  <div className="flex justify-end gap-3 pt-4">
                     <Button
                       type="button"
                       onClick={() => {
@@ -212,7 +213,7 @@ export default function ProfilePage() {
                     </Button>
                     <Button type="submit" disabled={isUpdating}>
                       {isUpdating ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <Loader2 className="h-4 w-4 animate-spin" />
                       ) : (
                         "Save Changes"
                       )}

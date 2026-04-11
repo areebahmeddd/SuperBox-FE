@@ -58,24 +58,24 @@ export default function ServerDetailsCard({ server }: ServerDetailsCardProps) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.3 }}
-      className="border border-border rounded-2xl bg-card p-6"
+      className="border-border bg-card rounded-2xl border p-6"
     >
-      <div className="flex items-center gap-2 pb-4 mb-6 border-b border-border">
-        <Info className="w-5 h-5 text-primary" />
-        <h2 className="text-lg font-bold text-foreground">Details</h2>
+      <div className="border-border mb-6 flex items-center gap-2 border-b pb-4">
+        <Info className="text-primary h-5 w-5" />
+        <h2 className="text-foreground text-lg font-bold">Details</h2>
       </div>
 
       <div className="grid grid-cols-2 gap-6">
         {serverData.qualityScore !== undefined && (
           <div className="col-span-2">
-            <div className="flex items-center gap-2 mb-3">
-              <Award className="w-4 h-4 text-muted-foreground" />
-              <p className="text-xs text-muted-foreground uppercase tracking-wider">
+            <div className="mb-3 flex items-center gap-2">
+              <Award className="text-muted-foreground h-4 w-4" />
+              <p className="text-muted-foreground text-xs tracking-wider uppercase">
                 Quality Score
               </p>
             </div>
             <div className="flex items-center gap-3">
-              <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
+              <div className="bg-muted h-2 flex-1 overflow-hidden rounded-full">
                 <div
                   className={`h-full transition-all duration-500 ${
                     serverData.qualityScore >= 80
@@ -97,13 +97,13 @@ export default function ServerDetailsCard({ server }: ServerDetailsCardProps) {
         )}
 
         <div>
-          <div className="flex items-center gap-2 mb-3">
-            <TrendingUp className="w-4 h-4 text-muted-foreground" />
-            <p className="text-xs text-muted-foreground uppercase tracking-wider">
+          <div className="mb-3 flex items-center gap-2">
+            <TrendingUp className="text-muted-foreground h-4 w-4" />
+            <p className="text-muted-foreground text-xs tracking-wider uppercase">
               Monthly Calls
             </p>
           </div>
-          <div className="text-lg font-bold text-foreground">
+          <div className="text-foreground text-lg font-bold">
             {serverData.monthlyToolCalls !== undefined
               ? formatNumber(serverData.monthlyToolCalls)
               : "Not measured"}
@@ -111,13 +111,13 @@ export default function ServerDetailsCard({ server }: ServerDetailsCardProps) {
         </div>
 
         <div>
-          <div className="flex items-center gap-2 mb-3">
-            <Download className="w-4 h-4 text-muted-foreground" />
-            <p className="text-xs text-muted-foreground uppercase tracking-wider">
+          <div className="mb-3 flex items-center gap-2">
+            <Download className="text-muted-foreground h-4 w-4" />
+            <p className="text-muted-foreground text-xs tracking-wider uppercase">
               Total Pulls
             </p>
           </div>
-          <div className="text-lg font-bold text-foreground">
+          <div className="text-foreground text-lg font-bold">
             {serverData.totalPulls !== undefined
               ? formatNumber(serverData.totalPulls)
               : "Not measured"}
@@ -125,9 +125,9 @@ export default function ServerDetailsCard({ server }: ServerDetailsCardProps) {
         </div>
 
         <div>
-          <div className="flex items-center gap-2 mb-3">
-            <Activity className="w-4 h-4 text-muted-foreground" />
-            <p className="text-xs text-muted-foreground uppercase tracking-wider">
+          <div className="mb-3 flex items-center gap-2">
+            <Activity className="text-muted-foreground h-4 w-4" />
+            <p className="text-muted-foreground text-xs tracking-wider uppercase">
               Uptime
             </p>
           </div>
@@ -135,7 +135,7 @@ export default function ServerDetailsCard({ server }: ServerDetailsCardProps) {
             className={
               serverData.uptime !== undefined
                 ? "text-lg font-bold text-green-600 dark:text-green-400"
-                : "text-base font-semibold text-muted-foreground"
+                : "text-muted-foreground text-base font-semibold"
             }
           >
             {serverData.uptime !== undefined
@@ -146,25 +146,25 @@ export default function ServerDetailsCard({ server }: ServerDetailsCardProps) {
 
         {serverData.latency !== undefined ? (
           <div>
-            <div className="flex items-center gap-2 mb-3">
-              <Clock className="w-4 h-4 text-muted-foreground" />
-              <p className="text-xs text-muted-foreground uppercase tracking-wider">
+            <div className="mb-3 flex items-center gap-2">
+              <Clock className="text-muted-foreground h-4 w-4" />
+              <p className="text-muted-foreground text-xs tracking-wider uppercase">
                 Latency (P95)
               </p>
             </div>
-            <div className="text-base font-semibold text-foreground">
+            <div className="text-foreground text-base font-semibold">
               {serverData.latency.p95}ms
             </div>
           </div>
         ) : (
           <div>
-            <div className="flex items-center gap-2 mb-3">
-              <Clock className="w-4 h-4 text-muted-foreground" />
-              <p className="text-xs text-muted-foreground uppercase tracking-wider">
+            <div className="mb-3 flex items-center gap-2">
+              <Clock className="text-muted-foreground h-4 w-4" />
+              <p className="text-muted-foreground text-xs tracking-wider uppercase">
                 Latency (P95)
               </p>
             </div>
-            <div className="text-base font-semibold text-muted-foreground">
+            <div className="text-muted-foreground text-base font-semibold">
               Not measured
             </div>
           </div>
@@ -172,13 +172,13 @@ export default function ServerDetailsCard({ server }: ServerDetailsCardProps) {
 
         {server.license && (
           <div>
-            <div className="flex items-center gap-2 mb-3">
-              <Scale className="w-4 h-4 text-muted-foreground" />
-              <p className="text-xs text-muted-foreground uppercase tracking-wider">
+            <div className="mb-3 flex items-center gap-2">
+              <Scale className="text-muted-foreground h-4 w-4" />
+              <p className="text-muted-foreground text-xs tracking-wider uppercase">
                 License
               </p>
             </div>
-            <div className="text-base font-semibold text-foreground">
+            <div className="text-foreground text-base font-semibold">
               {server.license}
             </div>
           </div>
@@ -186,13 +186,13 @@ export default function ServerDetailsCard({ server }: ServerDetailsCardProps) {
 
         {serverData.publishedDate && (
           <div>
-            <div className="flex items-center gap-2 mb-3">
-              <Calendar className="w-4 h-4 text-muted-foreground" />
-              <p className="text-xs text-muted-foreground uppercase tracking-wider">
+            <div className="mb-3 flex items-center gap-2">
+              <Calendar className="text-muted-foreground h-4 w-4" />
+              <p className="text-muted-foreground text-xs tracking-wider uppercase">
                 Published
               </p>
             </div>
-            <div className="text-base font-semibold text-foreground">
+            <div className="text-foreground text-base font-semibold">
               {serverData.publishedDate}
             </div>
           </div>
@@ -200,30 +200,30 @@ export default function ServerDetailsCard({ server }: ServerDetailsCardProps) {
 
         {serverData.lastDeployed && (
           <div className="col-span-2">
-            <div className="flex items-center gap-2 mb-3">
-              <Clock className="w-4 h-4 text-muted-foreground" />
-              <p className="text-xs text-muted-foreground uppercase tracking-wider">
+            <div className="mb-3 flex items-center gap-2">
+              <Clock className="text-muted-foreground h-4 w-4" />
+              <p className="text-muted-foreground text-xs tracking-wider uppercase">
                 Last Updated
               </p>
             </div>
-            <div className="text-base font-semibold text-foreground">
+            <div className="text-foreground text-base font-semibold">
               {serverData.lastDeployed}
             </div>
           </div>
         )}
 
-        <div className="col-span-2 pt-4 border-t border-border">
+        <div className="border-border col-span-2 border-t pt-4">
           <div className="flex items-center justify-between">
-            <p className="text-xs text-muted-foreground uppercase tracking-wider">
+            <p className="text-muted-foreground text-xs tracking-wider uppercase">
               Pricing
             </p>
             <div>
               {server.pricing && server.pricing.amount > 0 ? (
-                <span className="px-3 py-1.5 bg-primary/15 text-primary text-sm font-bold rounded-lg">
+                <span className="bg-primary/15 text-primary rounded-lg px-3 py-1.5 text-sm font-bold">
                   ${server.pricing.amount}/mo
                 </span>
               ) : (
-                <span className="px-3 py-1.5 bg-green-500/15 text-green-600 dark:text-green-400 text-sm font-bold rounded-lg">
+                <span className="rounded-lg bg-green-500/15 px-3 py-1.5 text-sm font-bold text-green-600 dark:text-green-400">
                   FREE
                 </span>
               )}
@@ -232,9 +232,9 @@ export default function ServerDetailsCard({ server }: ServerDetailsCardProps) {
         </div>
 
         <div className="col-span-2">
-          <div className="flex items-center gap-2 mb-3">
-            <Code className="w-4 h-4 text-muted-foreground" />
-            <p className="text-xs text-muted-foreground uppercase tracking-wider">
+          <div className="mb-3 flex items-center gap-2">
+            <Code className="text-muted-foreground h-4 w-4" />
+            <p className="text-muted-foreground text-xs tracking-wider uppercase">
               Source Code
             </p>
           </div>
@@ -242,19 +242,19 @@ export default function ServerDetailsCard({ server }: ServerDetailsCardProps) {
             href={server.repository.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 text-sm font-medium text-primary hover:text-primary/80 transition-colors group"
+            className="text-primary hover:text-primary/80 group flex items-center gap-2 text-sm font-medium transition-colors"
           >
             <span className="truncate">
               {server.repository.url.replace("https://github.com/", "")}
             </span>
-            <ExternalLink className="w-3.5 h-3.5 opacity-70 flex-shrink-0 group-hover:opacity-100" />
+            <ExternalLink className="h-3.5 w-3.5 flex-shrink-0 opacity-70 group-hover:opacity-100" />
           </a>
         </div>
 
         <div className="col-span-2">
-          <div className="flex items-center gap-2 mb-3">
-            <Home className="w-4 h-4 text-muted-foreground" />
-            <p className="text-xs text-muted-foreground uppercase tracking-wider">
+          <div className="mb-3 flex items-center gap-2">
+            <Home className="text-muted-foreground h-4 w-4" />
+            <p className="text-muted-foreground text-xs tracking-wider uppercase">
               Homepage
             </p>
           </div>
@@ -263,13 +263,13 @@ export default function ServerDetailsCard({ server }: ServerDetailsCardProps) {
               href={server.homepage}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 text-sm font-medium text-primary hover:text-primary/80 transition-colors group"
+              className="text-primary hover:text-primary/80 group flex items-center gap-2 text-sm font-medium transition-colors"
             >
               <span className="truncate">{server.homepage}</span>
-              <ExternalLink className="w-3.5 h-3.5 opacity-70 flex-shrink-0 group-hover:opacity-100" />
+              <ExternalLink className="h-3.5 w-3.5 flex-shrink-0 opacity-70 group-hover:opacity-100" />
             </a>
           ) : (
-            <span className="text-sm text-muted-foreground">Not available</span>
+            <span className="text-muted-foreground text-sm">Not available</span>
           )}
         </div>
       </div>

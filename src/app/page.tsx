@@ -10,10 +10,10 @@ export default function Home() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="min-h-screen bg-background overflow-x-hidden relative"
+      className="bg-background relative min-h-screen overflow-x-hidden"
     >
       <WaveBackground />
-      <div className="fixed inset-0 z-[10] backdrop-blur-[16px] pointer-events-none" />
+      <div className="pointer-events-none fixed inset-0 z-[10] backdrop-blur-[16px]" />
       <Header />
       <main className="relative z-10">
         <LandingSections />

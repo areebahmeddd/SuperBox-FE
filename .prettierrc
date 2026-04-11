@@ -2,13 +2,13 @@
   "semi": true,
   "singleQuote": false,
   "jsxSingleQuote": false,
-  "useTabs": false,
   "tabWidth": 2,
-  "endOfLine": "auto",
+  "useTabs": false,
   "arrowParens": "always",
+  "endOfLine": "auto",
   "plugins": [
-    "prettier-plugin-tailwindcss",
-    "prettier-plugin-organize-imports"
+    "prettier-plugin-organize-imports",
+    "prettier-plugin-tailwindcss"
   ],
   "tailwindFunctions": ["classNames"]
 }

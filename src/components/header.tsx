@@ -98,13 +98,13 @@ export default function Header() {
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.6, type: "spring", stiffness: 100 }}
-      className={`fixed top-0 w-full z-50 transition-all duration-300 ${
+      className={`fixed top-0 z-50 w-full transition-all duration-300 ${
         scrolled
-          ? "backdrop-blur-md bg-background/80 dark:bg-background/60 shadow-lg border-b border-border"
-          : "backdrop-blur-sm bg-background/40 dark:bg-background/20"
+          ? "bg-background/80 dark:bg-background/60 border-border border-b shadow-lg backdrop-blur-md"
+          : "bg-background/40 dark:bg-background/20 backdrop-blur-sm"
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 md:px-8 py-4 flex items-center justify-between">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 md:px-8">
         <motion.div
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
@@ -122,7 +122,7 @@ export default function Header() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="hidden md:flex items-center gap-2"
+          className="hidden items-center gap-2 md:flex"
         >
           <motion.a
             href="https://github.com/areebahmeddd/superbox.ai"
@@ -130,7 +130,7 @@ export default function Header() {
             rel="noopener noreferrer"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-muted text-foreground text-sm transition"
+            className="bg-muted text-foreground inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm transition"
           >
             <svg
               width="16"
@@ -146,7 +146,7 @@ export default function Header() {
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: 0.5, type: "spring" }}
-              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-muted text-xs"
+              className="bg-muted inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs"
             >
               <svg
                 width="12"
@@ -164,7 +164,7 @@ export default function Header() {
           <motion.div
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="px-4 py-2 pl-2 text-sm text-foreground hover:text-primary transition-colors"
+            className="text-foreground hover:text-primary px-4 py-2 pl-2 text-sm transition-colors"
           >
             <Link href="/playground">Playground</Link>
           </motion.div>
@@ -172,7 +172,7 @@ export default function Header() {
           <motion.div
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="px-4 py-2 pl-2 text-sm text-foreground hover:text-primary transition-colors"
+            className="text-foreground hover:text-primary px-4 py-2 pl-2 text-sm transition-colors"
           >
             <Link href="/explore">Explore</Link>
           </motion.div>
@@ -180,7 +180,7 @@ export default function Header() {
           <motion.div
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="px-4 py-2 pl-2 text-sm text-foreground hover:text-primary transition-colors"
+            className="text-foreground hover:text-primary px-4 py-2 pl-2 text-sm transition-colors"
           >
             <a
               href="https://acm-aa28ebf6.mintlify.app"
@@ -195,10 +195,10 @@ export default function Header() {
             <DropdownMenu>
               <DropdownMenuTrigger
                 render={
-                  <button className="rounded-full border border-border w-9 h-9 p-0 cursor-pointer outline-none" />
+                  <button className="border-border h-9 w-9 cursor-pointer rounded-full border p-0 outline-none" />
                 }
               >
-                <div className="w-full h-full rounded-full bg-muted flex items-center justify-center text-foreground text-sm font-bold pointer-events-none">
+                <div className="bg-muted text-foreground pointer-events-none flex h-full w-full items-center justify-center rounded-full text-sm font-bold">
                   {(user.displayName || user.email || "U")[0].toUpperCase()}
                 </div>
               </DropdownMenuTrigger>
@@ -209,7 +209,7 @@ export default function Header() {
                       <p className="text-sm font-medium">
                         {user.displayName || "User"}
                       </p>
-                      <p className="text-xs text-muted-foreground font-normal">
+                      <p className="text-muted-foreground text-xs font-normal">
                         {user.email || ""}
                       </p>
                     </div>
@@ -220,16 +220,16 @@ export default function Header() {
                   <DropdownMenuItem key={item.label}>
                     <Link
                       href={item.href}
-                      className="flex items-center gap-1.5 w-full"
+                      className="flex w-full items-center gap-1.5"
                     >
-                      <item.icon className="w-4 h-4" />
+                      <item.icon className="h-4 w-4" />
                       {item.label}
                     </Link>
                   </DropdownMenuItem>
                 ))}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleSignOut} variant="destructive">
-                  <LogOut className="w-4 h-4" />
+                  <LogOut className="h-4 w-4" />
                   Sign Out
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -245,13 +245,13 @@ export default function Header() {
           <motion.button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             whileTap={{ scale: 0.95 }}
-            className="flex items-center justify-center w-9 h-9 text-foreground hover:text-primary transition-colors duration-200"
+            className="text-foreground hover:text-primary flex h-9 w-9 items-center justify-center transition-colors duration-200"
             aria-label="Toggle menu"
           >
             {mobileMenuOpen ? (
-              <X className="w-5 h-5" />
+              <X className="h-5 w-5" />
             ) : (
-              <Menu className="w-5 h-5" />
+              <Menu className="h-5 w-5" />
             )}
           </motion.button>
 
@@ -262,7 +262,7 @@ export default function Header() {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -10, scale: 0.95 }}
                 transition={{ duration: 0.2 }}
-                className="absolute right-0 mt-2 w-56 bg-card border border-border rounded-2xl backdrop-blur-xl shadow-2xl overflow-hidden z-50"
+                className="bg-card border-border absolute right-0 z-50 mt-2 w-56 overflow-hidden rounded-2xl border shadow-2xl backdrop-blur-xl"
               >
                 <div>
                   <a
@@ -270,7 +270,7 @@ export default function Header() {
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-muted transition-all"
+                    className="text-foreground hover:bg-muted flex items-center gap-3 px-4 py-2.5 text-sm transition-all"
                   >
                     <svg
                       width="16"
@@ -282,7 +282,7 @@ export default function Header() {
                       <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z" />
                     </svg>
                     <span>GitHub</span>
-                    <span className="ml-auto text-xs text-muted-foreground">
+                    <span className="text-muted-foreground ml-auto text-xs">
                       {stars ?? 0} ⭐
                     </span>
                   </a>
@@ -290,7 +290,7 @@ export default function Header() {
                   <Link
                     href="/playground"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-muted transition-all"
+                    className="text-foreground hover:bg-muted flex items-center gap-3 px-4 py-2.5 text-sm transition-all"
                   >
                     <span>Playground</span>
                   </Link>
@@ -300,7 +300,7 @@ export default function Header() {
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-muted transition-all"
+                    className="text-foreground hover:bg-muted flex items-center gap-3 px-4 py-2.5 text-sm transition-all"
                   >
                     <span>Docs</span>
                   </a>
@@ -312,9 +312,9 @@ export default function Header() {
                           key={item.label}
                           href={item.href}
                           onClick={() => setMobileMenuOpen(false)}
-                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-muted transition-all"
+                          className="text-foreground hover:bg-muted flex items-center gap-3 px-4 py-2.5 text-sm transition-all"
                         >
-                          <item.icon className="w-4 h-4" />
+                          <item.icon className="h-4 w-4" />
                           <span>{item.label}</span>
                         </Link>
                       ))}
@@ -323,9 +323,9 @@ export default function Header() {
                           setMobileMenuOpen(false);
                           handleSignOut();
                         }}
-                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-destructive hover:bg-muted transition-all"
+                        className="text-destructive hover:bg-muted flex w-full items-center gap-3 px-4 py-2.5 text-sm transition-all"
                       >
-                        <LogOut className="w-4 h-4" />
+                        <LogOut className="h-4 w-4" />
                         <span>Sign Out</span>
                       </button>
                     </>
@@ -335,7 +335,7 @@ export default function Header() {
                         setMobileMenuOpen(false);
                         setAuthOpen(true);
                       }}
-                      className="w-full px-4 py-2.5 text-sm font-semibold text-primary-foreground bg-primary hover:bg-primary/90 transition-all"
+                      className="text-primary-foreground bg-primary hover:bg-primary/90 w-full px-4 py-2.5 text-sm font-semibold transition-all"
                     >
                       Get started
                     </button>

@@ -45,10 +45,10 @@ export default function ServerPage() {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="min-h-screen bg-background flex items-center justify-center"
+        className="bg-background flex min-h-screen items-center justify-center"
       >
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-2 border-border border-t-primary mx-auto mb-4" />
+          <div className="border-border border-t-primary mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-2" />
           <p className="text-muted-foreground text-sm">
             Loading server details...
           </p>
@@ -63,29 +63,29 @@ export default function ServerPage() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="min-h-screen bg-background"
+          className="bg-background min-h-screen"
         >
           <Header />
-          <main className="pt-24 flex items-center justify-center min-h-[calc(100vh-6rem)]">
+          <main className="flex min-h-[calc(100vh-6rem)] items-center justify-center pt-24">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="text-center max-w-md mx-auto px-6"
+              className="mx-auto max-w-md px-6 text-center"
             >
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-                className="w-20 h-20 mx-auto mb-6 rounded-full bg-muted border border-border flex items-center justify-center"
+                className="bg-muted border-border mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full border"
               >
-                <Box className="w-10 h-10 text-muted-foreground" />
+                <Box className="text-muted-foreground h-10 w-10" />
               </motion.div>
               <motion.h1
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
-                className="text-2xl font-bold text-foreground mb-3"
+                className="text-foreground mb-3 text-2xl font-bold"
               >
                 Server not found
               </motion.h1>
@@ -93,7 +93,7 @@ export default function ServerPage() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.35 }}
-                className="text-muted-foreground text-sm mb-8"
+                className="text-muted-foreground mb-8 text-sm"
               >
                 The server you're looking for doesn't exist or has been removed.
               </motion.p>
@@ -142,11 +142,11 @@ export default function ServerPage() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="min-h-screen bg-background overflow-x-hidden"
+      className="bg-background min-h-screen overflow-x-hidden"
     >
       <Header />
       <main className="pt-24">
-        <div className="max-w-6xl mx-auto">
+        <div className="mx-auto max-w-6xl">
           <ServerDetail server={transformedServer} />
         </div>
       </main>

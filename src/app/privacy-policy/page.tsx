@@ -4,10 +4,10 @@ export default function PrivacyPage() {
   return (
     <>
       <Header />
-      <main className="min-h-screen bg-background text-foreground px-6 pt-32 md:pt-40 pb-12">
-        <div className="max-w-4xl mx-auto">
+      <main className="bg-background text-foreground min-h-screen px-6 pt-32 pb-12 md:pt-40">
+        <div className="mx-auto max-w-4xl">
           <h1 className="mb-4 text-4xl font-medium">Privacy Policy</h1>
-          <p className="text-sm text-muted-foreground mb-6">
+          <p className="text-muted-foreground mb-6 text-sm">
             <strong>Last updated:</strong> December 31, 2025
           </p>
 
@@ -20,10 +20,10 @@ export default function PrivacyPage() {
               Services.
             </p>
 
-            <h2 className="mb-3 text-2xl font-semibold text-foreground">
+            <h2 className="text-foreground mb-3 text-2xl font-semibold">
               1. Information We Collect
             </h2>
-            <h3 className="mb-2 mt-4 text-lg font-semibold text-foreground">
+            <h3 className="text-foreground mt-4 mb-2 text-lg font-semibold">
               1.1 Information You Provide
             </h3>
             <ul className="ml-6 list-disc space-y-2">
@@ -44,7 +44,7 @@ export default function PrivacyPage() {
               </li>
             </ul>
 
-            <h3 className="mb-2 mt-4 text-lg font-semibold text-foreground">
+            <h3 className="text-foreground mt-4 mb-2 text-lg font-semibold">
               1.2 Automatically Collected Information
             </h3>
             <ul className="ml-6 list-disc space-y-2">
@@ -63,7 +63,7 @@ export default function PrivacyPage() {
               </li>
             </ul>
 
-            <h3 className="mb-2 mt-4 text-lg font-semibold text-foreground">
+            <h3 className="text-foreground mt-4 mb-2 text-lg font-semibold">
               1.3 Third‑Party Sources
             </h3>
             <p>
@@ -72,7 +72,7 @@ export default function PrivacyPage() {
               by the platform.
             </p>
 
-            <h2 className="mb-3 text-2xl font-semibold text-foreground">
+            <h2 className="text-foreground mb-3 text-2xl font-semibold">
               2. How We Use Information
             </h2>
             <ul className="ml-6 list-disc space-y-2">
@@ -98,7 +98,7 @@ export default function PrivacyPage() {
               </li>
             </ul>
 
-            <h2 className="mb-3 text-2xl font-semibold text-foreground">
+            <h2 className="text-foreground mb-3 text-2xl font-semibold">
               3. Third‑Party Services
             </h2>
             <p className="mb-2">
@@ -124,7 +124,7 @@ export default function PrivacyPage() {
               </li>
             </ul>
 
-            <h2 className="mb-3 text-2xl font-semibold text-foreground">
+            <h2 className="text-foreground mb-3 text-2xl font-semibold">
               4. Sharing & Disclosure
             </h2>
             <p className="mb-2">
@@ -146,7 +146,7 @@ export default function PrivacyPage() {
               </li>
             </ul>
 
-            <h2 className="mb-3 text-2xl font-semibold text-foreground">
+            <h2 className="text-foreground mb-3 text-2xl font-semibold">
               5. Your Rights & Choices
             </h2>
             <ul className="ml-6 list-disc space-y-2">
@@ -169,7 +169,7 @@ export default function PrivacyPage() {
               </li>
             </ul>
 
-            <h2 className="mb-3 text-2xl font-semibold text-foreground">
+            <h2 className="text-foreground mb-3 text-2xl font-semibold">
               6. Data Retention
             </h2>
             <p>
@@ -180,7 +180,7 @@ export default function PrivacyPage() {
               publisher.
             </p>
 
-            <h2 className="mb-3 text-2xl font-semibold text-foreground">
+            <h2 className="text-foreground mb-3 text-2xl font-semibold">
               7. Security
             </h2>
             <p>
@@ -190,7 +190,7 @@ export default function PrivacyPage() {
               guarantee absolute security.
             </p>
 
-            <h2 className="mb-3 text-2xl font-semibold text-foreground">
+            <h2 className="text-foreground mb-3 text-2xl font-semibold">
               8. International Transfers
             </h2>
             <p>
@@ -199,7 +199,7 @@ export default function PrivacyPage() {
               to ensure adequate protection.
             </p>
 
-            <h2 className="mb-3 text-2xl font-semibold text-foreground">
+            <h2 className="text-foreground mb-3 text-2xl font-semibold">
               9. Children's Privacy
             </h2>
             <p>
@@ -208,7 +208,7 @@ export default function PrivacyPage() {
               discovered, we will take steps to delete it.
             </p>
 
-            <h2 className="mb-3 text-2xl font-semibold text-foreground">
+            <h2 className="text-foreground mb-3 text-2xl font-semibold">
               10. Cookies & Tracking
             </h2>
             <p>
@@ -217,7 +217,7 @@ export default function PrivacyPage() {
               settings or available preference controls.
             </p>
 
-            <h2 className="mb-3 text-2xl font-semibold text-foreground">
+            <h2 className="text-foreground mb-3 text-2xl font-semibold">
               11. Open Source & Public Data
             </h2>
             <p>
@@ -226,7 +226,7 @@ export default function PrivacyPage() {
               do not publish secrets or credentials.
             </p>
 
-            <h2 className="mb-3 text-2xl font-semibold text-foreground">
+            <h2 className="text-foreground mb-3 text-2xl font-semibold">
               12. Changes to This Policy
             </h2>
             <p>
@@ -235,7 +235,7 @@ export default function PrivacyPage() {
               use after changes constitutes acceptance.
             </p>
 
-            <h2 className="mb-3 text-2xl font-semibold text-foreground">
+            <h2 className="text-foreground mb-3 text-2xl font-semibold">
               13. Contact
             </h2>
             <p>

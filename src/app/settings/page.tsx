@@ -124,10 +124,10 @@ export default function SettingsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="bg-background min-h-screen">
         <Header />
-        <div className="min-h-screen flex items-center justify-center">
-          <Loader2 className="w-8 h-8 animate-spin text-foreground" />
+        <div className="flex min-h-screen items-center justify-center">
+          <Loader2 className="text-foreground h-8 w-8 animate-spin" />
         </div>
       </div>
     );
@@ -136,18 +136,18 @@ export default function SettingsPage() {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="bg-background min-h-screen">
       <Header />
 
-      <main className="pt-32 pb-20 px-4">
-        <div className="max-w-4xl mx-auto">
+      <main className="px-4 pt-32 pb-20">
+        <div className="mx-auto max-w-4xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
             className="mb-8 text-center"
           >
-            <h1 className="text-4xl font-bold text-foreground mb-2">
+            <h1 className="text-foreground mb-2 text-4xl font-bold">
               Settings
             </h1>
             <p className="text-muted-foreground text-sm">
@@ -160,28 +160,28 @@ export default function SettingsPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: 0.1 }}
-              className="bg-card rounded-2xl border border-border p-8"
+              className="bg-card border-border rounded-2xl border p-8"
             >
-              <h3 className="text-xl font-semibold text-foreground mb-6">
+              <h3 className="text-foreground mb-6 text-xl font-semibold">
                 General Settings
               </h3>
 
               <div className="flex items-center justify-between py-3">
                 <div>
-                  <p className="font-medium text-foreground">Theme</p>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-foreground font-medium">Theme</p>
+                  <p className="text-muted-foreground text-sm">
                     Toggle between light and dark themes
                   </p>
                 </div>
                 <button
                   onClick={toggleTheme}
-                  className={`w-12 h-6 rounded-full relative transition-colors ${
+                  className={`relative h-6 w-12 rounded-full transition-colors ${
                     theme === "dark" ? "bg-primary" : "bg-muted"
                   }`}
                   aria-label="Toggle theme"
                 >
                   <div
-                    className={`w-5 h-5 bg-primary-foreground dark:bg-white rounded-full absolute top-0.5 transition-transform shadow-sm ${
+                    className={`bg-primary-foreground absolute top-0.5 h-5 w-5 rounded-full shadow-sm transition-transform dark:bg-white ${
                       theme === "dark" ? "right-0.5" : "left-0.5"
                     }`}
                   />
@@ -193,19 +193,19 @@ export default function SettingsPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: 0.2 }}
-              className="bg-card rounded-2xl border border-border p-8"
+              className="bg-card border-border rounded-2xl border p-8"
             >
-              <h3 className="text-xl font-semibold text-foreground mb-6">
+              <h3 className="text-foreground mb-6 text-xl font-semibold">
                 Security Settings
               </h3>
 
               <div className="mb-8">
-                <div className="flex items-center justify-between mb-4">
+                <div className="mb-4 flex items-center justify-between">
                   <div>
-                    <p className="font-medium text-foreground">
+                    <p className="text-foreground font-medium">
                       Change Password
                     </p>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-muted-foreground text-sm">
                       Update your account password
                     </p>
                   </div>
@@ -222,7 +222,7 @@ export default function SettingsPage() {
                 <form
                   id="password-form"
                   onSubmit={handleChangePassword}
-                  className="hidden space-y-4 mt-4 pt-4 border-t border-border"
+                  className="border-border mt-4 hidden space-y-4 border-t pt-4"
                 >
                   <div>
                     <Label>Current Password</Label>
@@ -257,7 +257,7 @@ export default function SettingsPage() {
                       className="mt-2"
                     />
                   </div>
-                  <div className="flex gap-3 justify-end">
+                  <div className="flex justify-end gap-3">
                     <Button
                       type="button"
                       onClick={() => {
@@ -274,7 +274,7 @@ export default function SettingsPage() {
                     </Button>
                     <Button type="submit" disabled={isUpdating}>
                       {isUpdating ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <Loader2 className="h-4 w-4 animate-spin" />
                       ) : (
                         "Update Password"
                       )}
@@ -283,24 +283,24 @@ export default function SettingsPage() {
                 </form>
               </div>
 
-              <div className="py-4 border-t border-border">
+              <div className="border-border border-t py-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-medium text-foreground">
+                    <p className="text-foreground font-medium">
                       Two-Factor Authentication (2FA)
                     </p>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-muted-foreground text-sm">
                       Add an extra layer of security to your account
                     </p>
                   </div>
-                  <div className="flex gap-2 items-center">
-                    <span className="px-3 py-1.5 rounded-full text-sm font-medium bg-muted text-muted-foreground">
+                  <div className="flex items-center gap-2">
+                    <span className="bg-muted text-muted-foreground rounded-full px-3 py-1.5 text-sm font-medium">
                       Disabled
                     </span>
                     <Button
                       disabled
                       variant="secondary"
-                      className="opacity-50 cursor-not-allowed"
+                      className="cursor-not-allowed opacity-50"
                     >
                       Enable 2FA
                     </Button>
@@ -308,13 +308,13 @@ export default function SettingsPage() {
                 </div>
               </div>
 
-              <div className="py-4 border-t border-border">
+              <div className="border-border border-t py-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-medium text-foreground">
+                    <p className="text-foreground font-medium">
                       Delete Account
                     </p>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-muted-foreground text-sm">
                       Permanently delete your account and all data
                     </p>
                   </div>
@@ -333,10 +333,10 @@ export default function SettingsPage() {
 
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <DialogContent className="bg-card border-destructive/30">
-          <DialogTitle className="text-xl font-semibold text-foreground">
+          <DialogTitle className="text-foreground text-xl font-semibold">
             Delete Account
           </DialogTitle>
-          <DialogDescription className="text-muted-foreground text-sm mt-1">
+          <DialogDescription className="text-muted-foreground mt-1 text-sm">
             This action cannot be undone. All your data will be permanently
             deleted.
           </DialogDescription>
@@ -360,10 +360,10 @@ export default function SettingsPage() {
                 className="flex-1"
               >
                 {isDeleting ? (
-                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <Loader2 className="h-5 w-5 animate-spin" />
                 ) : (
                   <>
-                    <Trash2 className="w-4 h-4" />
+                    <Trash2 className="h-4 w-4" />
                     Delete Account
                   </>
                 )}

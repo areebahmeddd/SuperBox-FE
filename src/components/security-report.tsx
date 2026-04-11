@@ -93,8 +93,8 @@ interface SecurityReportProps {
 export default function SecurityReport({ security }: SecurityReportProps) {
   if (!security) {
     return (
-      <div className="border border-border rounded-2xl bg-card p-12 text-center">
-        <Shield className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+      <div className="border-border bg-card rounded-2xl border p-12 text-center">
+        <Shield className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
         <p className="text-muted-foreground">No security report available</p>
       </div>
     );
@@ -126,30 +126,30 @@ export default function SecurityReport({ security }: SecurityReportProps) {
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="border border-border rounded-2xl bg-card p-6"
+        className="border-border bg-card rounded-2xl border p-6"
       >
         <div className="flex items-start justify-between">
           <div>
-            <div className="flex items-center gap-3 mb-2">
-              <Shield className="w-6 h-6 text-primary" />
-              <h3 className="text-2xl font-bold text-foreground">
+            <div className="mb-2 flex items-center gap-3">
+              <Shield className="text-primary h-6 w-6" />
+              <h3 className="text-foreground text-2xl font-bold">
                 Security Scan
               </h3>
             </div>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-muted-foreground text-sm">
               Scanned{" "}
               {new Date(security.metadata.scan_date).toLocaleDateString()}
             </p>
           </div>
 
           {security.summary.scan_passed ? (
-            <div className="flex items-center gap-2 px-4 py-2 bg-green-500/15 text-green-600 dark:text-green-400 rounded-lg">
-              <CheckCircle className="w-5 h-5" />
+            <div className="flex items-center gap-2 rounded-lg bg-green-500/15 px-4 py-2 text-green-600 dark:text-green-400">
+              <CheckCircle className="h-5 w-5" />
               <span className="font-semibold">Passed</span>
             </div>
           ) : (
-            <div className="flex items-center gap-2 px-4 py-2 bg-red-500/15 text-red-600 dark:text-red-400 rounded-lg">
-              <XCircle className="w-5 h-5" />
+            <div className="flex items-center gap-2 rounded-lg bg-red-500/15 px-4 py-2 text-red-600 dark:text-red-400">
+              <XCircle className="h-5 w-5" />
               <span className="font-semibold">Issues Found</span>
             </div>
           )}
@@ -162,15 +162,15 @@ export default function SecurityReport({ security }: SecurityReportProps) {
         transition={{ delay: 0.1 }}
         className="grid grid-cols-4 gap-4"
       >
-        <div className="border border-border rounded-2xl bg-card p-6">
-          <p className="text-sm text-muted-foreground mb-2">Total Issues</p>
-          <p className="text-3xl font-bold text-foreground">
+        <div className="border-border bg-card rounded-2xl border p-6">
+          <p className="text-muted-foreground mb-2 text-sm">Total Issues</p>
+          <p className="text-foreground text-3xl font-bold">
             {security.summary.total_issues_all_scanners}
           </p>
         </div>
 
-        <div className="border border-border rounded-2xl bg-card p-6">
-          <p className="text-sm text-muted-foreground mb-2">Critical</p>
+        <div className="border-border bg-card rounded-2xl border p-6">
+          <p className="text-muted-foreground mb-2 text-sm">Critical</p>
           <p
             className={`text-3xl font-bold ${security.summary.critical_issues === 0 ? "text-green-400" : "text-red-400"}`}
           >
@@ -178,8 +178,8 @@ export default function SecurityReport({ security }: SecurityReportProps) {
           </p>
         </div>
 
-        <div className="border border-border rounded-2xl bg-card p-6">
-          <p className="text-sm text-muted-foreground mb-2">Vulnerabilities</p>
+        <div className="border-border bg-card rounded-2xl border p-6">
+          <p className="text-muted-foreground mb-2 text-sm">Vulnerabilities</p>
           <p
             className={`text-3xl font-bold ${security.sonarqube.vulnerabilities === 0 ? "text-green-400" : "text-red-400"}`}
           >
@@ -187,8 +187,8 @@ export default function SecurityReport({ security }: SecurityReportProps) {
           </p>
         </div>
 
-        <div className="border border-border rounded-2xl bg-card p-6">
-          <p className="text-sm text-muted-foreground mb-2">Secrets</p>
+        <div className="border-border bg-card rounded-2xl border p-6">
+          <p className="text-muted-foreground mb-2 text-sm">Secrets</p>
           <p
             className={`text-3xl font-bold ${security.gitguardian.total_secrets === 0 ? "text-green-400" : "text-yellow-400"}`}
           >
@@ -201,14 +201,14 @@ export default function SecurityReport({ security }: SecurityReportProps) {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="border border-border rounded-2xl bg-card p-6"
+        className="border-border bg-card rounded-2xl border p-6"
       >
-        <h4 className="text-lg font-semibold text-foreground mb-6">
+        <h4 className="text-foreground mb-6 text-lg font-semibold">
           Quality Ratings
         </h4>
         <div className="grid grid-cols-3 gap-6">
           <div>
-            <p className="text-sm text-muted-foreground mb-3">Security</p>
+            <p className="text-muted-foreground mb-3 text-sm">Security</p>
             <div className="flex items-center gap-3">
               <span
                 className={`text-4xl font-bold ${getRatingColor(security.sonarqube.security_rating)}`}
@@ -219,7 +219,7 @@ export default function SecurityReport({ security }: SecurityReportProps) {
           </div>
 
           <div>
-            <p className="text-sm text-muted-foreground mb-3">Reliability</p>
+            <p className="text-muted-foreground mb-3 text-sm">Reliability</p>
             <div className="flex items-center gap-3">
               <span
                 className={`text-4xl font-bold ${getRatingColor(security.sonarqube.reliability_rating)}`}
@@ -230,7 +230,7 @@ export default function SecurityReport({ security }: SecurityReportProps) {
           </div>
 
           <div>
-            <p className="text-sm text-muted-foreground mb-3">
+            <p className="text-muted-foreground mb-3 text-sm">
               Maintainability
             </p>
             <div className="flex items-center gap-3">
@@ -243,22 +243,22 @@ export default function SecurityReport({ security }: SecurityReportProps) {
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-6 mt-6 pt-6 border-t border-border">
+        <div className="border-border mt-6 grid grid-cols-3 gap-6 border-t pt-6">
           <div>
-            <p className="text-sm text-muted-foreground mb-2">Code Coverage</p>
-            <p className="text-2xl font-bold text-foreground">
+            <p className="text-muted-foreground mb-2 text-sm">Code Coverage</p>
+            <p className="text-foreground text-2xl font-bold">
               {security.sonarqube.coverage}%
             </p>
           </div>
           <div>
-            <p className="text-sm text-muted-foreground mb-2">Duplications</p>
-            <p className="text-2xl font-bold text-foreground">
+            <p className="text-muted-foreground mb-2 text-sm">Duplications</p>
+            <p className="text-foreground text-2xl font-bold">
               {security.sonarqube.duplications}%
             </p>
           </div>
           <div>
-            <p className="text-sm text-muted-foreground mb-2">Lines of Code</p>
-            <p className="text-2xl font-bold text-foreground">
+            <p className="text-muted-foreground mb-2 text-sm">Lines of Code</p>
+            <p className="text-foreground text-2xl font-bold">
               {security.sonarqube.lines_of_code.toLocaleString()}
             </p>
           </div>
@@ -270,61 +270,61 @@ export default function SecurityReport({ security }: SecurityReportProps) {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="border border-border rounded-2xl bg-card p-6"
+          className="border-border bg-card rounded-2xl border p-6"
         >
-          <div className="flex items-center justify-between mb-6">
+          <div className="mb-6 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Shield className="w-6 h-6 text-red-600 dark:text-red-400" />
-              <h4 className="text-lg font-semibold text-foreground">
+              <Shield className="h-6 w-6 text-red-600 dark:text-red-400" />
+              <h4 className="text-foreground text-lg font-semibold">
                 Dependency Vulnerabilities
               </h4>
-              <span className="px-2.5 py-0.5 bg-red-500/15 text-red-600 dark:text-red-400 text-sm font-semibold rounded-lg">
+              <span className="rounded-lg bg-red-500/15 px-2.5 py-0.5 text-sm font-semibold text-red-600 dark:text-red-400">
                 {security.snyk.total_vulnerabilities}
               </span>
             </div>
           </div>
 
-          <div className="grid grid-cols-4 gap-4 mb-6">
-            <div className="text-center p-4 border border-red-500/40 bg-red-500/15 rounded-xl">
-              <p className="text-2xl font-bold text-red-600 dark:text-red-400 mb-1">
+          <div className="mb-6 grid grid-cols-4 gap-4">
+            <div className="rounded-xl border border-red-500/40 bg-red-500/15 p-4 text-center">
+              <p className="mb-1 text-2xl font-bold text-red-600 dark:text-red-400">
                 {security.snyk.severity_counts.critical}
               </p>
-              <p className="text-sm text-muted-foreground">Critical</p>
+              <p className="text-muted-foreground text-sm">Critical</p>
             </div>
-            <div className="text-center p-4 border border-red-500/30 bg-red-500/10 rounded-xl">
-              <p className="text-2xl font-bold text-red-600 dark:text-red-400 mb-1">
+            <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-center">
+              <p className="mb-1 text-2xl font-bold text-red-600 dark:text-red-400">
                 {security.snyk.severity_counts.high}
               </p>
-              <p className="text-sm text-muted-foreground">High</p>
+              <p className="text-muted-foreground text-sm">High</p>
             </div>
-            <div className="text-center p-4 border border-yellow-500/30 bg-yellow-500/10 rounded-xl">
-              <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-400 mb-1">
+            <div className="rounded-xl border border-yellow-500/30 bg-yellow-500/10 p-4 text-center">
+              <p className="mb-1 text-2xl font-bold text-yellow-600 dark:text-yellow-400">
                 {security.snyk.severity_counts.medium}
               </p>
-              <p className="text-sm text-muted-foreground">Medium</p>
+              <p className="text-muted-foreground text-sm">Medium</p>
             </div>
-            <div className="text-center p-4 border border-border bg-muted rounded-xl">
-              <p className="text-2xl font-bold text-muted-foreground mb-1">
+            <div className="border-border bg-muted rounded-xl border p-4 text-center">
+              <p className="text-muted-foreground mb-1 text-2xl font-bold">
                 {security.snyk.severity_counts.low}
               </p>
-              <p className="text-sm text-muted-foreground">Low</p>
+              <p className="text-muted-foreground text-sm">Low</p>
             </div>
           </div>
 
           {security.snyk.vulnerabilities.slice(0, 3).map((vuln, idx) => (
             <div
               key={idx}
-              className={`p-4 rounded-xl border mb-3 last:mb-0 ${getSeverityColor(vuln.severity)}`}
+              className={`mb-3 rounded-xl border p-4 last:mb-0 ${getSeverityColor(vuln.severity)}`}
             >
-              <div className="flex items-start justify-between mb-2">
-                <p className="text-sm font-medium flex-1">{vuln.title}</p>
+              <div className="mb-2 flex items-start justify-between">
+                <p className="flex-1 text-sm font-medium">{vuln.title}</p>
                 <span
-                  className={`px-2 py-1 text-xs font-semibold rounded ${getSeverityColor(vuln.severity)}`}
+                  className={`rounded px-2 py-1 text-xs font-semibold ${getSeverityColor(vuln.severity)}`}
                 >
                   {vuln.severity.toUpperCase()}
                 </span>
               </div>
-              <div className="flex items-center gap-4 text-xs text-muted-foreground mb-2">
+              <div className="text-muted-foreground mb-2 flex items-center gap-4 text-xs">
                 <span>
                   <strong>Package:</strong> {vuln.package}@{vuln.version}
                 </span>
@@ -335,15 +335,15 @@ export default function SecurityReport({ security }: SecurityReportProps) {
                 )}
               </div>
               {(vuln.is_upgradable || vuln.is_patchable) && (
-                <div className="mt-2 pt-2 border-t border-border/50">
+                <div className="border-border/50 mt-2 border-t pt-2">
                   <div className="flex gap-2">
                     {vuln.is_upgradable && (
-                      <span className="px-2 py-1 text-xs bg-green-500/15 text-green-600 dark:text-green-400 rounded">
+                      <span className="rounded bg-green-500/15 px-2 py-1 text-xs text-green-600 dark:text-green-400">
                         Upgradable
                       </span>
                     )}
                     {vuln.is_patchable && (
-                      <span className="px-2 py-1 text-xs bg-blue-500/15 text-blue-600 dark:text-blue-400 rounded">
+                      <span className="rounded bg-blue-500/15 px-2 py-1 text-xs text-blue-600 dark:text-blue-400">
                         Patchable
                       </span>
                     )}
@@ -358,17 +358,17 @@ export default function SecurityReport({ security }: SecurityReportProps) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.3, delay: 0.2 }}
-              className="mt-6 relative"
+              className="relative mt-6"
             >
               <div className="flex items-center justify-center">
-                <button className="group flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
+                <button className="group text-muted-foreground hover:text-foreground flex items-center gap-2 text-sm transition-colors">
                   <span className="relative">
                     Show {security.snyk.vulnerabilities.length - 3} more
                     vulnerabilities
-                    <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-foreground/50 group-hover:w-full transition-all duration-300" />
+                    <span className="bg-foreground/50 absolute -bottom-0.5 left-0 h-px w-0 transition-all duration-300 group-hover:w-full" />
                   </span>
                   <svg
-                    className="w-3.5 h-3.5 transition-transform duration-300"
+                    className="h-3.5 w-3.5 transition-transform duration-300"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -392,22 +392,22 @@ export default function SecurityReport({ security }: SecurityReportProps) {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.35 }}
-          className="border border-border rounded-2xl bg-card p-6"
+          className="border-border bg-card rounded-2xl border p-6"
         >
-          <div className="flex items-center justify-between mb-6">
+          <div className="mb-6 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <AlertTriangle className="w-6 h-6 text-yellow-600 dark:text-yellow-400" />
-              <h4 className="text-lg font-semibold text-foreground">
+              <AlertTriangle className="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
+              <h4 className="text-foreground text-lg font-semibold">
                 Secrets Detected
               </h4>
-              <span className="px-2.5 py-0.5 bg-yellow-500/15 text-yellow-600 dark:text-yellow-400 text-sm font-semibold rounded-lg">
+              <span className="rounded-lg bg-yellow-500/15 px-2.5 py-0.5 text-sm font-semibold text-yellow-600 dark:text-yellow-400">
                 {security.gitguardian.total_secrets}
               </span>
             </div>
           </div>
 
-          <div className="p-4 rounded-xl border border-yellow-500/30 bg-yellow-500/10">
-            <p className="text-sm text-yellow-600 dark:text-yellow-400 font-medium">
+          <div className="rounded-xl border border-yellow-500/30 bg-yellow-500/10 p-4">
+            <p className="text-sm font-medium text-yellow-600 dark:text-yellow-400">
               {security.gitguardian.total_secrets} secret
               {security.gitguardian.total_secrets > 1 ? "s" : ""} found in
               repository. Rotate credentials immediately.
@@ -421,58 +421,58 @@ export default function SecurityReport({ security }: SecurityReportProps) {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="border border-border rounded-2xl bg-card p-6"
+          className="border-border bg-card rounded-2xl border p-6"
         >
-          <div className="flex items-center justify-between mb-6">
+          <div className="mb-6 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <AlertTriangle className="w-6 h-6 text-yellow-600 dark:text-yellow-400" />
-              <h4 className="text-lg font-semibold text-foreground">
+              <AlertTriangle className="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
+              <h4 className="text-foreground text-lg font-semibold">
                 Security Issues
               </h4>
-              <span className="px-2.5 py-0.5 bg-yellow-500/15 text-yellow-600 dark:text-yellow-400 text-sm font-semibold rounded-lg">
+              <span className="rounded-lg bg-yellow-500/15 px-2.5 py-0.5 text-sm font-semibold text-yellow-600 dark:text-yellow-400">
                 {security.bandit.total_issues}
               </span>
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-4 mb-6">
-            <div className="text-center p-4 border border-red-500/30 bg-red-500/10 rounded-xl">
-              <p className="text-2xl font-bold text-red-600 dark:text-red-400 mb-1">
+          <div className="mb-6 grid grid-cols-3 gap-4">
+            <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-center">
+              <p className="mb-1 text-2xl font-bold text-red-600 dark:text-red-400">
                 {security.bandit.severity_counts.high}
               </p>
-              <p className="text-sm text-muted-foreground">High</p>
+              <p className="text-muted-foreground text-sm">High</p>
             </div>
-            <div className="text-center p-4 border border-yellow-500/30 bg-yellow-500/10 rounded-xl">
-              <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-400 mb-1">
+            <div className="rounded-xl border border-yellow-500/30 bg-yellow-500/10 p-4 text-center">
+              <p className="mb-1 text-2xl font-bold text-yellow-600 dark:text-yellow-400">
                 {security.bandit.severity_counts.medium}
               </p>
-              <p className="text-sm text-muted-foreground">Medium</p>
+              <p className="text-muted-foreground text-sm">Medium</p>
             </div>
-            <div className="text-center p-4 border border-border bg-muted rounded-xl">
-              <p className="text-2xl font-bold text-muted-foreground mb-1">
+            <div className="border-border bg-muted rounded-xl border p-4 text-center">
+              <p className="text-muted-foreground mb-1 text-2xl font-bold">
                 {security.bandit.severity_counts.low}
               </p>
-              <p className="text-sm text-muted-foreground">Low</p>
+              <p className="text-muted-foreground text-sm">Low</p>
             </div>
           </div>
 
           {security.bandit.issues.slice(0, 3).map((issue, idx) => (
             <div
               key={idx}
-              className={`p-4 rounded-xl border mb-3 last:mb-0 ${getSeverityColor(issue.severity)}`}
+              className={`mb-3 rounded-xl border p-4 last:mb-0 ${getSeverityColor(issue.severity)}`}
             >
-              <div className="flex items-start justify-between mb-2">
-                <p className="text-sm font-medium flex-1">{issue.title}</p>
+              <div className="mb-2 flex items-start justify-between">
+                <p className="flex-1 text-sm font-medium">{issue.title}</p>
                 <span
-                  className={`px-2 py-1 text-xs font-semibold rounded ${getSeverityColor(issue.severity)}`}
+                  className={`rounded px-2 py-1 text-xs font-semibold ${getSeverityColor(issue.severity)}`}
                 >
                   {issue.severity.toUpperCase()}
                 </span>
               </div>
-              <div className="flex items-center gap-4 text-xs text-muted-foreground">
+              <div className="text-muted-foreground flex items-center gap-4 text-xs">
                 <span>{issue.file.split("/").pop()}</span>
                 <span>Line {issue.line_number}</span>
-                <code className="px-2 py-0.5 bg-muted rounded">
+                <code className="bg-muted rounded px-2 py-0.5">
                   {issue.test_id}
                 </code>
               </div>
@@ -484,16 +484,16 @@ export default function SecurityReport({ security }: SecurityReportProps) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.3, delay: 0.2 }}
-              className="mt-6 relative"
+              className="relative mt-6"
             >
               <div className="flex items-center justify-center">
-                <button className="group flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
+                <button className="group text-muted-foreground hover:text-foreground flex items-center gap-2 text-sm transition-colors">
                   <span className="relative">
                     Show {security.bandit.issues.length - 3} more issues
-                    <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-foreground/50 group-hover:w-full transition-all duration-300" />
+                    <span className="bg-foreground/50 absolute -bottom-0.5 left-0 h-px w-0 transition-all duration-300 group-hover:w-full" />
                   </span>
                   <svg
-                    className="w-3.5 h-3.5 transition-transform duration-300"
+                    className="h-3.5 w-3.5 transition-transform duration-300"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -517,17 +517,17 @@ export default function SecurityReport({ security }: SecurityReportProps) {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="border border-border rounded-2xl bg-card p-6"
+          className="border-border bg-card rounded-2xl border p-6"
         >
-          <div className="flex items-center gap-3 mb-4">
-            <FileText className="w-5 h-5 text-primary" />
-            <h4 className="text-lg font-semibold text-foreground">
+          <div className="mb-4 flex items-center gap-3">
+            <FileText className="text-primary h-5 w-5" />
+            <h4 className="text-foreground text-lg font-semibold">
               Recommendations
             </h4>
           </div>
           <ul className="space-y-2">
             {security.recommendations.map((rec, idx) => (
-              <li key={idx} className="flex items-start gap-3 text-foreground">
+              <li key={idx} className="text-foreground flex items-start gap-3">
                 <span className="text-primary mt-1">•</span>
                 <span>{rec}</span>
               </li>

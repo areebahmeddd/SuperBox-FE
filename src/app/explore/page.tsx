@@ -109,22 +109,22 @@ function ExploreContent() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="min-h-screen bg-background overflow-x-hidden"
+      className="bg-background min-h-screen overflow-x-hidden"
     >
       <Header />
-      <main className="pt-28 px-6 pb-20">
+      <main className="px-6 pt-28 pb-20">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="max-w-5xl mx-auto"
+          className="mx-auto max-w-5xl"
         >
           <div className="mb-10 text-center">
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="text-4xl md:text-5xl font-bold text-foreground mb-3"
+              className="text-foreground mb-3 text-4xl font-bold md:text-5xl"
             >
               Explore MCP Servers
             </motion.h1>
@@ -142,22 +142,22 @@ function ExploreContent() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, delay: 0.4 }}
-            className="relative max-w-2xl mx-auto mb-8"
+            className="relative mx-auto mb-8 max-w-2xl"
           >
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search by name, author or description"
-              className="w-full pl-12 pr-12 py-3 bg-input border border-border rounded-full text-foreground placeholder-muted-foreground outline-none transition-all duration-200 focus:border-primary/60 focus:bg-input/80"
+              className="bg-input border-border text-foreground placeholder-muted-foreground focus:border-primary/60 focus:bg-input/80 w-full rounded-full border py-3 pr-12 pl-12 transition-all duration-200 outline-none"
             />
-            <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground pointer-events-none" />
+            <Search className="text-muted-foreground pointer-events-none absolute top-1/2 left-5 h-5 w-5 -translate-y-1/2" />
             <button
               onClick={toggleMic}
               aria-label="Voice search"
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+              className="text-muted-foreground hover:text-foreground absolute top-1/2 right-4 -translate-y-1/2 transition-colors"
             >
-              <Mic className={`w-5 h-5 ${isListening ? "text-primary" : ""}`} />
+              <Mic className={`h-5 w-5 ${isListening ? "text-primary" : ""}`} />
             </button>
           </motion.div>
 
@@ -166,9 +166,9 @@ function ExploreContent() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.4, delay: 0.5 }}
-              className="flex items-center justify-start mb-8"
+              className="mb-8 flex items-center justify-start"
             >
-              <p className="text-sm font-medium text-muted-foreground">
+              <p className="text-muted-foreground text-sm font-medium">
                 {filteredTools.length}{" "}
                 {filteredTools.length === 1 ? "server" : "servers"} found
               </p>
@@ -181,10 +181,10 @@ function ExploreContent() {
               animate={{ opacity: 1 }}
               className="flex items-center justify-center py-24"
             >
-              <div className="animate-spin rounded-full h-10 w-10 border-2 border-border border-t-primary" />
+              <div className="border-border border-t-primary h-10 w-10 animate-spin rounded-full border-2" />
             </motion.div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 justify-items-center">
+            <div className="grid grid-cols-1 justify-items-center gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {filteredTools.length > 0 ? (
                 filteredTools.map((tool, index) => (
                   <motion.div
@@ -206,15 +206,15 @@ function ExploreContent() {
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.4 }}
-                  className="col-span-full text-center py-24"
+                  className="col-span-full py-24 text-center"
                 >
-                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-muted mb-4">
-                    <Search className="w-8 h-8 text-muted-foreground" />
+                  <div className="bg-muted mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full">
+                    <Search className="text-muted-foreground h-8 w-8" />
                   </div>
-                  <p className="text-xl text-muted-foreground mb-2">
+                  <p className="text-muted-foreground mb-2 text-xl">
                     No servers found
                   </p>
-                  <p className="text-sm text-muted-foreground/70">
+                  <p className="text-muted-foreground/70 text-sm">
                     Try searching with different keywords
                   </p>
                 </motion.div>
@@ -231,8 +231,8 @@ export default function ExplorePage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-background overflow-x-hidden flex items-center justify-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
+        <div className="bg-background flex min-h-screen items-center justify-center overflow-x-hidden">
+          <div className="border-primary h-12 w-12 animate-spin rounded-full border-b-2" />
         </div>
       }
     >

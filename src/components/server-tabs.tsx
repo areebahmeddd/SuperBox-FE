@@ -58,7 +58,7 @@ export default function ServerDetailTabs({ server }: ServerDetailTabsProps) {
 
   return (
     <div>
-      <div className="border-b border-border mb-8">
+      <div className="border-border mb-8 border-b">
         <div className="flex gap-1">
           {tabs.map((tab) => (
             <motion.button
@@ -71,13 +71,13 @@ export default function ServerDetailTabs({ server }: ServerDetailTabsProps) {
               }`}
             >
               <div className="flex items-center gap-2">
-                <tab.icon className="w-4 h-4" />
+                <tab.icon className="h-4 w-4" />
                 <span>{tab.label}</span>
               </div>
               {activeTab === tab.id && (
                 <motion.div
                   layoutId="activeTab"
-                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"
+                  className="bg-primary absolute right-0 bottom-0 left-0 h-0.5"
                   transition={{ type: "spring", stiffness: 380, damping: 30 }}
                 />
               )}
@@ -94,8 +94,8 @@ export default function ServerDetailTabs({ server }: ServerDetailTabsProps) {
       >
         {activeTab === "overview" && (
           <div className="space-y-6">
-            <section className="border-2 border-border rounded-2xl bg-card p-6">
-              <h3 className="text-lg font-semibold text-foreground mb-4">
+            <section className="border-border bg-card rounded-2xl border-2 p-6">
+              <h3 className="text-foreground mb-4 text-lg font-semibold">
                 About
               </h3>
               <p className="text-muted-foreground leading-relaxed">
@@ -104,10 +104,10 @@ export default function ServerDetailTabs({ server }: ServerDetailTabsProps) {
             </section>
 
             <section>
-              <div className="flex items-center gap-3 mb-4">
-                <Code className="w-5 h-5 text-[var(--brand-red)]" />
-                <h3 className="text-lg font-semibold text-foreground">Tools</h3>
-                <span className="px-2.5 py-0.5 bg-[var(--brand-red)]/15 text-[var(--brand-red)] text-xs font-semibold rounded-lg">
+              <div className="mb-4 flex items-center gap-3">
+                <Code className="h-5 w-5 text-[var(--brand-red)]" />
+                <h3 className="text-foreground text-lg font-semibold">Tools</h3>
+                <span className="rounded-lg bg-[var(--brand-red)]/15 px-2.5 py-0.5 text-xs font-semibold text-[var(--brand-red)]">
                   {server.tools.length}
                 </span>
               </div>
@@ -119,9 +119,9 @@ export default function ServerDetailTabs({ server }: ServerDetailTabsProps) {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3, delay: index * 0.05 }}
-                    className="border-2 border-border rounded-2xl bg-card p-5"
+                    className="border-border bg-card rounded-2xl border-2 p-5"
                   >
-                    <h4 className="text-base font-semibold text-foreground mb-2">
+                    <h4 className="text-foreground mb-2 text-base font-semibold">
                       {tool.name}
                     </h4>
                     <p className="text-muted-foreground text-sm leading-relaxed">
@@ -129,21 +129,21 @@ export default function ServerDetailTabs({ server }: ServerDetailTabsProps) {
                     </p>
 
                     {tool.parameters && tool.parameters.length > 0 && (
-                      <div className="mt-4 pt-4 border-t border-white/5">
-                        <p className="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wider">
+                      <div className="mt-4 border-t border-white/5 pt-4">
+                        <p className="mb-2 text-xs font-semibold tracking-wider text-gray-500 uppercase">
                           Parameters
                         </p>
                         <div className="space-y-2">
                           {tool.parameters.map((param, idx) => (
                             <div
                               key={idx}
-                              className="flex items-center gap-2 text-sm flex-wrap"
+                              className="flex flex-wrap items-center gap-2 text-sm"
                             >
-                              <code className="px-2 py-1 bg-muted border border-border rounded text-primary font-mono text-xs">
+                              <code className="bg-muted border-border text-primary rounded border px-2 py-1 font-mono text-xs">
                                 {param.name}
                               </code>
                               <span
-                                className={`px-2 py-1 rounded text-xs font-medium ${
+                                className={`rounded px-2 py-1 text-xs font-medium ${
                                   param.required
                                     ? "bg-primary/15 text-primary"
                                     : "bg-muted text-muted-foreground"
@@ -151,7 +151,7 @@ export default function ServerDetailTabs({ server }: ServerDetailTabsProps) {
                               >
                                 {param.required ? "required" : "optional"}
                               </span>
-                              <span className="px-2 py-1 bg-muted rounded text-muted-foreground text-xs">
+                              <span className="bg-muted text-muted-foreground rounded px-2 py-1 text-xs">
                                 {param.type}
                               </span>
                             </div>
@@ -168,25 +168,25 @@ export default function ServerDetailTabs({ server }: ServerDetailTabsProps) {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.3, delay: 0.2 }}
-                  className="mt-6 relative"
+                  className="relative mt-6"
                 >
                   {!showAllTools && (
-                    <div className="absolute -top-12 left-0 right-0 h-12 bg-gradient-to-t from-background to-transparent pointer-events-none" />
+                    <div className="from-background pointer-events-none absolute -top-12 right-0 left-0 h-12 bg-gradient-to-t to-transparent" />
                   )}
 
                   <div className="flex items-center justify-center">
                     <button
                       onClick={() => setShowAllTools(!showAllTools)}
-                      className="group flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                      className="group text-muted-foreground hover:text-foreground flex items-center gap-2 text-sm transition-colors"
                     >
                       <span className="relative">
                         {showAllTools
                           ? "Show less"
                           : `Show ${server.tools.length - 3} more tools`}
-                        <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-foreground/50 group-hover:w-full transition-all duration-300" />
+                        <span className="bg-foreground/50 absolute -bottom-0.5 left-0 h-px w-0 transition-all duration-300 group-hover:w-full" />
                       </span>
                       <svg
-                        className={`w-3.5 h-3.5 transition-transform duration-300 ${showAllTools ? "rotate-180" : ""}`}
+                        className={`h-3.5 w-3.5 transition-transform duration-300 ${showAllTools ? "rotate-180" : ""}`}
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"

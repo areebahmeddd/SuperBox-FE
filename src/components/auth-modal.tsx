@@ -7,6 +7,7 @@ import {
   DialogDescription,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { GithubIcon } from "@/components/ui/github-icon";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { auth, githubProvider, googleProvider } from "@/lib/firebase";
@@ -19,7 +20,7 @@ import {
   updateProfile,
 } from "firebase/auth";
 import { motion } from "framer-motion";
-import { ArrowLeft, Eye, EyeOff, Github, Lock, Mail, User } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff, Lock, Mail, User } from "lucide-react";
 import { useState } from "react";
 
 interface AuthModalProps {
@@ -204,9 +205,9 @@ export default function AuthModal({
         {authStep !== "select" && (
           <button
             onClick={() => setAuthStep("select")}
-            className="absolute top-4 left-4 p-1.5 transition-colors z-10 group rounded-sm opacity-70 hover:opacity-100"
+            className="group absolute top-4 left-4 z-10 rounded-sm p-1.5 opacity-70 transition-colors hover:opacity-100"
           >
-            <ArrowLeft className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
+            <ArrowLeft className="text-muted-foreground group-hover:text-primary h-4 w-4 transition-colors" />
           </button>
         )}
         <div className="pt-2">
@@ -223,10 +224,10 @@ export default function AuthModal({
                 style={{ willChange: "transform, opacity" }}
                 className="mb-6 text-center"
               >
-                <h2 className="text-xl font-bold text-foreground mb-1.5">
+                <h2 className="text-foreground mb-1.5 text-xl font-bold">
                   Welcome back!
                 </h2>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-muted-foreground text-xs">
                   Sign in to continue to SuperBox Platform
                 </p>
               </motion.div>
@@ -248,7 +249,7 @@ export default function AuthModal({
                     disabled={isLoading}
                     className="w-full"
                   >
-                    <Mail className="w-4 h-4" />
+                    <Mail className="h-4 w-4" />
                     Continue with Email
                   </Button>
                 </motion.div>
@@ -312,7 +313,7 @@ export default function AuthModal({
                     disabled={isLoading}
                     className="w-full"
                   >
-                    <Github className="w-4 h-4" />
+                    <GithubIcon className="h-4 w-4" />
                     Continue with GitHub
                   </Button>
                 </motion.div>
@@ -330,10 +331,10 @@ export default function AuthModal({
                 }}
                 className="mb-8 text-center"
               >
-                <h2 className="text-2xl font-bold text-foreground mb-2">
+                <h2 className="text-foreground mb-2 text-2xl font-bold">
                   Sign in with Email
                 </h2>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-muted-foreground text-sm">
                   Enter your credentials to continue
                 </p>
               </motion.div>
@@ -352,7 +353,7 @@ export default function AuthModal({
                     Email or Username
                   </Label>
                   <div className="relative">
-                    <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                    <User className="text-muted-foreground absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2" />
                     <Input
                       id="email"
                       type="text"
@@ -378,7 +379,7 @@ export default function AuthModal({
                     Password
                   </Label>
                   <div className="relative">
-                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                    <Lock className="text-muted-foreground absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2" />
                     <Input
                       id="password"
                       type={showPassword ? "text" : "password"}
@@ -386,21 +387,21 @@ export default function AuthModal({
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="Enter your password"
-                      className="pl-12 pr-12"
+                      className="pr-12 pl-12"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-primary transition-colors"
+                      className="text-muted-foreground hover:text-primary absolute top-1/2 right-4 -translate-y-1/2 p-1 transition-colors"
                     >
                       {showPassword ? (
-                        <EyeOff className="w-5 h-5" />
+                        <EyeOff className="h-5 w-5" />
                       ) : (
-                        <Eye className="w-5 h-5" />
+                        <Eye className="h-5 w-5" />
                       )}
                     </button>
                   </div>
-                  <div className="flex justify-end mt-2">
+                  <div className="mt-2 flex justify-end">
                     <Button
                       type="button"
                       variant="link"
@@ -425,7 +426,7 @@ export default function AuthModal({
                     {isLoading ? (
                       <>
                         <svg
-                          className="animate-spin h-4 w-4 mr-2"
+                          className="mr-2 h-4 w-4 animate-spin"
                           viewBox="0 0 24 24"
                         >
                           <circle
@@ -459,7 +460,7 @@ export default function AuthModal({
                     delay: 0.3,
                     ease: [0.4, 0, 0.2, 1],
                   }}
-                  className="text-center text-sm text-muted-foreground"
+                  className="text-muted-foreground text-center text-sm"
                 >
                   Don't have an account?{" "}
                   <Button
@@ -485,10 +486,10 @@ export default function AuthModal({
                 }}
                 className="mb-8 text-center"
               >
-                <h2 className="text-2xl font-bold text-foreground mb-2">
+                <h2 className="text-foreground mb-2 text-2xl font-bold">
                   Create Account
                 </h2>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-muted-foreground text-sm">
                   Join SuperBox community today
                 </p>
               </motion.div>
@@ -503,18 +504,18 @@ export default function AuthModal({
                     ease: [0.4, 0, 0.2, 1],
                   }}
                 >
-                  <label className="block text-left text-sm font-medium text-foreground mb-2">
+                  <label className="text-foreground mb-2 block text-left text-sm font-medium">
                     Username
                   </label>
                   <div className="relative">
-                    <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                    <User className="text-muted-foreground absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2" />
                     <input
                       type="text"
                       required
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
                       placeholder="Choose a username"
-                      className="w-full pl-12 pr-4 py-2.5 bg-input border border-border rounded-xl text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:border-primary/50 focus:bg-input/80 transition-all duration-200"
+                      className="bg-input border-border text-foreground placeholder-muted-foreground focus:border-primary/50 focus:bg-input/80 w-full rounded-xl border py-2.5 pr-4 pl-12 text-sm transition-all duration-200 focus:outline-none"
                     />
                   </div>
                 </motion.div>
@@ -528,18 +529,18 @@ export default function AuthModal({
                     ease: [0.4, 0, 0.2, 1],
                   }}
                 >
-                  <label className="block text-left text-sm font-medium text-foreground mb-2">
+                  <label className="text-foreground mb-2 block text-left text-sm font-medium">
                     Email
                   </label>
                   <div className="relative">
-                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                    <Mail className="text-muted-foreground absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2" />
                     <input
                       type="email"
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="Enter your email"
-                      className="w-full pl-12 pr-4 py-2.5 bg-input border border-border rounded-xl text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:border-primary/50 focus:bg-input/80 transition-all duration-200"
+                      className="bg-input border-border text-foreground placeholder-muted-foreground focus:border-primary/50 focus:bg-input/80 w-full rounded-xl border py-2.5 pr-4 pl-12 text-sm transition-all duration-200 focus:outline-none"
                     />
                   </div>
                 </motion.div>
@@ -553,28 +554,28 @@ export default function AuthModal({
                     ease: [0.4, 0, 0.2, 1],
                   }}
                 >
-                  <label className="block text-left text-sm font-medium text-foreground mb-2">
+                  <label className="text-foreground mb-2 block text-left text-sm font-medium">
                     Password
                   </label>
                   <div className="relative">
-                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                    <Lock className="text-muted-foreground absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2" />
                     <input
                       type={showPassword ? "text" : "password"}
                       required
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="Create a password"
-                      className="w-full pl-12 pr-12 py-2.5 bg-input border border-border rounded-xl text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:border-primary/50 focus:bg-input/80 transition-all duration-200"
+                      className="bg-input border-border text-foreground placeholder-muted-foreground focus:border-primary/50 focus:bg-input/80 w-full rounded-xl border py-2.5 pr-12 pl-12 text-sm transition-all duration-200 focus:outline-none"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-primary transition-colors"
+                      className="text-muted-foreground hover:text-primary absolute top-1/2 right-4 -translate-y-1/2 p-1 transition-colors"
                     >
                       {showPassword ? (
-                        <EyeOff className="w-5 h-5" />
+                        <EyeOff className="h-5 w-5" />
                       ) : (
-                        <Eye className="w-5 h-5" />
+                        <Eye className="h-5 w-5" />
                       )}
                     </button>
                   </div>
@@ -589,30 +590,30 @@ export default function AuthModal({
                     ease: [0.4, 0, 0.2, 1],
                   }}
                 >
-                  <label className="block text-left text-sm font-medium text-foreground mb-2">
+                  <label className="text-foreground mb-2 block text-left text-sm font-medium">
                     Confirm Password
                   </label>
                   <div className="relative">
-                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                    <Lock className="text-muted-foreground absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2" />
                     <input
                       type={showConfirmPassword ? "text" : "password"}
                       required
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       placeholder="Confirm your password"
-                      className="w-full pl-12 pr-12 py-2.5 bg-input border border-border rounded-xl text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:border-primary/50 focus:bg-input/80 transition-all duration-200"
+                      className="bg-input border-border text-foreground placeholder-muted-foreground focus:border-primary/50 focus:bg-input/80 w-full rounded-xl border py-2.5 pr-12 pl-12 text-sm transition-all duration-200 focus:outline-none"
                     />
                     <button
                       type="button"
                       onClick={() =>
                         setShowConfirmPassword(!showConfirmPassword)
                       }
-                      className="absolute right-4 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-primary transition-colors"
+                      className="text-muted-foreground hover:text-primary absolute top-1/2 right-4 -translate-y-1/2 p-1 transition-colors"
                     >
                       {showConfirmPassword ? (
-                        <EyeOff className="w-5 h-5" />
+                        <EyeOff className="h-5 w-5" />
                       ) : (
-                        <Eye className="w-5 h-5" />
+                        <Eye className="h-5 w-5" />
                       )}
                     </button>
                   </div>
@@ -630,11 +631,11 @@ export default function AuthModal({
                   whileTap={{ scale: 0.98 }}
                   type="submit"
                   disabled={isLoading}
-                  className="w-full py-2.5 rounded-full bg-[var(--brand-red)] hover:bg-[var(--brand-red)]/90 text-black text-sm font-semibold transition-all duration-200 disabled:opacity-50 flex items-center justify-center gap-2"
+                  className="flex w-full items-center justify-center gap-2 rounded-full bg-[var(--brand-red)] py-2.5 text-sm font-semibold text-black transition-all duration-200 hover:bg-[var(--brand-red)]/90 disabled:opacity-50"
                 >
                   {isLoading ? (
                     <>
-                      <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                      <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24">
                         <circle
                           className="opacity-25"
                           cx="12"
@@ -665,13 +666,13 @@ export default function AuthModal({
                     delay: 0.4,
                     ease: [0.4, 0, 0.2, 1],
                   }}
-                  className="text-center text-sm text-muted-foreground"
+                  className="text-muted-foreground text-center text-sm"
                 >
                   Already have an account?{" "}
                   <button
                     type="button"
                     onClick={() => setAuthStep("signin")}
-                    className="text-[var(--brand-red)] hover:underline font-medium"
+                    className="font-medium text-[var(--brand-red)] hover:underline"
                   >
                     Sign in
                   </button>
@@ -690,10 +691,10 @@ export default function AuthModal({
                 }}
                 className="mb-8 text-center"
               >
-                <h2 className="text-2xl font-bold text-foreground mb-2">
+                <h2 className="text-foreground mb-2 text-2xl font-bold">
                   Reset Password
                 </h2>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-muted-foreground text-sm">
                   Enter your email to receive a reset link
                 </p>
               </motion.div>
@@ -708,18 +709,18 @@ export default function AuthModal({
                     ease: [0.4, 0, 0.2, 1],
                   }}
                 >
-                  <label className="block text-left text-sm font-medium text-foreground mb-2">
+                  <label className="text-foreground mb-2 block text-left text-sm font-medium">
                     Email Address
                   </label>
                   <div className="relative">
-                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                    <Mail className="text-muted-foreground absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2" />
                     <input
                       type="email"
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="Enter your email"
-                      className="w-full pl-12 pr-4 py-2.5 bg-input border border-border rounded-xl text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:border-primary/50 focus:bg-input/80 transition-all duration-200"
+                      className="bg-input border-border text-foreground placeholder-muted-foreground focus:border-primary/50 focus:bg-input/80 w-full rounded-xl border py-2.5 pr-4 pl-12 text-sm transition-all duration-200 focus:outline-none"
                     />
                   </div>
                 </motion.div>
@@ -735,7 +736,7 @@ export default function AuthModal({
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   type="submit"
-                  className="w-full py-2.5 rounded-full bg-[var(--brand-red)] hover:bg-[var(--brand-red)]/90 text-black text-sm font-semibold transition-all duration-200"
+                  className="w-full rounded-full bg-[var(--brand-red)] py-2.5 text-sm font-semibold text-black transition-all duration-200 hover:bg-[var(--brand-red)]/90"
                 >
                   Send Reset Link
                 </motion.button>
@@ -748,13 +749,13 @@ export default function AuthModal({
                     delay: 0.25,
                     ease: [0.4, 0, 0.2, 1],
                   }}
-                  className="text-center text-sm text-muted-foreground"
+                  className="text-muted-foreground text-center text-sm"
                 >
                   Remember your password?{" "}
                   <button
                     type="button"
                     onClick={() => setAuthStep("signin")}
-                    className="text-[var(--brand-red)] hover:underline font-medium"
+                    className="font-medium text-[var(--brand-red)] hover:underline"
                   >
                     Sign in
                   </button>
@@ -774,13 +775,13 @@ export default function AuthModal({
               }}
               className="mt-6 text-center"
             >
-              <p className="text-xs text-muted-foreground">
+              <p className="text-muted-foreground text-xs">
                 By continuing, you agree to our{" "}
                 <a
                   href="/terms-of-service"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[var(--brand-red)] underline hover:underline transition-all"
+                  className="text-[var(--brand-red)] underline transition-all hover:underline"
                 >
                   Terms of Service
                 </a>{" "}
@@ -789,7 +790,7 @@ export default function AuthModal({
                   href="/privacy-policy"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[var(--brand-red)] underline hover:underline transition-all"
+                  className="text-[var(--brand-red)] underline transition-all hover:underline"
                 >
                   Privacy Policy
                 </a>
