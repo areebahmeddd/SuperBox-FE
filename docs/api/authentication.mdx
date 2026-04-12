@@ -1,4 +1,4 @@
----
+﻿---
 title: "Authentication"
 description: "Learn how to authenticate with the SuperBox API"
 icon: "key"
@@ -16,42 +16,42 @@ SuperBox uses **Firebase Authentication** with **JWT (JSON Web Tokens)** for sec
 
 <Steps>
   <Step title="Create an Account">
-    Sign up at [SuperBox](https://superbox.1mindlabs.org) using one of our supported providers:
-    
-    <CardGroup cols={3}>
-      <Card title="Google" icon="google">
-        Sign in with Google
-      </Card>
-      <Card title="GitHub" icon="github">
-        Sign in with GitHub
-      </Card>
-      <Card title="Email" icon="envelope">
-        Email/Password
-      </Card>
-    </CardGroup>
+ Sign up at [SuperBox](https://superbox.1mindlabs.org) using one of our supported providers:
+ 
+ <CardGroup cols={3}>
+<Card title="Google" icon="google">
+  Sign in with Google
+</Card>
+<Card title="GitHub" icon="github">
+  Sign in with GitHub
+</Card>
+<Card title="Email" icon="envelope">
+  Email/Password
+</Card>
+ </CardGroup>
   </Step>
 
   <Step title="Navigate to Settings">
-    Go to your [Profile Settings](https://superbox.1mindlabs.org/settings) page.
+ Go to your [Profile Settings](https://superbox.1mindlabs.org/settings) page.
   </Step>
 
   <Step title="Generate API Token">
-    Click **"Generate API Token"** to create a new authentication token.
-    
-    <Warning>
-      This token will only be shown once. Store it securely!
-    </Warning>
+ Click **"Generate API Token"** to create a new authentication token.
+ 
+ <Warning>
+This token will only be shown once. Store it securely!
+ </Warning>
   </Step>
 
   <Step title="Copy and Store">
-    Copy your token and store it in a secure location like:
-    - Environment variables
-    - Secure password manager
-    - Encrypted configuration file
-    
-    <Note>
-      Never commit tokens to version control or share them publicly.
-    </Note>
+ Copy your token and store it in a secure location like:
+ - Environment variables
+ - Secure password manager
+ - Encrypted configuration file
+ 
+ <Note>
+Never commit tokens to version control or share them publicly.
+ </Note>
   </Step>
 </Steps>
 
@@ -68,38 +68,35 @@ export SUPERBOX_API_TOKEN="your_firebase_jwt_token_here"
 Then reference it in your code:
 
 <CodeGroup>
-```bash
-cURL
+```bash cURL
 curl -X GET "https://api.superbox.ai/api/v1/servers" \
   -H "Authorization: Bearer $SUPERBOX_API_TOKEN"
 ```
 
-```javascript
-JavaScript
+```javascript JavaScript
 const token = process.env.SUPERBOX_API_TOKEN;
 
 const response = await fetch("https://api.superbox.ai/api/v1/servers", {
   headers: {
-    Authorization: `Bearer ${token}`,
-    "Content-Type": "application/json",
+ Authorization: `Bearer ${token}`,
+ "Content-Type": "application/json",
   },
 });
 ```
 
-```python
-Python
+```python Python
 import os
 import requests
 
 token = os.getenv('SUPERBOX_API_TOKEN')
 headers = {
-    'Authorization': f'Bearer {token}',
-    'Content-Type': 'application/json'
+ 'Authorization': f'Bearer {token}',
+ 'Content-Type': 'application/json'
 }
 
 response = requests.get(
-    'https://api.superbox.ai/api/v1/servers',
-    headers=headers
+ 'https://api.superbox.ai/api/v1/servers',
+ headers=headers
 )
 ```
 </CodeGroup>
@@ -109,32 +106,29 @@ response = requests.get(
 For testing or development, you can use the token directly:
 
 <CodeGroup>
-```bash
-cURL
+```bash cURL
 curl -X GET "https://api.superbox.ai/api/v1/servers" \
   -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IjE5..."
 ```
 
-```javascript
-JavaScript
+```javascript JavaScript
 const response = await fetch("https://api.superbox.ai/api/v1/servers", {
   headers: {
-    Authorization: "Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IjE5...",
-    "Content-Type": "application/json",
+ Authorization: "Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IjE5...",
+ "Content-Type": "application/json",
   },
 });
 ```
 
-```python
-Python
+```python Python
 headers = {
-    'Authorization': 'Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IjE5...',
-    'Content-Type': 'application/json'
+ 'Authorization': 'Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IjE5...',
+ 'Content-Type': 'application/json'
 }
 
 response = requests.get(
-    'https://api.superbox.ai/api/v1/servers',
-    headers=headers
+ 'https://api.superbox.ai/api/v1/servers',
+ headers=headers
 )
 ```
 </CodeGroup>
@@ -143,23 +137,23 @@ response = requests.get(
 
 ```mermaid
 sequenceDiagram
-    participant User
-    participant Frontend
-    participant Firebase
-    participant API
-    participant Resource
+ participant User
+ participant Frontend
+ participant Firebase
+ participant API
+ participant Resource
 
-    User->>Frontend: Login Request
-    Frontend->>Firebase: Authenticate
-    Firebase-->>Frontend: JWT Token
-    Frontend->>Frontend: Store Token
-    Frontend->>API: Request + Bearer Token
-    API->>Firebase: Validate Token
-    Firebase-->>API: Token Valid ✓
-    API->>Resource: Access Granted
-    Resource-->>API: Data
-    API-->>Frontend: Response
-    Frontend-->>User: Display Data
+ User->>Frontend: Login Request
+ Frontend->>Firebase: Authenticate
+ Firebase-->>Frontend: JWT Token
+ Frontend->>Frontend: Store Token
+ Frontend->>API: Request + Bearer Token
+ API->>Firebase: Validate Token
+ Firebase-->>API: Token Valid
+ API->>Resource: Access Granted
+ Resource-->>API: Data
+ API-->>Frontend: Response
+ Frontend-->>User: Display Data
 ```
 
 ## Token Validation
@@ -168,7 +162,7 @@ When you make an authenticated request, the API validates your token:
 
 <Steps>
   <Step title="Extract Token">
-    API extracts the Bearer token from the Authorization header
+ API extracts the Bearer token from the Authorization header
   </Step>
 
 <Step title="Verify Signature">
@@ -182,7 +176,7 @@ When you make an authenticated request, the API validates your token:
 </Step>
 
   <Step title="Authorize Request">
-    User permissions are checked for the requested resource
+ User permissions are checked for the requested resource
   </Step>
 </Steps>
 
@@ -212,11 +206,11 @@ Signature_Hash_Value...  (Signature)
   "email": "user@example.com",
   "email_verified": true,
   "firebase": {
-    "identities": {
-      "google.com": ["123456789"],
-      "email": ["user@example.com"]
-    },
-    "sign_in_provider": "google.com"
+ "identities": {
+"google.com": ["123456789"],
+"email": ["user@example.com"]
+ },
+ "sign_in_provider": "google.com"
   }
 }
 ```
@@ -249,11 +243,11 @@ When a token expires, you'll receive a `401 Unauthorized` response:
 {
   "success": false,
   "error": {
-    "code": "INVALID_TOKEN",
-    "message": "Authentication token has expired",
-    "details": {
-      "expiredAt": "2025-12-09T11:30:00Z"
-    }
+ "code": "INVALID_TOKEN",
+ "message": "Authentication token has expired",
+ "details": {
+"expiredAt": "2025-12-09T11:30:00Z"
+ }
   }
 }
 ```
@@ -263,14 +257,13 @@ When a token expires, you'll receive a `401 Unauthorized` response:
 The SuperBox frontend automatically refreshes tokens before they expire. For API clients, implement token refresh logic:
 
 <CodeGroup>
-```javascript
-JavaScript
+```javascript JavaScript
 let token = await getFirebaseToken();
 let tokenExpiry = getTokenExpiry(token);
 
 async function makeRequest(url, options = {}) {
 // Refresh if token expires in < 5 minutes
-if (Date.now() > tokenExpiry - 5 _ 60 _ 1000) {
+if (Date.now() > tokenExpiry - 5 * 60 * 1000) {
 token = await refreshFirebaseToken();
 tokenExpiry = getTokenExpiry(token);
 }
@@ -284,38 +277,37 @@ headers: {
 });
 }
 
-````
+```
 
-```python
-Python
+```python Python
 import time
 import jwt
 from datetime import datetime, timedelta
 
 class SuperBoxClient:
-    def __init__(self, token):
-        self.token = token
-        self.token_expiry = self._get_token_expiry()
+ def __init__(self, token):
+  self.token = token
+  self.token_expiry = self._get_token_expiry()
 
-    def _get_token_expiry(self):
-        decoded = jwt.decode(self.token, options={"verify_signature": False})
-        return datetime.fromtimestamp(decoded['exp'])
+ def _get_token_expiry(self):
+  decoded = jwt.decode(self.token, options={"verify_signature": False})
+  return datetime.fromtimestamp(decoded['exp'])
 
-    def _should_refresh(self):
-        # Refresh if token expires in < 5 minutes
-        return datetime.now() > self.token_expiry - timedelta(minutes=5)
+ def _should_refresh(self):
+  # Refresh if token expires in < 5 minutes
+  return datetime.now() > self.token_expiry - timedelta(minutes=5)
 
-    def make_request(self, url, **kwargs):
-        if self._should_refresh():
-            self.token = self._refresh_token()
-            self.token_expiry = self._get_token_expiry()
+ def make_request(self, url, **kwargs):
+  if self._should_refresh():
+self.token = self._refresh_token()
+self.token_expiry = self._get_token_expiry()
 
-        headers = kwargs.get('headers', {})
-        headers['Authorization'] = f'Bearer {self.token}'
-        kwargs['headers'] = headers
+  headers = kwargs.get('headers', {})
+  headers['Authorization'] = f'Bearer {self.token}'
+  kwargs['headers'] = headers
 
-        return requests.request(**kwargs)
-````
+  return requests.request(**kwargs)
+```
 
 </CodeGroup>
 
@@ -323,29 +315,29 @@ class SuperBoxClient:
 
 <Tabs>
   <Tab title="Public Endpoints">
-    These endpoints don't require authentication:
-    <ResponseField name="GET /servers" type="public">
-      List all servers (read-only)
-    </ResponseField>
-    <ResponseField name="GET /servers/:name" type="public">
-      Get server details (read-only)
-    </ResponseField>
-    <Note>Public endpoints have stricter rate limits (100 req/hour)</Note>
+ These endpoints don't require authentication:
+ <ResponseField name="GET /servers" type="public">
+List all servers (read-only)
+ </ResponseField>
+ <ResponseField name="GET /servers/:name" type="public">
+Get server details (read-only)
+ </ResponseField>
+ <Note>Public endpoints have stricter rate limits (100 req/hour)</Note>
   </Tab>
 
   <Tab title="Authenticated Endpoints">
-    These endpoints require a valid Bearer token:
-    <ResponseField name="POST /servers" type="authenticated" required>
-      Create a new server
-    </ResponseField>
-    <ResponseField name="PUT /servers/:name" type="authenticated" required>
-      Update server metadata
-    </ResponseField>
-    <ResponseField name="DELETE /servers/:name" type="authenticated" required>
-      Delete a server
-    </ResponseField>
-    <Note>MCP execution happens via WebSocket API (not HTTP endpoints). Use `superbox pull` to configure AI clients.</Note>
-    <Info>Authenticated endpoints have higher rate limits (1000 req/hour)</Info>
+ These endpoints require a valid Bearer token:
+ <ResponseField name="POST /servers" type="authenticated" required>
+Create a new server
+ </ResponseField>
+ <ResponseField name="PUT /servers/:name" type="authenticated" required>
+Update server metadata
+ </ResponseField>
+ <ResponseField name="DELETE /servers/:name" type="authenticated" required>
+Delete a server
+ </ResponseField>
+ <Note>MCP execution happens via WebSocket API (not HTTP endpoints). Use `superbox pull` to configure AI clients.</Note>
+ <Info>Authenticated endpoints have higher rate limits (1000 req/hour)</Info>
   </Tab>
 </Tabs>
 
@@ -355,7 +347,7 @@ SuperBox implements resource-level permissions:
 
 <AccordionGroup>
   <Accordion icon="eye" title="Read Permission">
-    All authenticated users can read any server's information
+ All authenticated users can read any server's information
   </Accordion>
 
 <Accordion icon="pen" title="Write Permission">
@@ -367,7 +359,7 @@ SuperBox implements resource-level permissions:
 </Accordion>
 
   <Accordion icon="crown" title="Admin Permission">
-    SuperBox admins can modify or delete any server
+ SuperBox admins can modify or delete any server
   </Accordion>
 </AccordionGroup>
 
@@ -379,11 +371,11 @@ SuperBox implements resource-level permissions:
 {
   "success": false,
   "error": {
-    "code": "MISSING_TOKEN",
-    "message": "Authentication token is required",
-    "details": {
-      "hint": "Include 'Authorization: Bearer <token>' header"
-    }
+ "code": "MISSING_TOKEN",
+ "message": "Authentication token is required",
+ "details": {
+"hint": "Include 'Authorization: Bearer <token>' header"
+ }
   }
 }
 ```
@@ -394,11 +386,11 @@ SuperBox implements resource-level permissions:
 {
   "success": false,
   "error": {
-    "code": "INVALID_TOKEN",
-    "message": "Authentication token is invalid or malformed",
-    "details": {
-      "reason": "Invalid signature"
-    }
+ "code": "INVALID_TOKEN",
+ "message": "Authentication token is invalid or malformed",
+ "details": {
+"reason": "Invalid signature"
+ }
   }
 }
 ```
@@ -409,12 +401,12 @@ SuperBox implements resource-level permissions:
 {
   "success": false,
   "error": {
-    "code": "EXPIRED_TOKEN",
-    "message": "Authentication token has expired",
-    "details": {
-      "expiredAt": "2025-12-09T10:30:00Z",
-      "hint": "Refresh your token and try again"
-    }
+ "code": "EXPIRED_TOKEN",
+ "message": "Authentication token has expired",
+ "details": {
+"expiredAt": "2025-12-09T10:30:00Z",
+"hint": "Refresh your token and try again"
+ }
   }
 }
 ```
@@ -425,12 +417,12 @@ SuperBox implements resource-level permissions:
 {
   "success": false,
   "error": {
-    "code": "FORBIDDEN",
-    "message": "You don't have permission to perform this action",
-    "details": {
-      "required": "owner",
-      "current": "user"
-    }
+ "code": "FORBIDDEN",
+ "message": "You don't have permission to perform this action",
+ "details": {
+"required": "owner",
+"current": "user"
+ }
   }
 }
 ```
@@ -439,9 +431,9 @@ SuperBox implements resource-level permissions:
 
 <AccordionGroup>
   <Accordion icon="lock" title="Store Tokens Securely">
-    - Use environment variables - Never hardcode tokens in source code - Don't
-    commit tokens to version control - Use secret management services (AWS
-    Secrets Manager, HashiCorp Vault)
+ - Use environment variables - Never hardcode tokens in source code - Don't
+ commit tokens to version control - Use secret management services (AWS
+ Secrets Manager, HashiCorp Vault)
   </Accordion>
 
 <Accordion icon="rotate" title="Implement Token Refresh">
@@ -461,8 +453,8 @@ SuperBox implements resource-level permissions:
 </Accordion>
 
   <Accordion icon="bell" title="Monitor for Breaches">
-    - Set up alerts for unusual activity - Review access logs regularly - Revoke
-    compromised tokens immediately
+ - Set up alerts for unusual activity - Review access logs regularly - Revoke
+ compromised tokens immediately
   </Accordion>
 </AccordionGroup>
 
@@ -471,8 +463,7 @@ SuperBox implements resource-level permissions:
 Using our official SDKs simplifies authentication:
 
 <CodeGroup>
-```python
-Python SDK
+```python Python SDK
 from superbox import SuperBoxClient
 
 # Initialize with token
@@ -483,10 +474,9 @@ client = SuperBoxClient(token=os.getenv('SUPERBOX_API_TOKEN'))
 
 servers = client.servers.list()
 
-````
+```
 
-```javascript
-Node.js SDK
+```javascript Node.js SDK
 import { SuperBoxClient } from '@superbox/sdk';
 
 // Initialize with token
@@ -496,23 +486,22 @@ const client = new SuperBoxClient({
 
 // Token refresh is handled automatically
 const servers = await client.servers.list();
-````
+```
 
-```go
-Go SDK
+```go Go SDK
 package main
 
 import (
-    "os"
-    "github.com/superbox/sdk-go"
+ "os"
+ "github.com/superbox/sdk-go"
 )
 
 func main() {
-    // Initialize with token
-    client := superbox.NewClient(os.Getenv("SUPERBOX_API_TOKEN"))
+ // Initialize with token
+ client := superbox.NewClient(os.Getenv("SUPERBOX_API_TOKEN"))
 
-    // Token refresh is handled automatically
-    servers, err := client.Servers.List()
+ // Token refresh is handled automatically
+ servers, err := client.Servers.List()
 }
 ```
 
@@ -524,19 +513,19 @@ Test your authentication setup:
 
 ```bash
 # Test with valid token
-curl -X GET "https://api.superbox.ai/api/v1/user/profile" \
+curl -X GET "https://api.superbox.ai/api/v1/auth/me" \
   -H "Authorization: Bearer $SUPERBOX_API_TOKEN"
 
 # Expected: 200 OK with user profile
 
 # Test with invalid token
-curl -X GET "https://api.superbox.ai/api/v1/user/profile" \
+curl -X GET "https://api.superbox.ai/api/v1/auth/me" \
   -H "Authorization: Bearer invalid_token"
 
 # Expected: 401 Unauthorized
 
 # Test without token
-curl -X GET "https://api.superbox.ai/api/v1/user/profile"
+curl -X GET "https://api.superbox.ai/api/v1/auth/me"
 
 # Expected: 401 Unauthorized (missing token)
 ```
@@ -549,14 +538,14 @@ curl -X GET "https://api.superbox.ai/api/v1/user/profile"
 
 <CardGroup cols={2}>
   <Card
-    title="Create Your First Server"
-    icon="rocket"
-    href="/api/servers/create"
+ title="Create Your First Server"
+ icon="rocket"
+ href="/api/servers/create"
   >
-    Deploy an MCP server using authenticated endpoints
+ Deploy an MCP server using authenticated endpoints
   </Card>
 
   <Card title="Error Handling" icon="triangle-exclamation" href="/api/errors">
-    Learn how to handle authentication errors
+ Learn how to handle authentication errors
   </Card>
 </CardGroup>

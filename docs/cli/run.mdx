@@ -1,63 +1,69 @@
----
+﻿---
 title: "superbox run"
-description: "[DEPRECATED] Use VS Code/Cursor integration via superbox pull instead"
+description: "Deprecated - use superbox pull to configure AI clients"
 icon: "ban"
 ---
 
 <Warning>
-  **DEPRECATED** - This command is no longer supported. Use `superbox pull` to configure MCP servers in your AI client instead.
+  **This command is deprecated.** Running `superbox run` prints a deprecation notice and exits. Use `superbox pull` to configure your AI client, then interact with the server through the client's MCP panel.
 </Warning>
 
-## Recommended Alternative
-
-Instead of using `superbox run`, configure your MCP server in VS Code, Cursor, or other AI clients:
+## What the command does
 
 ```bash
-superbox pull --name weather-mcp --client vscode
+superbox run --name NAME
 ```
 
-Then interact with the server through your AI client's MCP panel or chat interface.
+When invoked, the command:
 
-## Why Was This Deprecated?
+1. Prints a deprecation message explaining the change
+2. Suggests the equivalent `superbox pull` command
+3. Exits with code `0`
 
-The `run` command provided a terminal-based interactive session with MCP servers. However, the primary use case for MCP servers is integration with AI clients like VS Code, Cursor, Claude Desktop, etc.
+No connection to the Worker is made.
 
-The WebSocket-based architecture is optimized for stdio transport (which AI clients use), not HTTP-based terminal interactions.
+## Migration
 
-## Migration Guide
+Use `superbox pull` to configure your AI client for the server:
 
-<Steps>
-  <Step title="Old Workflow">
-    ```bash
-    superbox run --name weather-mcp
-    > What tools are available?
-    ```
-  </Step>
+```bash
+superbox pull --name weather-server --client cursor
+```
 
-  <Step title="New Workflow">
-    ```bash
-    # Configure in your AI client
-    superbox pull --name weather-mcp --client vscode
-    
-    # Then use the MCP panel in VS Code or ask in chat:
-    # "What tools are available in weather-mcp?"
-    ```
-  </Step>
-</Steps>
+Then interact with the server through your AI client's chat or MCP tool panel.
+
+## Sending raw JSON-RPC manually
+
+If you need to send raw JSON-RPC for debugging, use `curl` directly:
+
+```bash
+# Start a session
+curl -s -X POST \
+  "https://superbox-executor.<your-subdomain>.workers.dev/mcp?name=weather-server" \
+  -H "Content-Type: application/json" \
+  -H "Mcp-Session-Id: test-session-1" \
+  -d '{"jsonrpc":"2.0","method":"initialize","params":{"protocolVersion":"2025-11-25","capabilities":{}},"id":1}'
+
+# List tools
+curl -s -X POST \
+  "https://superbox-executor.<your-subdomain>.workers.dev/mcp?name=weather-server" \
+  -H "Content-Type: application/json" \
+  -H "Mcp-Session-Id: test-session-1" \
+  -d '{"jsonrpc":"2.0","method":"tools/list","id":2}'
+
+# Tear down session
+curl -s -X DELETE \
+  "https://superbox-executor.<your-subdomain>.workers.dev/mcp?name=weather-server" \
+  -H "Mcp-Session-Id: test-session-1"
+```
 
 ## See Also
 
 <CardGroup cols={2}>
-  <Card title="Pull Command" icon="download" href="/cli/pull">
-    Configure MCP servers in AI clients
+  <Card title="pull" icon="cloud-arrow-down" href="/cli/pull">
+ Configure MCP servers in AI clients
   </Card>
-  <Card title="Test Command" icon="flask" href="/cli/test">
-    Test servers during development
-  </Card>
-  <Card title="Push Command" icon="upload" href="/cli/push">
-    Publish to SuperBox registry
-  </Card>
-  <Card title="Inspect Command" icon="eye" href="/cli/inspect">
-    View server details
+  <Card title="test" icon="flask" href="/cli/test">
+ Test an unreleased server from GitHub
   </Card>
 </CardGroup>

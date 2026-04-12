@@ -1,6 +1,6 @@
----
+﻿---
 title: "CLI Introduction"
-description: "SuperBox CLI — Manage MCP servers end to end"
+description: "SuperBox CLI - Manage MCP servers end to end"
 icon: "terminal"
 ---
 
@@ -9,7 +9,7 @@ icon: "terminal"
 The SuperBox CLI is a Python (Click) tool for managing MCP servers from initialization to deployment. Commands map directly to the backend implementation in `superbox.ai/src/superbox/cli`.
 
 <Info>
-  All CLI documentation matches the actual backend implementation. For detailed setup and usage, visit [https://superbox.1mindlabs.org/docs](https://acm-aa28ebf6.mintlify.app)
+  All CLI documentation matches the actual backend implementation. For detailed setup and usage, visit [https://superbox.1mindlabs.org/docs](https://superbox.1mindlabs.org/docs)
 </Info>
 
 ## Installation
@@ -32,36 +32,36 @@ python -m pip install -e .[cli]
 
 <Steps>
   <Step title="Authenticate">
-    ```bash
-    superbox auth login --provider google
-    # or
-    superbox auth login --provider email
-    ```
-    Device flow for Google/GitHub is supported; email/password works too.
+ ```bash
+ superbox auth login --provider google
+ # or
+ superbox auth login --provider email
+ ```
+ Device flow for Google/GitHub is supported; email/password works too.
   </Step>
   <Step title="Init server config">
-    ```bash
-    superbox init
-    ```
-    Creates `superbox.json` with name, repo URL, entrypoint, license, etc.
+ ```bash
+ superbox init
+ ```
+ Creates `superbox.json` with name, repo URL, entrypoint, license, etc.
   </Step>
   <Step title="Publish with scans">
-    ```bash
-    superbox push --name my-mcp
-    ```
-    Runs SonarCloud, Bandit, GitGuardian, tool discovery, then uploads to S3 registry.
+ ```bash
+ superbox push --name my-mcp
+ ```
+ Runs SonarCloud, tool discovery, Snyk, GitGuardian, and Bandit, then uploads to R2 registry.
   </Step>
   <Step title="Configure client">
-    ```bash
-    superbox pull --name my-mcp --client cursor
-    ```
-    Clients supported: `vscode`, `cursor`, `windsurf`, `claude`, `chatgpt`.
+ ```bash
+ superbox pull --name my-mcp --client cursor
+ ```
+ Clients supported: `vscode`, `cursor`, `windsurf`, `claude`, `chatgpt`.
   </Step>
-  <Step title="Run & view logs">
-    ```bash
-    superbox run --name my-mcp
-    superbox logs --name my-mcp --follow
-    ```
+  <Step title="View logs">
+ ```bash
+ superbox logs --name my-mcp
+ ```
+ Prints `wrangler tail` instructions for streaming logs from the Cloudflare Worker.
   </Step>
 </Steps>
 
@@ -71,16 +71,16 @@ python -m pip install -e .[cli]
 
 <CardGroup cols={2}>
   <Card title="auth register" icon="user-plus" href="/cli/auth">
-    Create new account
+ Create new account
   </Card>
   <Card title="auth login" icon="right-to-bracket" href="/cli/auth">
-    Log in with email/Google/GitHub
+ Log in with email/Google/GitHub
   </Card>
   <Card title="auth status" icon="circle-info" href="/cli/auth">
-    Check auth status
+ Check auth status
   </Card>
   <Card title="auth logout" icon="right-from-bracket" href="/cli/auth">
-    Log out
+ Log out
   </Card>
 </CardGroup>
 
@@ -88,33 +88,33 @@ python -m pip install -e .[cli]
 
 <CardGroup cols={2}>
   <Card title="init" icon="wand-magic-sparkles" href="/cli/init">
-    Initialize superbox.json
+ Initialize superbox.json
   </Card>
   <Card title="push" icon="cloud-arrow-up" href="/cli/push">
-    Publish to registry with security scans
+ Publish to registry with security scans
   </Card>
   <Card title="pull" icon="cloud-arrow-down" href="/cli/pull">
-    Configure client for server
+ Configure client for server
   </Card>
   <Card title="search" icon="magnifying-glass" href="/cli/search">
-    List registry servers
+ List registry servers
   </Card>
 </CardGroup>
 
 ### Testing & Debugging
 
 <CardGroup cols={2}>
-  <Card title="run" icon="play" href="/cli/run">
-    Interactive terminal session
+  <Card title="run" icon="ban" href="/cli/run">
+ Deprecated
   </Card>
   <Card title="test" icon="flask" href="/cli/test">
-    Test without registry
+ Test without registry
   </Card>
   <Card title="logs" icon="file-lines" href="/cli/logs">
-    View CloudWatch logs
+ View Worker log instructions
   </Card>
   <Card title="inspect" icon="eye" href="/cli/inspect">
-    Open repository in browser
+ Open repository in browser
   </Card>
 </CardGroup>
 
@@ -136,29 +136,32 @@ superbox search
 superbox inspect --name NAME
 
 # Testing & debugging
-superbox run --name NAME
 superbox test --url URL --client CLIENT
 superbox logs --name NAME [--follow]
 ```
 
 ## Configuration
 
-The CLI expects a `.env` file in your working directory for AWS/Firebase config:
+The CLI expects a `.env` file in your working directory for Cloudflare/Firebase config:
 
 ```bash
-# AWS (required for S3 registry)
-AWS_REGION=ap-south-1
-AWS_ACCESS_KEY_ID=your_key
-AWS_SECRET_ACCESS_KEY=your_secret
-S3_BUCKET_NAME=your-bucket
+# Cloudflare
+CLOUDFLARE_ACCOUNT_ID=your_account_id
 
-# WebSocket API (for pull/test commands)
-WEBSOCKET_URL=wss://api-gateway-id.execute-api.region.amazonaws.com/production
+# Cloudflare R2
+CLOUDFLARE_R2_ENDPOINT=https://<account-id>.r2.cloudflarestorage.com
+CLOUDFLARE_R2_ACCESS_KEY_ID=your_r2_key
+CLOUDFLARE_R2_SECRET_ACCESS_KEY=your_r2_secret
+CLOUDFLARE_R2_BUCKET_NAME=superbox-mcp-registry
+
+# Cloudflare Worker URL
+CLOUDFLARE_WORKER_URL=https://superbox-executor.<your-subdomain>.workers.dev
 
 # Scanners (for push command)
 SONAR_TOKEN=your_token
 SONAR_ORGANIZATION=your_org
 GITGUARDIAN_API_KEY=your_key
+SNYK_API_TOKEN=your_snyk_api_token
 ```
 
 ## Token Storage
@@ -189,8 +192,7 @@ superbox push --name weather-mcp
 # Configure client
 superbox pull --name weather-mcp --client cursor
 
-# Test and monitor
-superbox run --name weather-mcp
+# Monitor
 superbox logs --name weather-mcp --follow
 ```
 
@@ -210,19 +212,19 @@ superbox inspect --name weather-mcp
 
 <CardGroup cols={2}>
   <Card title="Installation" icon="download" href="/cli/installation">
-    Setup guide
+ Setup guide
   </Card>
   <Card title="Authentication" icon="key" href="/cli/auth">
-    Auth commands
+ Auth commands
   </Card>
   <Card title="Publishing" icon="upload" href="/cli/push">
-    Publish servers
+ Publish servers
   </Card>
   <Card title="Backend Setup" icon="server" href="/backend/setup">
-    Run local server
+ Run local server
   </Card>
 </CardGroup>
 
 <Info>
-  For complete documentation, visit [https://superbox.1mindlabs.org/docs](https://acm-aa28ebf6.mintlify.app)
+  For complete documentation, visit [https://superbox.1mindlabs.org/docs](https://superbox.1mindlabs.org/docs)
 </Info>

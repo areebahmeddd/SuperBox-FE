@@ -1,4 +1,4 @@
----
+﻿---
 title: "superbox test"
 description: "Test MCP server directly from repository without registry (development mode)"
 icon: "flask"
@@ -7,7 +7,7 @@ icon: "flask"
 ## Usage
 
 ```bash
-superbox test --url URL --client CLIENT [--entrypoint FILE] [--lang LANGUAGE]
+superbox test --url URL --client CLIENT [--entrypoint FILE]
 ```
 
 ## Description
@@ -15,7 +15,7 @@ superbox test --url URL --client CLIENT [--entrypoint FILE] [--lang LANGUAGE]
 Test an MCP server directly from a GitHub repository URL without registry registration or security checks. Perfect for rapid development and testing before publishing to the platform.
 
 <Warning>
-  **TEST MODE** - Bypasses security scanning and S3 registration. Use only for testing your own servers during development.
+  **TEST MODE** - Bypasses security scanning and R2 registry. Use only for testing your own servers during development.
 </Warning>
 
 ## Options
@@ -29,30 +29,26 @@ Test an MCP server directly from a GitHub repository URL without registry regist
 </ParamField>
 
 <ParamField path="--entrypoint" type="string" default="main.py">
-  Entrypoint file for the server
-</ParamField>
-
-<ParamField path="--lang" type="string" default="python">
-  Programming language (currently supports Python)
+  Entry point file within the repository root.
 </ParamField>
 
 ## How It Works
 
 <Steps>
   <Step title="Skip Registry">
-    Bypasses S3 registry lookup and security scanning pipeline
+ Bypasses R2 registry lookup and security scanning pipeline
   </Step>
 
   <Step title="Configure Client">
-    Writes MCP config with test mode WebSocket URL pointing directly to your repo
+ Writes MCP config with test mode HTTP URL pointing directly to the Cloudflare Worker
   </Step>
 
-  <Step title="Lambda Clones Repo">
-    Lambda executor clones your repo from GitHub on-demand (no S3 storage)
+  <Step title="Worker fetches source file">
+ The Cloudflare Worker reads the entrypoint directly from the GitHub URL - no R2 registry lookup
   </Step>
 
   <Step title="Test in Client">
-    Use the server immediately in your AI client (appears as `your-repo-test`)
+ Use the server immediately in your AI client. It appears as `{repo-name}-test` in the config (e.g. a repo named `my-mcp` becomes `my-mcp-test`).
   </Step>
 </Steps>
 
@@ -60,22 +56,21 @@ Test an MCP server directly from a GitHub repository URL without registry regist
 
 ```mermaid
 graph LR
-    A[superbox test] --> B[Write mcp.json]
-    B --> C[VS Code/Cursor]
-    C --> D[Local Proxy]
-    D --> E[WebSocket API]
-    E --> F[Lambda]
-    F --> G[Clone GitHub Repo]
-    G --> H[Run MCP Server]
+ A[superbox test] --> B[Write HTTP config]
+ B --> C[VS Code/Cursor]
+ C --> D[Cloudflare Worker]
+ D --> E[McpSession DO - test_mode=true]
+ E --> F[Fetch source from GitHub]
+ F --> G[TS interpreter runs MCP server]
 ```
 
-The test mode uses the same WebSocket infrastructure as production but tells Lambda to clone directly from your repo URL instead of fetching from S3.
+Test mode uses the same Worker infrastructure as production but skips the R2 registry lookup and fetches the entrypoint source directly from your GitHub URL.
 
 ## Security Notice
 
 <Warning>
 This command skips:
-- Security scanning (SonarQube, Bandit, GitGuardian)
+- Security scanning (SonarCloud, tool discovery, Snyk, GitGuardian, Bandit)
 - Quality checks
 - Registry validation
 
@@ -95,27 +90,19 @@ superbox test \
   --client vscode \
   --entrypoint server.py
 ```
-
-```bash Node.js Server
-superbox test \
-  --url https://github.com/user/my-mcp \
-  --client claude \
-  --lang node \
-  --entrypoint index.js
-```
 </CodeGroup>
 
 ## Example Output
 
 ```bash
 $ superbox test --url https://github.com/user/my-mcp --client cursor
-⚠️  TEST MODE - No Security Checks
+[TEST MODE] - No Security Checks
 This server is being tested directly and has NOT gone through:
-  • Security scanning (SonarQube, Bandit, GitGuardian)
-  • Quality checks
-  • Registry validation
+  - Security scanning (SonarCloud, tool discovery, Snyk, GitGuardian, Bandit)
+  - Quality checks
+  - Registry validation
 
-✓ Configuration written to ~/.cursor/mcp.json
+Configuration written to ~/.cursor/mcp.json
 
 Ready to test in Cursor!
 ```
@@ -124,9 +111,6 @@ Ready to test in Cursor!
 
 <CardGroup cols={2}>
   <Card title="Push Server" icon="upload" href="/cli/push">
-    Publish after tests pass
-  </Card>
-  <Card title="Run Locally" icon="play" href="/cli/run">
-    Test interactively
+ Publish after tests pass
   </Card>
 </CardGroup>

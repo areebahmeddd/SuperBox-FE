@@ -1,124 +1,111 @@
----
+﻿---
 title: "Quickstart"
-description: "Get started with SuperBox - publish and use MCP servers"
+description: "Publish and use MCP servers with SuperBox"
 icon: "bolt"
 ---
 
-## For Developers: Publishing MCP Servers
+## For developers: publishing a server
 
 <Steps>
-  <Step title="Install CLI">
-    ```bash
-    pip install superbox
-    ```
+  <Step title="Install the CLI">
+ ```bash
+ pip install superbox
+ ```
   </Step>
 
   <Step title="Authenticate">
-    ```bash
-    superbox auth login
-    ```
-    
-    Follow the device flow instructions to authenticate via browser.
+ ```bash
+ superbox auth login
+ ```
+ Follow the device flow instructions to authenticate via browser.
   </Step>
 
-  <Step title="Initialize Your Server">
-    ```bash
-    superbox init
-    ```
-    
-    Provide server details: name, repository URL, description, entrypoint file.
+  <Step title="Initialize server metadata">
+ ```bash
+ superbox init
+ ```
+ Provide your server name, repository URL, description, and entrypoint file.
   </Step>
 
-  <Step title="Push to Registry">
-    ```bash
-    superbox push
-    ```
-    
-    This will:
-    - Run SonarCloud analysis on your repository
-    - Scan for security issues with Bandit and GitGuardian
-    - Discover MCP tools in your code
-    - Upload metadata to S3
+  <Step title="Publish to the registry">
+ ```bash
+ superbox push
+ ```
+ This runs the full security pipeline:
+ - SonarCloud static analysis
+ - MCP tool discovery
+ - Snyk dependency vulnerability scan
+ - GitGuardian secret detection
+ - Bandit Python security linting
+ - Upload metadata to the R2 registry
   </Step>
 </Steps>
 
-## For Users: Using MCP Servers
+## For users: connecting a server to your AI client
 
 <Steps>
-  <Step title="Browse Servers">
-    Visit [SuperBox](https://superbox.1mindlabs.org/explore) to browse available MCP servers.
+  <Step title="Browse available servers">
+ Visit [superbox.1mindlabs.org/explore](https://superbox.1mindlabs.org/explore) to find published servers.
   </Step>
 
-  <Step title="Install CLI">
-    ```bash
-    pip install superbox
-    ```
+  <Step title="Install the CLI">
+ ```bash
+ pip install superbox
+ ```
   </Step>
 
-  <Step title="Pull Server Configuration">
-    ```bash
-    superbox pull weather-server --client cursor
-    ```
-    
-    Supports: vscode, cursor, windsurf, claude, chatgpt
-  </Step>
+  <Step title="Pull the server config">
+ ```bash
+ superbox pull --name weather-server --client cursor
+ ```
+ Supported clients: `vscode`, `cursor`, `windsurf`, `claude`, `chatgpt`.
 
-  <Step title="Test the Server">
-    ```bash
-    superbox run --name weather-server
-    ```
-    
-    Interactive terminal session to test server tools.
+ This writes the MCP configuration for your client. VS Code receives an HTTP-type entry pointing directly to the Cloudflare Worker. All other clients (Cursor, Windsurf, Claude, ChatGPT) receive an `npx mcp-remote` stdio bridge entry.
   </Step>
 </Steps>
 
-## API Usage
+## API usage
 
 <Steps>
-  <Step title="List All Servers">
-    ```bash
-    curl https://api.superbox.ai/api/v1/servers
-    ```
-    
-    Response includes server metadata, tools, pricing, and security reports.
+  <Step title="List all servers">
+ ```bash
+ curl https://api.superbox.ai/api/v1/servers
+ ```
   </Step>
 
-  <Step title="Get Server Details">
-    ```bash
-    curl https://api.superbox.ai/api/v1/servers/weather-server
-    ```
+  <Step title="Get server details">
+ ```bash
+ curl https://api.superbox.ai/api/v1/servers/weather-server
+ ```
   </Step>
 
-  <Step title="Execute MCP Server">
-    Configure your AI client (VS Code, Cursor, Claude Desktop) using:
-    
-    ```bash
-    superbox pull --name weather-server --client vscode
-    ```
-    
-    The server will be available in your AI client's MCP tools list.
+  <Step title="Connect to your AI client">
+ ```bash
+ superbox pull --name weather-server --client vscode
+ ```
+ The server appears in your AI client's MCP tools list immediately.
   </Step>
 </Steps>
 
-## Next Steps
+## Next steps
 
 <CardGroup cols={3}>
-  <Card title="API Reference" icon="book" href="/api/introduction">
-    Explore all endpoints
+  <Card title="API reference" icon="book" href="/api/introduction">
+ All endpoints
   </Card>
-  <Card title="CLI Tools" icon="terminal" href="/cli/introduction">
-    Learn CLI commands
+  <Card title="CLI commands" icon="terminal" href="/cli/introduction">
+ Full command reference
   </Card>
   <Card title="Authentication" icon="key" href="/api/authentication">
-    Auth flow details
+ Auth flow details
   </Card>
-  <Card title="Error Handling" icon="triangle-exclamation" href="/api/errors">
-    Handle API errors
+  <Card title="Error handling" icon="triangle-exclamation" href="/api/errors">
+ Handle API errors
   </Card>
   <Card title="Architecture" icon="sitemap" href="/architecture">
-    System design
+ System design
   </Card>
   <Card title="Security" icon="shield" href="/concepts/security">
-    Security pipeline
+ Security pipeline
   </Card>
 </CardGroup>

@@ -1,189 +1,141 @@
+﻿---
+title: "OAuth"
+description: "Authenticate with Google or GitHub using OAuth"
+api: "POST https://api.superbox.ai/api/v1/auth/login/provider"
+icon: "brands google"
 ---
-title: "OAuth Authentication"
-description: "OAuth 2.0 authentication with Google and GitHub"
-api: "GET https://api.superbox.ai/v1/auth/oauth/{provider}"
-icon: "link"
----
 
-## Supported Providers
+## Overview
 
-<CardGroup cols={2}>
-  <Card title="Google OAuth" icon="brands google">
-    Sign in with Google account
-  </Card>
-  <Card title="GitHub OAuth" icon="brands github">
-    Sign in with GitHub account
-  </Card>
-</CardGroup>
+SuperBox supports OAuth authentication via Google and GitHub. The flow depends on the client:
 
-## OAuth Flow
+- **Web / Mobile**: Use the Firebase SDK to obtain an ID token, then exchange it via `POST /auth/login/provider`.
+- **CLI**: Use the device authorization flow documented in [Device Flow](/api/auth/device-flow).
 
-<Steps>
-  <Step title="Initiate OAuth">
-    Redirect user to provider authorization URL
-    
-    ```
-    GET /auth/oauth/google
-    GET /auth/oauth/github
-    ```
-  </Step>
+## Provider Login
 
-<Step title="User Authorization">User grants permissions on provider site</Step>
+Exchange a provider-issued token for a SuperBox session token.
 
-<Step title="Callback">
-  Provider redirects to callback URL with code ```
-  https://superbox.ai/auth/callback?code=abc123&state=xyz ```
-</Step>
+### Endpoint
 
-  <Step title="Token Exchange">
-    Backend exchanges code for user data and creates session
-  </Step>
-</Steps>
+```
+POST /api/v1/auth/login/provider
+```
 
-## Google OAuth
+### Request Body
 
-### Initiate Authorization
+<ParamField body="provider" type="string" required>
+  OAuth provider: `google` or `github`
+</ParamField>
+
+<ParamField body="id_token" type="string">
+  Firebase ID token from `signInWithPopup` or `signInWithRedirect`. Use this **or** `access_token`.
+</ParamField>
+
+<ParamField body="access_token" type="string">
+  OAuth access token from the provider. Use this **or** `id_token`.
+</ParamField>
+
+### Example Request
 
 <CodeGroup>
-```bash
-cURL
-curl https://api.superbox.ai/v1/auth/oauth/google
+```bash cURL
+curl -X POST https://api.superbox.ai/api/v1/auth/login/provider \
+  -H "Content-Type: application/json" \
+  -d '{
+    "provider": "google",
+    "id_token": "<firebase-id-token>"
+  }'
 ```
 
-```javascript
-JavaScript
-window.location.href = "https://api.superbox.ai/v1/auth/oauth/google";
+```javascript JavaScript (Firebase SDK)
+import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+
+const auth = getAuth();
+const provider = new GoogleAuthProvider();
+
+const result = await signInWithPopup(auth, provider);
+const idToken = await result.user.getIdToken();
+
+// Exchange with SuperBox API
+const response = await fetch("https://api.superbox.ai/api/v1/auth/login/provider", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ provider: "google", id_token: idToken }),
+});
+
+const { id_token, refresh_token } = await response.json();
 ```
 
-```python
-Python
+```python Python
 import requests
 
-response = requests.get('https://api.superbox.ai/v1/auth/oauth/google')
-# Redirect user to response.url
+response = requests.post(
+    "https://api.superbox.ai/api/v1/auth/login/provider",
+    json={
+        "provider": "google",
+        "id_token": "<firebase-id-token>",
+    },
+)
+
+data = response.json()
 ```
 
 </CodeGroup>
 
-### Query Parameters
+## Response
 
-<ParamField query="redirect_uri" type="string">
-  Callback URL after authorization Default: `https://superbox.ai/auth/callback`
-</ParamField>
+<ResponseField name="id_token" type="string">
+  Firebase ID token (JWT). Use as `Authorization: Bearer <id_token>`.
+</ResponseField>
 
-<ParamField query="state" type="string">
-  CSRF protection state parameter
-</ParamField>
+<ResponseField name="refresh_token" type="string">
+  Refresh token for renewing the session.
+</ResponseField>
 
-## GitHub OAuth
+<ResponseField name="expires_in" type="number">
+  Seconds until expiry (3600 = 1 hour).
+</ResponseField>
 
-### Initiate Authorization
+<ResponseField name="email" type="string">
+  Authenticated email address.
+</ResponseField>
 
-```
-GET /auth/oauth/github?redirect_uri=https://yourapp.com/callback
-```
+<ResponseField name="local_id" type="string">
+  Firebase user ID.
+</ResponseField>
 
-### Requested Scopes
-
-- `user:email` - Access user email
-- `read:user` - Read user profile
-
-## Callback Handling
-
-### Success Response
+### Success Response (200)
 
 ```json
 {
-  "user": {
-    "id": "usr_1234567890",
-    "email": "areeb@example.com",
-    "username": "areeb",
-    "avatar_url": "https://avatars.githubusercontent.com/u/12345",
-    "oauth_provider": "github",
-    "oauth_id": "12345"
-  },
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "refresh_token": "rt_abcdef123456..."
+  "id_token": "eyJhbGciOiJSUzI1NiIsImtpZCI6...",
+  "refresh_token": "AMf-vByW3...",
+  "expires_in": 3600,
+  "email": "user@example.com",
+  "local_id": "abc123def456"
 }
 ```
 
 ### Error Responses
 
 <CodeGroup>
-```json 400 - Missing Code
+```json 401 - Token Invalid
 {
-  "error": "Missing authorization code",
-  "message": "No code provided in callback"
+  "status": "error",
+  "detail": "OAuth authentication failed"
 }
 ```
 
-```json 401 - OAuth Error
+```json 400 - Missing Provider
 {
-  "error": "OAuth authentication failed",
-  "message": "Failed to exchange code for token",
-  "provider": "google"
+  "status": "error",
+  "detail": "Invalid request: provider is required"
 }
 ```
 
 </CodeGroup>
 
-## Frontend Integration
+## CLI / Device Flow
 
-<CodeGroup>
-```javascript
-React
-function GoogleLogin() {
-  const handleLogin = () => {
-    const width = 500;
-    const height = 600;
-    const left = window.screen.width / 2 - width / 2;
-    const top = window.screen.height / 2 - height / 2;
-    
-    const popup = window.open(
-      'https://api.superbox.ai/v1/auth/oauth/google',
-      'Google Login',
-      `width=${width},height=${height},left=${left},top=${top}`
-    );
-    
-    // Listen for callback
-    window.addEventListener('message', (event) => {
-      if (event.data.type === 'oauth_success') {
-        const { token, user } = event.data;
-        // Store token and update UI
-      }
-    });
-  };
-  
-  return (
-    <button onClick={handleLogin}>
-      Sign in with Google
-    </button>
-  );
-}
-```
-
-```javascript
-Next.js
-// pages/api/auth/callback.js
-export default async function handler(req, res) {
-  const { code, state } = req.query;
-
-  // Exchange code for token
-  const response = await fetch(
-    "https://api.superbox.ai/v1/auth/oauth/callback",
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ code, state }),
-    },
-  );
-
-  const { token, user } = await response.json();
-
-  // Set secure cookie
-  res.setHeader("Set-Cookie", `token=${token}; HttpOnly; Secure; Path=/`);
-  res.redirect("/dashboard");
-}
-```
-
-</CodeGroup>
+For headless environments like the CLI, use the device authorization flow instead. See [Device Flow](/api/auth/device-flow) for details.

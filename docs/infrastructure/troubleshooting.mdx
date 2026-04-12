@@ -1,616 +1,166 @@
----
+﻿---
 title: "Troubleshooting"
-description: "Debug common SuperBox infrastructure issues and errors"
-icon: "circle-exclamation"
+description: "Diagnose and fix common SuperBox deployment issues"
+icon: "triangle-exclamation"
 ---
 
-Comprehensive troubleshooting guide for common SuperBox infrastructure issues, deployment errors, and runtime problems.
+## Deployment issues
 
-## Deployment Issues
+### `wrangler deploy` fails with authentication error
 
-### Terraform/OpenTofu Errors
-
-<AccordionGroup>
-  <Accordion title="Access Denied / Invalid Credentials" icon="lock">
-    **Symptom:**
-    ```
-    Error: error configuring S3 Backend: no valid credential sources
-    ```
-    
-    **Causes:**
-    - AWS credentials not configured
-    - Incorrect IAM permissions
-    - Profile not found
-    
-    **Solutions:**
-    <Steps>
-      <Step title="Verify credentials">
-        ```powershell
-        aws sts get-caller-identity
-        ```
-        Should return your AWS account ID
-      </Step>
-      
-      <Step title="Check IAM permissions">
-        Ensure your user/role has:
-        - `s3:*` on target buckets
-        - `lambda:*` for Lambda functions
-        - `iam:CreateRole`, `iam:AttachRolePolicy`
-        - `logs:CreateLogGroup`
-      </Step>
-      
-      <Step title="Re-configure credentials">
-        ```powershell
-        aws configure --profile superbox
-        # Enter Access Key ID
-        # Enter Secret Access Key
-        # Region: ap-south-1
-        ```
-      </Step>
-    </Steps>
-  </Accordion>
-  
-  <Accordion title="State Lock Conflict" icon="lock-keyhole">
-    **Symptom:**
-    ```
-    Error acquiring the state lock
-    Lock Info: ID: xxx-xxx-xxx
-    ```
-    
-    **Causes:**
-    - Previous deployment interrupted
-    - Multiple deployments running simultaneously
-    
-    **Solutions:**
-    ```powershell
-    # Force unlock (use with caution)
-    tofu force-unlock <LOCK_ID>
-    
-    # Or remove lock from S3 backend
-    aws s3 rm s3://superbox-terraform-state/.terraform.tfstate.lock.info
-    ```
-    
-    <Warning>Only force-unlock if you're certain no other deployment is running</Warning>
-  </Accordion>
-  
-  <Accordion title="Lambda Package Too Large" icon="box-archive">
-    **Symptom:**
-    ```
-    Error: InvalidParameterValueException: Unzipped size must be smaller than 262144000 bytes
-    ```
-    
-    **Causes:**
-    - Lambda deployment package > 250 MB uncompressed
-    - Too many dependencies
-    
-    **Solutions:**
-    <Steps>
-      <Step title="Check package size">
-        ```powershell
-        Get-Item -Path "SuperBox-Infra/lambda_package.zip" | Select-Object Length
-        ```
-      </Step>
-      
-      <Step title="Use Lambda Layers">
-        Move large dependencies to layers:
-        ```hcl
-        resource "aws_lambda_layer_version" "dependencies" {
-          filename   = "layer.zip"
-          layer_name = "superbox-deps"
-          
-          compatible_runtimes = ["python3.11"]
-        }
-        ```
-      </Step>
-      
-      <Step title="Exclude unnecessary files">
-        Update packaging script:
-        ```python
-        exclude_patterns = [
-            "**/__pycache__",
-            "**/*.pyc",
-            "**/tests",
-            "**/docs"
-        ]
-        ```
-      </Step>
-    </Steps>
-  </Accordion>
-  
-  <Accordion title="Resource Already Exists" icon="clone">
-    **Symptom:**
-    ```
-    Error: BucketAlreadyExists: The requested bucket name is not available
-    ```
-    
-    **Causes:**
-    - S3 bucket names must be globally unique
-    - Resource created in previous deployment
-    
-    **Solutions:**
-    ```hcl
-    # Add unique suffix to bucket name
-    resource "aws_s3_bucket" "registry" {
-      bucket = "superbox-mcp-registry-${random_id.bucket_suffix.hex}"
-    }
-    
-    resource "random_id" "bucket_suffix" {
-      byte_length = 4
-    }
-    
-    # Or import existing resource
-    tofu import aws_s3_bucket.registry superbox-mcp-registry
-    ```
-  </Accordion>
-</AccordionGroup>
-
-## Lambda Runtime Errors
-
-### Execution Failures
-
-<Tabs>
-  <Tab title="Module Import Error">
-    **Error:**
-    ```
-    ModuleNotFoundError: No module named 'xyz'
-    ```
-    
-    **Causes:**
-    - Dependency missing from `requirements.txt`
-    - Package not included in Lambda package
-    
-    **Fix:**
-    ```powershell
-    # Add to requirements.txt
-    echo "xyz==1.2.3" >> superbox.ai/requirements.txt
-    
-    # Rebuild Lambda package
-    cd SuperBox-Infra
-    .\scripts\package_lambda.ps1
-    
-    # Redeploy
-    tofu apply
-    ```
-  </Tab>
-  
-  <Tab title="Timeout Error">
-    **Error:**
-    ```
-    Task timed out after 30.00 seconds
-    ```
-    
-    **Causes:**
-    - Long-running MCP server execution
-    - External API calls taking too long
-    - Insufficient timeout setting
-    
-    **Fix:**
-    ```hcl
-    resource "aws_lambda_function" "mcp_executor" {
-      timeout = 300  # Increase to 5 minutes
-      
-      # Or optimize code
-      environment {
-        variables = {
-          EXECUTION_TIMEOUT = "60"
-        }
-      }
-    }
-    ```
-  </Tab>
-  
-  <Tab title="Memory Exceeded">
-    **Error:**
-    ```
-    Runtime exited with error: signal: killed
-    Runtime.ExitError
-    ```
-    
-    **Causes:**
-    - Lambda running out of memory (default 128 MB)
-    
-    **Fix:**
-    ```hcl
-    resource "aws_lambda_function" "mcp_executor" {
-      memory_size = 512  # Increase from 128 MB
-    }
-    ```
-    
-    Check CloudWatch Logs for memory usage:
-    ```sql
-    fields @timestamp, @maxMemoryUsed, @memorySize
-    | filter @type = "REPORT"
-    | sort @timestamp desc
-    | limit 20
-    ```
-  </Tab>
-  
-  <Tab title="Permission Denied">
-    **Error:**
-    ```
-    AccessDeniedException: User is not authorized to perform: s3:GetObject
-    ```
-    
-    **Causes:**
-    - Lambda IAM role missing S3 permissions
-    
-    **Fix:**
-    ```hcl
-    resource "aws_iam_role_policy" "lambda_s3_access" {
-      role = aws_iam_role.lambda_exec.id
-      
-      policy = jsonencode({
-        Version = "2012-10-17"
-        Statement = [{
-          Effect = "Allow"
-          Action = [
-            "s3:GetObject",
-            "s3:PutObject",
-            "s3:ListBucket"
-          ]
-          Resource = [
-            "${aws_s3_bucket.registry.arn}",
-            "${aws_s3_bucket.registry.arn}/*"
-          ]
-        }]
-      })
-    }
-    ```
-  </Tab>
-</Tabs>
-
-## S3 Issues
-
-### Bucket Access Errors
-
-<AccordionGroup>
-  <Accordion title="403 Forbidden" icon="ban">
-    **Causes:**
-    - Bucket policy blocking access
-    - Missing IAM permissions
-    - Public access blocked
-    
-    **Debug:**
-    ```powershell
-    # Check bucket policy
-    aws s3api get-bucket-policy --bucket superbox-mcp-registry
-    
-    # Test access
-    aws s3 ls s3://superbox-mcp-registry
-    ```
-    
-    **Fix:**
-    ```hcl
-    resource "aws_s3_bucket_public_access_block" "registry" {
-      bucket = aws_s3_bucket.registry.id
-      
-      block_public_acls       = false  # Allow public access if needed
-      block_public_policy     = false
-      ignore_public_acls      = false
-      restrict_public_buckets = false
-    }
-    ```
-  </Accordion>
-  
-  <Accordion title="NoSuchKey Error" icon="key">
-    **Error:**
-    ```
-    An error occurred (NoSuchKey) when calling the GetObject operation
-    ```
-    
-    **Causes:**
-    - File doesn't exist at specified path
-    - Incorrect S3 key format
-    
-    **Debug:**
-    ```powershell
-    # List all objects
-    aws s3 ls s3://superbox-mcp-registry --recursive
-    
-    # Check specific path
-    aws s3 ls s3://superbox-mcp-registry/servers/my-server/
-    ```
-  </Accordion>
-</AccordionGroup>
-
-## CLI Issues
-
-### Authentication Failures
-
-<AccordionGroup>
-  <Accordion title="Invalid Token" icon="key">
-    **Error:** ``` Error: Authentication failed. Invalid token. ``` **Fix:**
-    ```powershell # Re-authenticate superbox auth login # Or set token manually
-    $env:SUPERBOX_TOKEN = "your-token-here" ```
-  </Accordion>
-
-  <Accordion title="Connection Refused" icon="plug">
-    **Error:**
-    ```
-    Error: Could not connect to SuperBox backend
-    ```
-    
-    **Causes:**
-    - Backend server down
-    - Network/firewall blocking connection
-    - Incorrect API endpoint
-    
-    **Debug:**
-    ```powershell
-    # Test connectivity
-    curl https://api.superbox.ai/health
-    
-    # Check DNS resolution
-    nslookup api.superbox.ai
-    
-    # Verify endpoint in config
-    superbox config get api_url
-    ```
-  </Accordion>
-</AccordionGroup>
-
-## Server Execution Errors
-
-### MCP Server Failures
-
-<Tabs>
-  <Tab title="Server Not Found">
-    **Error:**
-    ```
-    Error: MCP server 'xyz' not found in registry
-    ```
-    
-    **Fix:**
-    ```powershell
-    # Search for server
-    superbox search xyz
-    
-    # Pull specific version
-    superbox pull xyz --version 1.2.3
-    
-    # Or publish if missing
-    superbox publish ./servers/xyz
-    ```
-  </Tab>
-  
-  <Tab title="Dependency Conflict">
-    **Error:**
-    ```
-    Error: Dependency conflict - package 'abc' requires version 2.x but 1.x is installed
-    ```
-    
-    **Fix:**
-    ```yaml
-    # Update server manifest (mcp.yaml)
-    dependencies:
-      abc: ">=2.0.0,<3.0.0"
-    
-    # Or create isolated environment
-    python -m venv .venv-xyz
-    .\.venv-xyz\Scripts\Activate.ps1
-    pip install -r requirements.txt
-    ```
-  </Tab>
-  
-  <Tab title="Sandbox Security Violation">
-    **Error:**
-    ```
-    SecurityError: Attempted to access prohibited resource
-    ```
-    
-    **Causes:**
-    - MCP server trying to access network/filesystem beyond allowed scope
-    
-    **Fix:**
-    ```yaml
-    # Update sandbox permissions in mcp.yaml
-    sandbox:
-      network: true  # Allow network access
-      filesystem:
-        - "/allowed/path"
-        - "/another/path"
-    ```
-  </Tab>
-</Tabs>
-
-## CloudWatch Logs Debugging
-
-### Log Analysis
-
-<Steps>
-  <Step title="Access Lambda Logs">
-    ```powershell
-    aws logs tail /aws/lambda/superbox-mcp-executor --follow
-    ```
-  </Step>
-
-<Step title="Filter Error Logs">
-  ```sql fields @timestamp, @message | filter @message like
-  /Error|Exception|Failed/ | sort @timestamp desc | limit 100 ```
-</Step>
-
-  <Step title="Extract Stack Traces">
-    ```sql
-    fields @timestamp, @message
-    | filter @message like /Traceback/
-    | display @message
-    ```
-  </Step>
-</Steps>
-
-## Performance Debugging
-
-### Slow Execution
-
-<CardGroup cols={2}>
-  <Card title="Identify Bottlenecks" icon="hourglass-half">
-    ```sql
-    fields @timestamp, @duration
-    | filter @type = "REPORT"
-    | sort @duration desc
-    | limit 50
-    ```
-    
-    Shows slowest Lambda executions
-  </Card>
-  
-  <Card title="Cold Start Analysis" icon="snowflake">
-    ```sql
-    fields @timestamp, @initDuration
-    | filter @type = "REPORT"
-    | filter @initDuration > 0
-    | stats count() as cold_starts,
-            avg(@initDuration) as avg_init_time
-    ```
-    
-    Measure cold start impact
-  </Card>
-  
-  <Card title="Memory Profiling" icon="memory">
-    ```python
-    import tracemalloc
-    
-    tracemalloc.start()
-    # ... your code ...
-    current, peak = tracemalloc.get_traced_memory()
-    print(f"Peak memory: {peak / 1024 / 1024} MB")
-    ```
-  </Card>
-  
-  <Card title="External API Latency" icon="clock">
-    ```python
-    import time
-    
-    start = time.time()
-    response = requests.get(api_url)
-    duration = time.time() - start
-    print(f"API call took {duration}s")
-    ```
-  </Card>
-</CardGroup>
-
-## Networking Issues
-
-### VPC Configuration (if using)
-
-<AccordionGroup>
-  <Accordion title="Lambda Cannot Reach Internet" icon="wifi">
-    **Symptom:** External API calls timeout
-    
-    **Cause:** Lambda in private subnet without NAT Gateway
-    
-    **Fix:**
-    ```hcl
-    resource "aws_lambda_function" "mcp_executor" {
-      # Option 1: Remove VPC config (not recommended for production)
-      # vpc_config = {}
-      
-      # Option 2: Use subnet with NAT Gateway
-      vpc_config {
-        subnet_ids         = [aws_subnet.private_with_nat.id]
-        security_group_ids = [aws_security_group.lambda.id]
-      }
-    }
-    ```
-  </Accordion>
-  
-  <Accordion title="Security Group Blocking Traffic" icon="shield">
-    **Debug:**
-    ```powershell
-    # Check security group rules
-    aws ec2 describe-security-groups --group-ids sg-xxxxx
-    ```
-    
-    **Fix:**
-    ```hcl
-    resource "aws_security_group_rule" "lambda_outbound" {
-      type              = "egress"
-      from_port         = 0
-      to_port           = 0
-      protocol          = "-1"
-      cidr_blocks       = ["0.0.0.0/0"]
-      security_group_id = aws_security_group.lambda.id
-    }
-    ```
-  </Accordion>
-</AccordionGroup>
-
-## Common Error Messages
-
-| Error                            | Meaning                              | Solution                                |
-| -------------------------------- | ------------------------------------ | --------------------------------------- |
-| `ResourceNotFoundException`      | Resource (Lambda/S3) doesn't exist   | Check resource names, verify deployment |
-| `ThrottlingException`            | Too many requests                    | Implement exponential backoff           |
-| `InvalidParameterValueException` | Invalid function parameter           | Validate input parameters               |
-| `ServiceException`               | AWS service error                    | Check AWS status page, retry            |
-| `KMSAccessDeniedException`       | Cannot decrypt environment variables | Update KMS key policy                   |
-
-## Debug Mode
-
-Enable detailed logging:
-
-```python
-# In lambda.py
-import logging
-
-logger = logging.getLogger()
-logger.setLevel(logging.DEBUG)  # Change from INFO to DEBUG
-
-# Add verbose logging
-logger.debug(f"Received event: {json.dumps(event)}")
-logger.debug(f"Environment: {os.environ}")
+```
+Error: Not authenticated. Please run `wrangler login`.
 ```
 
-Update Lambda:
+**Fix:** Run `wrangler login` and complete the browser OAuth flow. Your session token is stored in `~/.wrangler/config/default.toml`.
 
-```powershell
-cd SuperBox-Infra
-.\scripts\package_lambda.ps1
-tofu apply
+---
+
+### Worker deploys but requests return `500`
+
+Check live logs:
+
+```bash
+wrangler tail superbox-executor --format pretty --status error
 ```
 
-## Getting Help
+Common causes:
 
-<CardGroup cols={2}>
-  <Card
-    title="GitHub Issues"
-    icon="github"
-    href="https://github.com/superbox/superbox/issues"
-  >
-    Report bugs and request features
-  </Card>
-  <Card
-    title="Community Discord"
-    icon="discord"
-    href="https://discord.gg/superbox"
-  >
-    Ask questions and get help
-  </Card>
-  <Card
-    title="AWS Support"
-    icon="aws"
-    href="https://console.aws.amazon.com/support"
-  >
-    For AWS-specific infrastructure issues
-  </Card>
-  <Card title="Documentation" icon="book" href="/introduction">
-    Browse complete documentation
-  </Card>
-</CardGroup>
+| Symptom | Likely cause | Fix |
+|---------|-------------|-----|
+| `R2Error: Access Denied` | Missing/wrong R2 binding | Verify `wrangler.jsonc` has `r2_buckets` binding pointing to `superbox-mcp-registry` |
+| `TypeError: Cannot read properties of undefined` | Durable Object class not exported | Ensure `McpSession` is exported as a named export in the Worker's entry file |
+| `RangeError: Maximum call stack size exceeded` | Infinite loop in server code | Review the published server's entrypoint |
 
-## Emergency Rollback
+---
 
-If deployment breaks production:
+### Bundle too large
 
-```powershell
-# Rollback to previous state
-tofu apply -auto-approve -backup=terraform.tfstate.backup
-
-# Or destroy and recreate
-tofu destroy -target=aws_lambda_function.mcp_executor
-tofu apply
+```
+Error: Script startup exceeded CPU time limit.
 ```
 
-<Warning>
-  Always test infrastructure changes in staging environment first
-</Warning>
+or
+
+```
+Error: Worker size limit exceeded (10 MB compressed).
+```
+
+**Fix:**
+
+1. Run `npx wrangler deploy --dry-run --outdir dist` to inspect what's in the bundle
+2. Move large static assets out of the Worker and into R2
+3. Tree-shake unused imports
+
+---
+
+### R2 bucket not found
+
+```
+NoSuchBucket: The specified bucket does not exist
+```
+
+**Fix:** Create the bucket and verify the binding name matches:
+
+```bash
+wrangler r2 bucket create superbox-mcp-registry
+```
+
+Then confirm `wrangler.jsonc` has:
+
+```jsonc
+"r2_buckets": [
+  { "binding": "REGISTRY", "bucket_name": "superbox-mcp-registry" }
+]
+```
+
+---
+
+### Durable Object errors
+
+```
+Durable Object 'McpSession' is not exported by the entrypoint worker script
+```
+
+**Fix:** Ensure `wrangler.jsonc` declares the DO class with the correct class name:
+
+```jsonc
+"durable_objects": {
+  "bindings": [
+ { "name": "MCP_SESSION", "class_name": "McpSession" }
+  ]
+}
+```
+
+And that `McpSession` is a named export in `src/index.ts`.
+
+---
+
+## Runtime issues
+
+### `401 Unauthorized` on every request
+
+The Firebase JWT is missing, expired, or belongs to the wrong project.
+
+**Fix:**
+
+1. Verify `FIREBASE_PROJECT_ID` in the backend `.env` matches your Firebase project
+2. Confirm the AI client is sending the token in `Authorization: Bearer <token>`
+3. Check token expiry - Firebase JWTs expire after 1 hour
+
+---
+
+### Session not found after reconnect
+
+AI client receives `404` on a resumed session.
+
+This is expected - DO sessions evict after 30 minutes of inactivity. The client should start a new session by omitting the `Mcp-Session-Id` header (or using a new UUID).
+
+---
+
+### Server not found in R2
+
+```
+404: server 'my-server' not found in registry
+```
+
+**Fix:**
+
+1. Run `superbox push` again to republish the server metadata
+2. Verify the object key in R2: `wrangler r2 object get superbox-mcp-registry my-server.json`
+3. Check Back end logs for R2 write errors during push
+
+---
+
+## Backend API issues
+
+### Go API crashes on startup
+
+```
+failed to connect: CLOUDFLARE_R2_ENDPOINT is not set
+```
+
+**Fix:** Ensure all required environment variables are set in `.env`:
+
+```env
+CLOUDFLARE_R2_ENDPOINT=https://<account-id>.r2.cloudflarestorage.com
+CLOUDFLARE_R2_ACCESS_KEY_ID=...
+CLOUDFLARE_R2_SECRET_ACCESS_KEY=...
+CLOUDFLARE_R2_BUCKET_NAME=superbox-mcp-registry
+FIREBASE_PROJECT_ID=...
+```
+
+---
+
+### `security_helper.py` or `s3_helper.py` not found
+
+The Go API invokes these as subprocess commands. They must be on the `PATH` or in the working directory.
+
+**Fix:**
+
+```bash
+cd backend
+pip install -e .
+```
+
+This installs the `superbox` package in editable mode, making both helpers available as module scripts.

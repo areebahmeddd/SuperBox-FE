@@ -1,4 +1,4 @@
----
+﻿---
 title: "Component Library"
 description: "Comprehensive guide to SuperBox reusable React components"
 icon: "layer-group"
@@ -10,16 +10,16 @@ SuperBox's component library is built with React 19, TypeScript, and Tailwind CS
 
 <CardGroup cols={2}>
   <Card title="Fully Typed" icon="shield-check">
-    All components are TypeScript-first with full type safety
+ All components are TypeScript-first with full type safety
   </Card>
   <Card title="Accessible" icon="universal-access">
-    WCAG 2.1 AA compliant with keyboard navigation
+ WCAG 2.1 AA compliant with keyboard navigation
   </Card>
   <Card title="Animated" icon="sparkles">
-    Smooth animations powered by Framer Motion
+ Smooth animations powered by Framer Motion
   </Card>
   <Card title="Responsive" icon="mobile-screen">
-    Mobile-first design with all breakpoints covered
+ Mobile-first design with all breakpoints covered
   </Card>
 </CardGroup>
 
@@ -31,18 +31,18 @@ The main navigation header with authentication and user menu.
 
 <Tabs>
   <Tab title="Usage">
-    ```tsx
-    import Header from '@/components/header'
+ ```tsx
+ import Header from '@/components/header'
 
-    export default function Layout({ children }) {
-      return (
-        <>
-          <Header />
-          <main>{children}</main>
-        </>
-      )
-    }
-    ```
+ export default function Layout({ children }) {
+return (
+  <>
+ <Header />
+ <main>{children}</main>
+  </>
+)
+ }
+ ```
 
   </Tab>
 
@@ -55,12 +55,12 @@ The main navigation header with authentication and user menu.
 </Tab>
 
   <Tab title="Features">
-    - Responsive navigation menu
-    - User authentication status
-    - Profile dropdown menu
-    - Mobile hamburger menu
-    - Sticky header on scroll
-    - Dark mode support
+ - Responsive navigation menu
+ - User authentication status
+ - Profile dropdown menu
+ - Mobile hamburger menu
+ - Sticky header on scroll
+ - Dark mode support
   </Tab>
 </Tabs>
 
@@ -75,13 +75,13 @@ import ServerCard from '@/components/server-card'
 
 <ServerCard
   server={{
-    id: "123",
-    name: "Weather MCP",
-    description: "Real-time weather data provider",
-    author: "Areeb Ahmed",
-    downloads: 1234,
-    rating: 4.5,
-    tags: ["weather", "api", "data"],
+ id: "123",
+ name: "Weather MCP",
+ description: "Real-time weather data provider",
+ author: "Areeb Ahmed",
+ downloads: 1234,
+ rating: 4.5,
+ tags: ["weather", "api", "data"],
   }}
 />
 ```
@@ -106,27 +106,27 @@ Skeleton Loading
 <ParamField path="server" type="object" required>
   Server data object
   <Expandable title="Server Object Properties">
-    <ParamField path="id" type="string" required>
-      Unique server identifier
-    </ParamField>
-    <ParamField path="name" type="string" required>
-      Server display name
-    </ParamField>
-    <ParamField path="description" type="string" required>
-      Brief server description
-    </ParamField>
-    <ParamField path="author" type="string">
-      Server creator username
-    </ParamField>
-    <ParamField path="downloads" type="number">
-      Total download count
-    </ParamField>
-    <ParamField path="rating" type="number">
-      Average rating (0-5)
-    </ParamField>
-    <ParamField path="tags" type="string[]">
-      Server category tags
-    </ParamField>
+ <ParamField path="id" type="string" required>
+Unique server identifier
+ </ParamField>
+ <ParamField path="name" type="string" required>
+Server display name
+ </ParamField>
+ <ParamField path="description" type="string" required>
+Brief server description
+ </ParamField>
+ <ParamField path="author" type="string">
+Server creator username
+ </ParamField>
+ <ParamField path="downloads" type="number">
+Total download count
+ </ParamField>
+ <ParamField path="rating" type="number">
+Average rating (0-5)
+ </ParamField>
+ <ParamField path="tags" type="string[]">
+Server category tags
+ </ParamField>
   </Expandable>
 </ParamField>
 
@@ -136,46 +136,46 @@ Modal dialog for user authentication with multiple providers.
 
 <Steps>
   <Step title="Import Component">
-    ```tsx
-    import AuthModal from '@/components/auth-modal'
-    ```
+ ```tsx
+ import AuthModal from '@/components/auth-modal'
+ ```
   </Step>
 
   <Step title="Add to Layout">
-    ```tsx
-    const [showAuthModal, setShowAuthModal] = useState(false)
+ ```tsx
+ const [showAuthModal, setShowAuthModal] = useState(false)
 
-    return (
-      <>
-        <button onClick={() => setShowAuthModal(true)}>
-          Sign In
-        </button>
+ return (
+<>
+  <button onClick={() => setShowAuthModal(true)}>
+ Sign In
+  </button>
 
-        <AuthModal
-          isOpen={showAuthModal}
-          onClose={() => setShowAuthModal(false)}
-          defaultView="login"
-        />
-      </>
-    )
-    ```
+  <AuthModal
+ isOpen={showAuthModal}
+ onClose={() => setShowAuthModal(false)}
+ defaultView="login"
+  />
+</>
+ )
+ ```
 
   </Step>
 
   <Step title="Handle Callbacks">
-    ```tsx
-    <AuthModal
-      isOpen={showAuthModal}
-      onClose={() => setShowAuthModal(false)}
-      onSuccess={(user) => {
-        console.log('Authenticated:', user)
-        setShowAuthModal(false)
-      }}
-      onError={(error) => {
-        console.error('Auth failed:', error)
-      }}
-    />
-    ```
+ ```tsx
+ <AuthModal
+isOpen={showAuthModal}
+onClose={() => setShowAuthModal(false)}
+onSuccess={(user) => {
+  console.log('Authenticated:', user)
+  setShowAuthModal(false)
+}}
+onError={(error) => {
+  console.error('Auth failed:', error)
+}}
+ />
+ ```
   </Step>
 </Steps>
 
@@ -213,19 +213,19 @@ import ToolCard from '@/components/tool-card'
 
 <ToolCard
   tool={{
-    name: "get_weather",
-    description: "Fetch current weather data",
-    parameters: {
-      city: { type: "string", required: true },
-      units: { type: "string", enum: ["metric", "imperial"] },
-    },
-    returns: {
-      type: "object",
-      properties: {
-        temperature: "number",
-        conditions: "string",
-      },
-    },
+ name: "get_weather",
+ description: "Fetch current weather data",
+ parameters: {
+city: { type: "string", required: true },
+units: { type: "string", enum: ["metric", "imperial"] },
+ },
+ returns: {
+type: "object",
+properties: {
+  temperature: "number",
+  conditions: "string",
+},
+ },
   }}
 />
 ```
@@ -247,10 +247,10 @@ import CustomDropdown from "@/components/custom-dropdown";
 <CustomDropdown
   trigger={<button>Options</button>}
   items={[
-    { label: "Edit", icon: "pencil", onClick: handleEdit },
-    { label: "Delete", icon: "trash", onClick: handleDelete },
-    { type: "separator" },
-    { label: "Share", icon: "share", onClick: handleShare },
+ { label: "Edit", icon: "pencil", onClick: handleEdit },
+ { label: "Delete", icon: "trash", onClick: handleDelete },
+ { type: "separator" },
+ { label: "Share", icon: "share", onClick: handleShare },
   ]}
 />;
 ```
@@ -266,57 +266,57 @@ Global toast notification system.
 
 <Tabs>
   <Tab title="Setup">
-    ```tsx
+ ```tsx
 app/layout.tsx
-    import ToastProvider from '@/components/toast-provider'
+ import ToastProvider from '@/components/toast-provider'
 
-    export default function RootLayout({ children }) {
-      return (
-        <html>
-          <body>
-            <ToastProvider />
-            {children}
-          </body>
-        </html>
-      )
-    }
-    ```
+ export default function RootLayout({ children }) {
+return (
+  <html>
+ <body>
+<ToastProvider />
+{children}
+ </body>
+  </html>
+)
+ }
+ ```
 
   </Tab>
 
   <Tab title="Usage">
-    ```tsx
-    import { toast } from '@/components/toast-provider'
+ ```tsx
+ import { toast } from '@/components/toast-provider'
 
-    // Success toast
-    toast.success('Server installed successfully!')
+ // Success toast
+ toast.success('Server installed successfully!')
 
-    // Error toast
-    toast.error('Failed to connect to server')
+ // Error toast
+ toast.error('Failed to connect to server')
 
-    // Info toast
-    toast.info('New update available')
+ // Info toast
+ toast.info('New update available')
 
-    // Warning toast
-    toast.warning('API rate limit approaching')
+ // Warning toast
+ toast.warning('API rate limit approaching')
 
-    // Custom toast
-    toast.custom('Custom message', {
-      duration: 5000,
-      position: 'top-center',
-      icon: 'rocket'
-    })
-    ```
+ // Custom toast
+ toast.custom('Custom message', {
+duration: 5000,
+position: 'top-center',
+icon: 'rocket'
+ })
+ ```
 
   </Tab>
 
   <Tab title="Options">
-    | Option | Type | Default | Description |
-    |--------|------|---------|-------------|
-    | `duration` | `number` | `3000` | Toast duration in ms |
-    | `position` | `string` | `'bottom-right'` | Toast position |
-    | `icon` | `string` | Auto | Custom icon emoji |
-    | `dismissible` | `boolean` | `true` | Show close button |
+ | Option | Type | Default | Description |
+ |--------|------|---------|-------------|
+ | `duration` | `number` | `3000` | Toast duration in ms |
+ | `position` | `string` | `'bottom-right'` | Toast position |
+ | `icon` | `string` | Auto | Custom icon emoji |
+ | `dismissible` | `boolean` | `true` | Show close button |
   </Tab>
 </Tabs>
 
@@ -343,10 +343,10 @@ Multi-step wizard for publishing MCP servers.
   <Step title="Server Details">Name, description, and category selection</Step>
   <Step title="Tool Configuration">Define MCP tools and parameters</Step>
   <Step title="Security Scan">
-    Automated security checks (SonarQube, Bandit, GitGuardian)
+ Automated security checks (SonarCloud, Snyk, Bandit, GitGuardian)
   </Step>
   <Step title="Review & Publish">
-    Final review before publishing to marketplace
+ Final review before publishing to marketplace
   </Step>
 </Steps>
 
@@ -357,8 +357,8 @@ import PublishModal from "@/components/publish-modal";
   isOpen={showPublish}
   onClose={() => setShowPublish(false)}
   onSuccess={(server) => {
-    toast.success("Server published!");
-    router.push(`/server/${server.id}`);
+ toast.success("Server published!");
+ router.push(`/server/${server.id}`);
   }}
 />;
 ```
@@ -375,8 +375,8 @@ import ReviewsSection from "@/components/reviews-section";
   averageRating={4.5}
   totalReviews={42}
   userReview={{
-    rating: 5,
-    comment: "Excellent MCP server!",
+ rating: 5,
+ comment: "Excellent MCP server!",
   }}
 />;
 ```
@@ -401,11 +401,11 @@ import PageTransition from "@/components/page-transition";
 
 export default function RootLayout({ children }) {
   return (
-    <html>
-      <body>
-        <PageTransition>{children}</PageTransition>
-      </body>
-    </html>
+ <html>
+<body>
+  <PageTransition>{children}</PageTransition>
+</body>
+ </html>
   );
 }
 ```
@@ -420,7 +420,7 @@ import WaveBackground from "@/components/wave-background";
 <section className="relative">
   <WaveBackground />
   <div className="relative z-10">
-    <h1>Welcome to SuperBox</h1>
+ <h1>Welcome to SuperBox</h1>
   </div>
 </section>;
 ```
@@ -434,18 +434,18 @@ Build complex UIs by composing simple components:
 ```tsx
 <ServerCard server={server}>
   <ServerCard.Header>
-    <ServerCard.Title>{server.name}</ServerCard.Title>
-    <ServerCard.Badge>{server.category}</ServerCard.Badge>
+ <ServerCard.Title>{server.name}</ServerCard.Title>
+ <ServerCard.Badge>{server.category}</ServerCard.Badge>
   </ServerCard.Header>
 
   <ServerCard.Body>
-    <ServerCard.Description>{server.description}</ServerCard.Description>
-    <ServerCard.Stats downloads={server.downloads} rating={server.rating} />
+ <ServerCard.Description>{server.description}</ServerCard.Description>
+ <ServerCard.Stats downloads={server.downloads} rating={server.rating} />
   </ServerCard.Body>
 
   <ServerCard.Footer>
-    <ServerCard.InstallButton serverId={server.id} />
-    <ServerCard.FavoriteButton serverId={server.id} />
+ <ServerCard.InstallButton serverId={server.id} />
+ <ServerCard.FavoriteButton serverId={server.id} />
   </ServerCard.Footer>
 </ServerCard>
 ```
@@ -457,9 +457,9 @@ Share logic between components:
 ```tsx
 <DataFetcher url="/api/servers">
   {({ data, loading, error }) => {
-    if (loading) return <Skeleton />;
-    if (error) return <ErrorMessage error={error} />;
-    return <ServerList servers={data} />;
+ if (loading) return <Skeleton />;
+ if (error) return <ErrorMessage error={error} />;
+ return <ServerList servers={data} />;
   }}
 </DataFetcher>
 ```
@@ -522,15 +522,15 @@ All components follow WCAG 2.1 AA standards:
 
 <CardGroup cols={2}>
   <Card title="Setup Guide" icon="wrench" href="/frontend/setup">
-    Set up your development environment
+ Set up your development environment
   </Card>
   <Card title="Deployment" icon="rocket" href="/frontend/deployment">
-    Deploy to Vercel
+ Deploy to Vercel
   </Card>
   <Card title="API Integration" icon="plug" href="/api/introduction">
-    Connect to backend APIs
+ Connect to backend APIs
   </Card>
   <Card title="Backend Overview" icon="server" href="/backend/overview">
-    Learn about the backend
+ Learn about the backend
   </Card>
 </CardGroup>

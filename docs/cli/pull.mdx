@@ -1,4 +1,4 @@
----
+﻿---
 title: "superbox pull"
 description: "Configure AI client to use an MCP server from the registry"
 icon: "cloud-arrow-down"
@@ -12,7 +12,10 @@ superbox pull --name NAME --client CLIENT
 
 ## Description
 
-Pull an MCP server from the S3 registry and configure it for your AI client. Automatically writes the correct MCP configuration file for the specified client using WebSocket cloud execution.
+Pull an MCP server from the R2 registry and configure it for your AI client. The config format differs by client:
+
+- **VS Code**: native HTTP transport (`type: http`) - no proxy needed
+- **All other clients**: stdio bridge via `npx mcp-remote`
 
 ## Options
 
@@ -28,39 +31,40 @@ Pull an MCP server from the S3 registry and configure it for your AI client. Aut
 
 <CardGroup cols={3}>
   <Card title="VS Code" icon="code">
-    Configures VS Code MCP settings
+ Configures VS Code MCP settings
   </Card>
   <Card title="Cursor" icon="mouse-pointer">
-    Configures Cursor MCP settings
+ Configures Cursor MCP settings
   </Card>
   <Card title="Windsurf" icon="wind">
-    Configures Windsurf MCP settings
+ Configures Windsurf MCP settings
   </Card>
   <Card title="Claude" icon="message">
-    Configures Claude Desktop MCP
+ Configures Claude Desktop MCP
   </Card>
   <Card title="ChatGPT" icon="comment">
-    Configures ChatGPT MCP settings
+ Configures ChatGPT MCP settings
   </Card>
 </CardGroup>
 
 ## How It Works
 
 <Steps>
-  <Step title="Fetch from S3">
-    Retrieves server metadata from S3 registry (entrypoint, language, repo URL)
+  <Step title="Fetch from R2">
+ Retrieves server metadata from R2 registry (entrypoint, lang, repo URL)
   </Step>
 
   <Step title="Generate Config">
-    Creates client-specific MCP configuration with local proxy bridge
+ Creates client-specific MCP configuration with the Worker HTTP URL
   </Step>
 
-  <Step title="Configure WebSocket">
-    Points client to WebSocket API via local stdio-WebSocket proxy module
+  <Step title="Write config entry">
+ - **VS Code**: writes `{ "type": "http", "url": "..."}` under the `"servers"` key in `.vscode/mcp.json`
+ - **Other clients**: writes `{ "type": "stdio", "command": "npx", "args": ["-y", "mcp-remote", url] }` under the `"mcpServers"` key in the client's config file
   </Step>
 
   <Step title="Save Config">
-    Writes configuration to client's config file location
+ Writes configuration to the client's config file location
   </Step>
 </Steps>
 
@@ -68,13 +72,13 @@ Pull an MCP server from the S3 registry and configure it for your AI client. Aut
 
 ```mermaid
 graph LR
-    A[superbox pull] --> B[S3 Registry]
-    B --> C[Write mcp.json]
-    C --> D[AI Client]
-    D --> E[Local Proxy Module]
-    E --> F[WebSocket API]
-    F --> G[Lambda Executor]
-    G --> H[MCP Server]
+ A[superbox pull] --> B[R2 Registry]
+ B --> C[Write HTTP URL to config]
+ C --> D[AI Client]
+ D --> E[Cloudflare Worker]
+ E --> F[McpSession DO]
+ F --> G[TypeScript interpreter]
+ G --> H[MCP Server response]
 ```
 
 ## Examples
@@ -97,7 +101,7 @@ superbox pull --name database-mcp --client claude
 
 ```bash
 $ superbox pull --name my-mcp --client cursor
-Fetching server 'my-mcp' from S3 bucket...
+Fetching server 'my-mcp' from R2 registry...
 Success!
 Server 'my-mcp' added to Cursor MCP config
 Location: ~/.cursor/mcp.json
@@ -105,27 +109,39 @@ Location: ~/.cursor/mcp.json
 
 ## Configuration Format
 
-The generated configuration uses a local proxy that bridges stdio to WebSocket:
+The generated configuration depends on your client.
 
-```json
-{
-  "mcpServers": {
-    "my-mcp": {
-      "command": "python",
-      "args": [
-        "-m",
-        "superbox.aws.proxy",
-        "--url",
-        "wss://3f382zdysa.execute-api.ap-south-1.amazonaws.com/production?server_name=my-mcp"
-      ]
-    }
+<Tabs>
+  <Tab title="VS Code">
+ Written to `.vscode/mcp.json` under the `"servers"` key:
+ ```json
+ {
+"servers": {
+  "my-mcp": {
+ "type": "http",
+ "url": "https://superbox-executor.<your-subdomain>.workers.dev/mcp?name=my-mcp"
   }
 }
-```
-
-<Note>
-  **Local Proxy Module**: Runs `python -m superbox.aws.proxy` on your machine to bridge stdio (required by AI clients) to WebSocket (cloud executor).
-</Note>
+ }
+ ```
+ VS Code supports the HTTP transport natively - no proxy process required.
+  </Tab>
+  <Tab title="Cursor / Windsurf / Claude / ChatGPT">
+ Written to the client's config file under the `"mcpServers"` key:
+ ```json
+ {
+"mcpServers": {
+  "my-mcp": {
+ "type": "stdio",
+ "command": "npx",
+ "args": ["-y", "mcp-remote", "https://superbox-executor.<your-subdomain>.workers.dev/mcp?name=my-mcp"]
+  }
+}
+ }
+ ```
+ `mcp-remote` is an npm shim that bridges stdio (required by these clients) to the HTTP Worker endpoint. It is installed automatically by `npx` on first use.
+  </Tab>
+</Tabs>
 
 ## Platform Support
 
@@ -140,9 +156,9 @@ The generated configuration uses a local proxy that bridges stdio to WebSocket:
 
 <CardGroup cols={2}>
   <Card title="Inspect Server" icon="eye" href="/cli/inspect">
-    View server details
+ View server details
   </Card>
   <Card title="Test Mode" icon="flask" href="/cli/test">
-    Test without registry
+ Test without registry
   </Card>
 </CardGroup>

@@ -1,4 +1,4 @@
----
+﻿---
 title: "Frontend Setup"
 description: "Set up your local development environment for SuperBox frontend"
 icon: "code"
@@ -10,13 +10,13 @@ Before you begin, ensure you have the following installed:
 
 <CardGroup cols={3}>
   <Card title="Node.js 20+" icon="node-js" color="#339933">
-    Download from [nodejs.org](https://nodejs.org)
+ Download from [nodejs.org](https://nodejs.org)
   </Card>
   <Card title="npm or pnpm" icon="box" color="#CB3837">
-    Package manager (npm comes with Node.js)
+ Package manager (npm comes with Node.js)
   </Card>
   <Card title="Git" icon="git-alt" color="#F05032">
-    Version control system
+ Version control system
   </Card>
 </CardGroup>
 
@@ -28,80 +28,86 @@ Before you begin, ensure you have the following installed:
 
 <Steps>
   <Step title="Clone the Repository">
-    Clone the SuperBox frontend repository to your local machine:
+ Clone the SuperBox frontend repository to your local machine:
 
-    ```bash
-    git clone https://github.com/areebahmeddd/SuperBox-FE.git
-    cd SuperBox-FE
-    ```
+ ```bash
+ git clone https://github.com/areebahmeddd/SuperBox-FE.git
+ cd SuperBox-FE
+ ```
   </Step>
 
   <Step title="Install Dependencies">
-    Install all required npm packages:
+ Install all required npm packages:
 
-    <CodeGroup>
-    ```bash
-    npm
-    npm install
-    ```
+ <CodeGroup>
+ ```bash
+ npm
+ npm install
+ ```
 
-    ```bash
-    pnpm
-    pnpm install
-    ```
+ ```bash
+ pnpm
+ pnpm install
+ ```
 
-    ```bash
-    yarn
-    yarn install
-    ```
-    </CodeGroup>
+ ```bash
+ yarn
+ yarn install
+ ```
+ </CodeGroup>
 
-    <Info>
-      This will install Next.js 16, React 19, Tailwind CSS 4.1, Framer Motion, and all other dependencies.
-    </Info>
+ <Info>
+This will install Next.js 16, React 19, Tailwind CSS 4.1, Framer Motion, and all other dependencies.
+ </Info>
 
   </Step>
 
   <Step title="Configure Environment Variables">
-    Create a `.env.local` file in the root directory:
+ Create a `.env.local` file in the root directory:
 
-    ```bash
-    cp .env.example .env.local
-    ```
+ ```bash
+ cp .env.example .env.local
+ ```
 
-    Edit `.env.local` with your configuration:
+ Edit `.env.local` with your configuration:
 
-    ```bash
-    # API Configuration
-    NEXT_PUBLIC_API_URL=https://api.superbox.ai
-    NEXT_PUBLIC_API_VERSION=v1
+ ```bash
+ # API Configuration
+ NEXT_PUBLIC_API_URL=https://api.superbox.ai
 
-    # Firebase Configuration
-    NEXT_PUBLIC_FIREBASE_API_KEY=your_firebase_api_key
-    NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project_id.firebaseapp.com
-    NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+ # Firebase Configuration
+ NEXT_PUBLIC_FIREBASE_API_KEY=your_firebase_api_key
+ NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project_id.firebaseapp.com
+ NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+ NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project_id.firebasestorage.app
+ NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+ NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+ NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=your_measurement_id
 
-    # Payment Gateway (Razorpay)
-    NEXT_PUBLIC_RAZORPAY_KEY_ID=your_razorpay_key_id
-    ```
+ # OAuth
+ NEXT_PUBLIC_GOOGLE_CLIENT_ID=your_google_client_id
+ GOOGLE_CLIENT_SECRET=your_google_client_secret
+ NEXT_PUBLIC_GITHUB_CLIENT_ID=your_github_client_id
+ GITHUB_CLIENT_SECRET=your_github_client_secret
+ ```
 
-    <Warning>
-      Never commit `.env.local` to version control. It contains sensitive credentials.
-    </Warning>
+ <Warning>
+Never commit `.env.local` to version control. It contains sensitive credentials.
+ </Warning>
 
   </Step>
 
   <Step title="Start Development Server">
-    Run the Next.js development server:
+ Run the Next.js development server:
 
-    ```bash
-    npm run dev
-    ```
+ ```bash
+ npm run dev
+ ```
 
-    The application will be available at:
-    <Card>
-      🌐 **http://localhost:3000**
-    </Card>
+ The application will be available at:
+ <Card>
+**http://localhost:3000**
+ </Card>
 
   </Step>
 </Steps>
@@ -110,53 +116,53 @@ Before you begin, ensure you have the following installed:
 
 <AccordionGroup>
   <Accordion title="npm run dev" icon="play">
-    Starts the Next.js development server with hot module replacement (HMR)
-    
-    ```bash
-    npm run dev
-    ```
-    
-    Server runs on **http://localhost:3000**
+ Starts the Next.js development server with hot module replacement (HMR)
+ 
+ ```bash
+ npm run dev
+ ```
+ 
+ Server runs on **http://localhost:3000**
   </Accordion>
 
   <Accordion title="npm run build" icon="hammer">
-    Creates an optimized production build
-    
-    ```bash
-    npm run build
-    ```
-    
-    Output is generated in the `.next` directory
+ Creates an optimized production build
+ 
+ ```bash
+ npm run build
+ ```
+ 
+ Output is generated in the `.next` directory
   </Accordion>
 
   <Accordion title="npm run start" icon="rocket">
-    Starts the production server (requires build first)
-    
-    ```bash
-    npm run build && npm run start
-    ```
-    
-    Serves the optimized production build
+ Starts the production server (requires build first)
+ 
+ ```bash
+ npm run build && npm run start
+ ```
+ 
+ Serves the optimized production build
   </Accordion>
 
   <Accordion title="npm run lint" icon="circle-check">
-    Runs ESLint to check code quality
-    
-    ```bash
-    npm run lint
-    ```
-    
-    Identifies and fixes linting issues
+ Runs ESLint to check code quality
+ 
+ ```bash
+ npm run lint
+ ```
+ 
+ Identifies and fixes linting issues
   </Accordion>
 
   <Accordion title="npm run type-check" icon="shield-check">
-    Runs TypeScript type checking
-    
-    ```bash
-    npm run type-check
-    ```
-    
-    Validates TypeScript types without building
+ Runs TypeScript type checking
+ 
+ ```bash
+ npm run type-check
+ ```
+ 
+ Validates TypeScript types without building
   </Accordion>
 </AccordionGroup>
 
@@ -164,32 +170,32 @@ Before you begin, ensure you have the following installed:
 
 ```
 SuperBox-FE/
-├── public/                 # Static assets
-│   ├── icons/             # App icons and favicons
-│   ├── manifest.json      # PWA manifest
-│   ├── robots.txt         # SEO robots file
-│   └── sitemap.xml        # SEO sitemap
-├── src/
-│   ├── app/               # Next.js App Router pages
-│   │   ├── layout.tsx     # Root layout
-│   │   ├── page.tsx       # Home page
-│   │   ├── explore/       # Explore servers page
-│   │   ├── server/[id]/   # Dynamic server detail page
-│   │   └── ...
-│   ├── components/        # React components
-│   │   ├── header.tsx
-│   │   ├── server-card.tsx
-│   │   ├── auth-modal.tsx
-│   │   └── ...
-│   ├── lib/               # Utilities and types
-│   │   └── types.ts
-│   └── styles/
-│       └── globals.css    # Global styles
-├── .env.local             # Environment variables (create this)
-├── next.config.mjs        # Next.js configuration
-├── tailwind.config.ts     # Tailwind CSS configuration
-├── tsconfig.json          # TypeScript configuration
-└── package.json           # Dependencies
+  public/ # Static assets
+ icons/# App icons and favicons
+ manifest.json  # PWA manifest
+ robots.txt  # SEO robots file
+ sitemap.xml # SEO sitemap
+  src/
+ app/  # Next.js App Router pages
+layout.tsx# Root layout
+page.tsx  # Home page
+explore/  # Explore servers page
+server/[id]/ # Dynamic server detail page
+...
+ components/ # React components
+header.tsx
+server-card.tsx
+auth-modal.tsx
+...
+ lib/  # Utilities and types
+types.ts
+ styles/
+globals.css  # Global styles
+  .env.local # Environment variables (create this)
+  next.config.mjs  # Next.js configuration
+  tailwind.config.ts  # Tailwind CSS configuration
+  tsconfig.json # TypeScript configuration
+  package.json  # Dependencies
 ```
 
 ## IDE Configuration
@@ -202,10 +208,10 @@ Install recommended extensions for the best development experience:
 ```json .vscode/extensions.json
 {
   "recommendations": [
-    "dbaeumer.vscode-eslint",
-    "esbenp.prettier-vscode",
-    "bradlc.vscode-tailwindcss",
-    "ms-vscode.vscode-typescript-next"
+ "dbaeumer.vscode-eslint",
+ "esbenp.prettier-vscode",
+ "bradlc.vscode-tailwindcss",
+ "ms-vscode.vscode-typescript-next"
   ]
 }
 ```
@@ -215,11 +221,11 @@ Install recommended extensions for the best development experience:
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
+ "source.fixAll.eslint": true
   },
   "typescript.tsdk": "node_modules/typescript/lib",
   "tailwindCSS.experimental.classRegex": [
-    ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"]
+ ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"]
   ]
 }
 ```
@@ -239,59 +245,59 @@ Enable these features:
 
 <AccordionGroup>
   <Accordion title="Port 3000 already in use" icon="triangle-exclamation">
-    If port 3000 is occupied, specify a different port:
-    
-    ```bash
-    PORT=3001 npm run dev
-    ```
-    
-    Or kill the process using port 3000:
-    
-    ```bash
-    # On Linux/macOS
-    lsof -ti:3000 | xargs kill -9
-    
-    # On Windows
-    netstat -ano | findstr :3000
-    taskkill /PID <PID> /F
-    ```
+ If port 3000 is occupied, specify a different port:
+ 
+ ```bash
+ PORT=3001 npm run dev
+ ```
+ 
+ Or kill the process using port 3000:
+ 
+ ```bash
+ # On Linux/macOS
+ lsof -ti:3000 | xargs kill -9
+ 
+ # On Windows
+ netstat -ano | findstr :3000
+ taskkill /PID <PID> /F
+ ```
   </Accordion>
 
   <Accordion title="Module not found errors" icon="circle-exclamation">
-    Clear node_modules and reinstall:
-    
-    ```bash
-    rm -rf node_modules package-lock.json
-    npm install
-    ```
+ Clear node_modules and reinstall:
+ 
+ ```bash
+ rm -rf node_modules package-lock.json
+ npm install
+ ```
   </Accordion>
 
   <Accordion title="TypeScript errors" icon="code">
-    Restart the TypeScript server in VS Code:
-    
-    1. Press `Cmd/Ctrl + Shift + P`
-    2. Type "TypeScript: Restart TS Server"
-    3. Press Enter
+ Restart the TypeScript server in VS Code:
+ 
+ 1. Press `Cmd/Ctrl + Shift + P`
+ 2. Type "TypeScript: Restart TS Server"
+ 3. Press Enter
   </Accordion>
 
   <Accordion title="Tailwind styles not working" icon="paintbrush">
-    Ensure Tailwind is properly configured and rebuild:
-    
-    ```bash
-    npm run build
-    npm run dev
-    ```
+ Ensure Tailwind is properly configured and rebuild:
+ 
+ ```bash
+ npm run build
+ npm run dev
+ ```
   </Accordion>
 
   <Accordion title="API connection errors" icon="plug">
-    Verify your backend is running and environment variables are correct:
-    
-    ```bash
+ Verify your backend is running and environment variables are correct:
+ 
+ ```bash
 # Check backend status
-    curl http://localhost:8080/health
-    
-    # Verify .env.local
-    cat .env.local | grep NEXT_PUBLIC_API_URL
+ curl http://localhost:8000/health
+ 
+ # Verify .env.local
+ cat .env.local | grep NEXT_PUBLIC_API_URL
 ```
   </Accordion>
 </AccordionGroup>
@@ -303,10 +309,10 @@ Enable these features:
   
   ```javascript
   const nextConfig = {
-    experimental: {
-      optimizePackageImports: ['framer-motion'],
-      serverActions: true,
-    },
+ experimental: {
+optimizePackageImports: ['framer-motion'],
+serverActions: true,
+ },
   }
   ```
 </Tip>
@@ -315,19 +321,19 @@ Enable these features:
 
 <CardGroup cols={2}>
   <Card
-    title="Component Library"
-    icon="layer-group"
-    href="/frontend/components"
+ title="Component Library"
+ icon="layer-group"
+ href="/frontend/components"
   >
-    Explore reusable components
+ Explore reusable components
   </Card>
   <Card title="Backend Setup" icon="server" href="/backend/setup">
-    Set up the Go API backend
+ Set up the Go API backend
   </Card>
   <Card title="Deploy Frontend" icon="rocket" href="/frontend/deployment">
-    Deploy to Vercel
+ Deploy to Vercel
   </Card>
   <Card title="API Integration" icon="plug" href="/api/introduction">
-    Learn about API endpoints
+ Learn about API endpoints
   </Card>
 </CardGroup>

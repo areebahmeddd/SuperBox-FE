@@ -1,4 +1,4 @@
----
+﻿---
 title: "superbox inspect"
 description: "Open MCP server repository in browser"
 icon: "file-magnifying-glass"
@@ -23,16 +23,16 @@ Open the repository URL for a registered MCP server in your default browser. Use
 ## What It Does
 
 <Steps>
-  <Step title="Fetch from S3">
-    Retrieves server metadata from S3 registry
+  <Step title="Fetch from R2">
+ Retrieves server metadata from R2 registry
   </Step>
 
   <Step title="Extract URL">
-    Extracts repository URL from server metadata
+ Extracts repository URL from server metadata
   </Step>
 
   <Step title="Open Browser">
-    Opens repository URL in default browser
+ Opens repository URL in default browser
   </Step>
 </Steps>
 
@@ -40,7 +40,7 @@ Open the repository URL for a registered MCP server in your default browser. Use
 
 ```bash
 $ superbox inspect --name weather-mcp
-Fetching server 'weather-mcp' from S3 bucket...
+Fetching server 'weather-mcp' from R2 registry...
 Opening repository: https://github.com/user/weather-mcp
 Done.
 ```
@@ -49,16 +49,16 @@ Done.
 
 <CardGroup cols={2}>
   <Card title="View Source" icon="code">
-    Inspect server implementation
+ Inspect server implementation
   </Card>
   <Card title="Read Docs" icon="book">
-    Check repository README
+ Check repository README
   </Card>
   <Card title="Check Issues" icon="bug">
-    View open issues
+ View open issues
   </Card>
   <Card title="Fork" icon="code-fork">
-    Fork for customization
+ Fork for customization
   </Card>
 </CardGroup>
 
@@ -66,9 +66,9 @@ Done.
 
 <CardGroup cols={2}>
   <Card title="Pull Config" icon="download" href="/cli/pull">
-    Download configuration
+ Download configuration
   </Card>
-  <Card title="Test Locally" icon="play" href="/cli/run">
-    Run server locally
+  <Card title="Test Server" icon="flask" href="/cli/test">
+ Test without publishing
   </Card>
 </CardGroup>

@@ -1,10 +1,10 @@
----
+﻿---
 title: "superbox logs"
-description: "View or follow CloudWatch logs for an MCP server"
+description: "Print wrangler tail instructions for a deployed MCP server"
 icon: "file-lines"
 ---
 
-The `logs` command reads CloudWatch logs for a deployed MCP server. It maps to `src/superbox/cli/commands/logs.py` in the backend repo and requires AWS credentials plus registry access in `.env`.
+The `logs` command prints instructions for streaming live logs from the SuperBox Cloudflare Worker. It does not stream logs directly - it outputs the `wrangler tail` command you should run.
 
 ## Usage
 
@@ -12,35 +12,78 @@ The `logs` command reads CloudWatch logs for a deployed MCP server. It maps to `
 superbox logs --name <server> [--follow|-f]
 ```
 
-### Options
+## Options
 
 <ParamField path="--name" type="string" required>
-  MCP server name (matches the registry entry and CloudWatch log group).
+  MCP server name. The command verifies the server exists in the R2 registry before printing instructions.
 </ParamField>
 
 <ParamField path="--follow" type="boolean" default={false}>
-  Follow logs in real time (tail). Shorthand: `-f`.
+  Changes output mode. Shorthand: `-f`.
 </ParamField>
 
 ## Behavior
 
-- Loads `.env` in the current directory for AWS creds/region and S3 bucket.
-- Verifies the server exists in the registry bucket.
-- Reads from CloudWatch log group `/aws/lambda/superbox-executor-<name>`.
-- Prints the last hour by default; with `--follow`, streams continuously.
+| Mode | Output |
+|------|--------|
+| Default (no `--follow`) | Prints both the `wrangler tail` CLI command **and** the Cloudflare dashboard URL |
+| With `--follow` | Prints only: `wrangler tail superbox-executor --format pretty` |
+
+The command verifies the server exists in R2 via `s3.get_server(bucket, name)` and exits with an error if not found.
 
 ## Examples
 
 ```bash
-# Fetch the last hour of logs
-superbox logs --name weather-mcp
+# Get instructions for weather-server
+superbox logs --name weather-server
+```
 
-# Tail in real time
-superbox logs --name weather-mcp --follow
+Example output (no `--follow`):
+
+```
+Logs for weather-server:
+
+  CLI: wrangler tail superbox-executor --format pretty
+  Dashboard: https://dash.cloudflare.com/<account>/workers/superbox-executor
+```
+
+```bash
+# Get the follow command
+superbox logs --name weather-server --follow
+```
+
+Example output:
+
+```
+wrangler tail superbox-executor --format pretty
+```
+
+## Streaming logs with wrangler
+
+Once you have the command, run it in a terminal:
+
+```bash
+# Stream all Worker logs
+wrangler tail superbox-executor --format pretty
+
+# Filter to errors only
+wrangler tail superbox-executor --status error
+
+# JSON output (pipe to jq)
+wrangler tail superbox-executor --format json | jq .
+```
+
+## Prerequisites
+
+`wrangler` must be installed and authenticated:
+
+```bash
+npm install -g wrangler
+wrangler login
 ```
 
 ## Troubleshooting
 
-- If you see “log group not found”, the server may not have been executed yet or the name does not match the deployed Lambda suffix.
-- Ensure `.env` contains `AWS_REGION`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, and the registry bucket name (`S3_BUCKET_NAME`).
-- Use `superbox search` to confirm the server exists in the registry. If missing, run `superbox push` first.
+- **Server not found**: Run `superbox search` to confirm the server name, then `superbox push` if it is missing.
+- **wrangler: command not found**: Install with `npm install -g wrangler`.
+- **Authentication error in wrangler**: Run `wrangler login` and complete the browser OAuth flow.

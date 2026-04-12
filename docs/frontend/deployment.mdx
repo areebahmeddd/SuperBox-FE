@@ -1,4 +1,4 @@
----
+﻿---
 title: "Frontend Deployment"
 description: "Deploy SuperBox frontend to Vercel with automatic CI/CD"
 icon: "upload"
@@ -17,7 +17,7 @@ SuperBox frontend is optimized for deployment on Vercel, the platform built by t
 
 <Steps>
   <Step title="Create Vercel Account">
-    Sign up at [vercel.com](https://vercel.com) using your GitHub account for seamless integration.
+ Sign up at [vercel.com](https://vercel.com) using your GitHub account for seamless integration.
   </Step>
 
 <Step title="Install Vercel CLI (Optional)">
@@ -29,7 +29,7 @@ SuperBox frontend is optimized for deployment on Vercel, the platform built by t
 </Step>
 
   <Step title="Prepare Environment Variables">
-    Ensure all required environment variables are documented and ready.
+ Ensure all required environment variables are documented and ready.
   </Step>
 </Steps>
 
@@ -39,62 +39,54 @@ SuperBox frontend is optimized for deployment on Vercel, the platform built by t
 
 <AccordionGroup>
   <Accordion title="Step 1: Connect Repository" icon="1">
-    1. Go to [vercel.com/new](https://vercel.com/new)
-    2. Select **Import Git Repository**
-    3. Choose the `SuperBox-FE` repository
-    4. Click **Import**
+ 1. Go to [vercel.com/new](https://vercel.com/new)
+ 2. Select **Import Git Repository**
+ 3. Choose the `SuperBox-FE` repository
+ 4. Click **Import**
   </Accordion>
 
 <Accordion title="Step 2: Configure Project" icon="2">
   Vercel auto-detects Next.js configuration. Verify settings:
   <ParamField path="Framework Preset" type="string" default="Next.js">
-    Automatically detected
+ Automatically detected
   </ParamField>
   <ParamField path="Root Directory" type="string" default="./">
-    Keep as root unless using monorepo
+ Keep as root unless using monorepo
   </ParamField>
   <ParamField path="Build Command" type="string" default="next build">
-    Default Next.js build command
+ Default Next.js build command
   </ParamField>
   <ParamField path="Output Directory" type="string" default=".next">
-    Next.js output directory
+ Next.js output directory
   </ParamField>
   <ParamField path="Install Command" type="string" default="npm install">
-    Dependency installation command
+ Dependency installation command
   </ParamField>
 </Accordion>
 
 <Accordion title="Step 3: Add Environment Variables" icon="3">
   Add all environment variables in the Vercel dashboard:
   ```bash
-# Required Variables
+# API
   NEXT_PUBLIC_API_URL=https://api.superbox.ai
-  NEXT_PUBLIC_API_VERSION=v1
 
-# Authentication
+# Firebase
+
+NEXT_PUBLIC_FIREBASE_API_KEY=your_firebase_api_key
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project_id.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project_id.firebasestorage.app
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=your_measurement_id
+
+# OAuth
 
 NEXT_PUBLIC_GOOGLE_CLIENT_ID=your_google_client_id
-NEXT_PUBLIC_GITHUB_CLIENT_ID=your_github_client_id
 GOOGLE_CLIENT_SECRET=your_google_client_secret
+NEXT_PUBLIC_GITHUB_CLIENT_ID=your_github_client_id
 GITHUB_CLIENT_SECRET=your_github_client_secret
-NEXTAUTH_SECRET=your_nextauth_secret
-NEXTAUTH_URL=https://your-domain.vercel.app
-
-# Payment Gateway
-
-NEXT_PUBLIC_RAZORPAY_KEY_ID=your_razorpay_key_id
-RAZORPAY_KEY_SECRET=your_razorpay_secret
-
-# Analytics (Optional)
-
-NEXT_PUBLIC_GA_TRACKING_ID=your_ga_tracking_id
-SENTRY_DSN=your_sentry_dsn
-
-# Feature Flags
-
-NEXT_PUBLIC_ENABLE_ANALYTICS=true
-NEXT_PUBLIC_ENABLE_SENTRY=true
-````
+  ```
 <Warning>
   Environment variables prefixed with `NEXT_PUBLIC_` are exposed to the
   browser. Never include secrets in public variables.
@@ -150,9 +142,9 @@ Upload your built application manually:
 
 <Steps>
   <Step title="Build Locally">
-    ```bash
-    npm run build
-    ```
+ ```bash
+ npm run build
+ ```
   </Step>
 
 <Step title="Test Production Build">
@@ -162,11 +154,11 @@ Upload your built application manually:
 </Step>
 
   <Step title="Deploy via Dashboard">
-    1. Go to Vercel dashboard
-    2. Click **Add New** > **Project**
-    3. Upload the `.next` folder
-    4. Configure settings
-    5. Deploy
+ 1. Go to Vercel dashboard
+ 2. Click **Add New** > **Project**
+ 3. Upload the `.next` folder
+ 4. Configure settings
+ 5. Deploy
   </Step>
 </Steps>
 
@@ -179,27 +171,32 @@ Upload your built application manually:
 
 <Steps>
   <Step title="Add Domain in Vercel">
-    1. Go to your project settings
-    2. Navigate to **Domains** tab
-    3. Click **Add Domain**
-    4. Enter your domain (e.g., `superbox.ai`)
+ 1. Go to your project settings
+ 2. Navigate to **Domains** tab
+ 3. Click **Add Domain**
+ 4. Enter your domain (e.g., `superbox.ai`)
   </Step>
 
 <Step title="Configure DNS">
   Add these DNS records in your domain registrar:
   <Tabs>
     <Tab title="Apex Domain">
-      ``` Type: A Name: @ Value: 76.76.21.21 TTL: 3600 ```
+      ```text
+      Type:  A
+      Name:  @
+      Value: 76.76.21.21
+      TTL:   3600
+      ```
     </Tab>
 
     <Tab title="www Subdomain">
-      ``` Type: CNAME Name: www Value: cname.vercel-dns.com TTL: 3600 ```
+      ```text
+      Type:  CNAME
+      Name:  www
+      Value: cname.vercel-dns.com
+      TTL:   3600
+      ```
     </Tab>
-
-    <Tab title="API Subdomain">
-      ``` Type: CNAME Name: app Value: cname.vercel-dns.com TTL: 3600 ```
-    </Tab>
-
   </Tabs>
 </Step>
 
@@ -207,17 +204,17 @@ Upload your built application manually:
   Vercel automatically verifies DNS configuration and provisions SSL
   certificates.
   <Check>
-    HTTPS is automatically enabled for all domains with Let's Encrypt
-    certificates.
+ HTTPS is automatically enabled for all domains with Let's Encrypt
+ certificates.
   </Check>
 </Step>
 
   <Step title="Update Environment Variables">
-    Update `NEXTAUTH_URL` to your custom domain:
-    
-    ```bash
-    NEXTAUTH_URL=https://superbox.ai
-    ```
+ Update `NEXTAUTH_URL` to your custom domain:
+ 
+ ```bash
+ NEXTAUTH_URL=https://superbox.ai
+ ```
   </Step>
 </Steps>
 
@@ -234,39 +231,39 @@ Customize deployment behavior with `vercel.json`:
   "framework": "nextjs",
   "regions": ["iad1", "sfo1"],
   "env": {
-    "NEXT_PUBLIC_API_URL": "https://api.superbox.ai"
+ "NEXT_PUBLIC_API_URL": "https://api.superbox.ai"
   },
   "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        {
-          "key": "X-Frame-Options",
-          "value": "DENY"
-        },
-        {
-          "key": "X-Content-Type-Options",
-          "value": "nosniff"
-        },
-        {
-          "key": "Referrer-Policy",
-          "value": "strict-origin-when-cross-origin"
-        }
-      ]
-    }
+ {
+"source": "/(.*)",
+"headers": [
+  {
+ "key": "X-Frame-Options",
+ "value": "DENY"
+  },
+  {
+ "key": "X-Content-Type-Options",
+ "value": "nosniff"
+  },
+  {
+ "key": "Referrer-Policy",
+ "value": "strict-origin-when-cross-origin"
+  }
+]
+ }
   ],
   "redirects": [
-    {
-      "source": "/docs",
-      "destination": "/docs/introduction",
-      "permanent": true
-    }
+ {
+"source": "/docs",
+"destination": "/docs/introduction",
+"permanent": true
+ }
   ],
   "rewrites": [
-    {
-      "source": "/api/:path*",
-      "destination": "https://api.superbox.ai/:path*"
-    }
+ {
+"source": "/api/:path*",
+"destination": "https://api.superbox.ai/:path*"
+ }
   ]
 }
 ```
@@ -282,13 +279,13 @@ Customize deployment behavior with `vercel.json`:
 
 <CardGroup cols={2}>
   <Card title="Production" icon="rocket" color="#000">
-    **Trigger:** Push to `main` branch Automatically deploys to production
-    domain
+ **Trigger:** Push to `main` branch Automatically deploys to production
+ domain
   </Card>
 
   <Card title="Preview" icon="eye" color="#0070F3">
-    **Trigger:** Pull requests & other branches Creates unique preview URLs for
-    testing
+ **Trigger:** Pull requests & other branches Creates unique preview URLs for
+ testing
   </Card>
 </CardGroup>
 
@@ -300,9 +297,9 @@ name: Vercel Deployment
 
 on:
   push:
-    branches: [main, develop]
+ branches: [main, develop]
   pull_request:
-    branches: [main]
+ branches: [main]
 
 env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
@@ -310,20 +307,20 @@ env:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+ runs-on: ubuntu-latest
+ steps:
+- uses: actions/checkout@v4
 
-      - name: Install Vercel CLI
-        run: npm install -g vercel
+- name: Install Vercel CLI
+  run: npm install -g vercel
 
-      - name: Deploy to Vercel
-        run: |
-          if [ "${{ github.ref }}" == "refs/heads/main" ]; then
-            vercel --prod --token=${{ secrets.VERCEL_TOKEN }}
-          else
-            vercel --token=${{ secrets.VERCEL_TOKEN }}
-          fi
+- name: Deploy to Vercel
+  run: |
+ if [ "${{ github.ref }}" == "refs/heads/main" ]; then
+vercel --prod --token=${{ secrets.VERCEL_TOKEN }}
+ else
+vercel --token=${{ secrets.VERCEL_TOKEN }}
+ fi
 ```
 
 ### Deployment Protection
@@ -349,9 +346,9 @@ const nextConfig = {
 
   // Optimize images
   images: {
-    domains: ["api.superbox.ai", "avatars.githubusercontent.com"],
-    formats: ["image/avif", "image/webp"],
-    minimumCacheTTL: 60,
+ domains: ["api.superbox.ai", "avatars.githubusercontent.com"],
+ formats: ["image/avif", "image/webp"],
+ minimumCacheTTL: 60,
   },
 
   // Enable SWC minification
@@ -362,34 +359,34 @@ const nextConfig = {
 
   // Experimental features
   experimental: {
-    optimizePackageImports: ["framer-motion", "lucide-react"],
+ optimizePackageImports: ["framer-motion", "lucide-react"],
   },
 
   // Headers for security
   async headers() {
-    return [
-      {
-        source: "/(.*)",
-        headers: [
-          {
-            key: "X-DNS-Prefetch-Control",
-            value: "on",
-          },
-          {
-            key: "Strict-Transport-Security",
-            value: "max-age=63072000; includeSubDomains; preload",
-          },
-          {
-            key: "X-Frame-Options",
-            value: "SAMEORIGIN",
-          },
-          {
-            key: "X-Content-Type-Options",
-            value: "nosniff",
-          },
-        ],
-      },
-    ];
+ return [
+{
+  source: "/(.*)",
+  headers: [
+ {
+key: "X-DNS-Prefetch-Control",
+value: "on",
+ },
+ {
+key: "Strict-Transport-Security",
+value: "max-age=63072000; includeSubDomains; preload",
+ },
+ {
+key: "X-Frame-Options",
+value: "SAMEORIGIN",
+ },
+ {
+key: "X-Content-Type-Options",
+value: "nosniff",
+ },
+  ],
+},
+ ];
   },
 };
 
@@ -406,8 +403,8 @@ export const runtime = "edge";
 
 export async function GET() {
   return Response.json({
-    status: "healthy",
-    timestamp: new Date().toISOString(),
+ status: "healthy",
+ timestamp: new Date().toISOString(),
   });
 }
 ```
@@ -424,7 +421,7 @@ export async function generateStaticParams() {
   const servers = await fetchPopularServers();
 
   return servers.map((server) => ({
-    id: server.id,
+ id: server.id,
   }));
 }
 ```
@@ -442,13 +439,13 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export default function RootLayout({ children }) {
   return (
-    <html>
-      <body>
-        {children}
-        <Analytics />
-        <SpeedInsights />
-      </body>
-    </html>
+ <html>
+<body>
+  {children}
+  <Analytics />
+  <SpeedInsights />
+</body>
+ </html>
   );
 }
 ```
@@ -459,21 +456,21 @@ Monitor Core Web Vitals:
 
 <CardGroup cols={3}>
   <Card title="LCP" icon="gauge-high">
-    **Target:** < 2.5s
-    
-    Largest Contentful Paint
+ **Target:** < 2.5s
+ 
+ Largest Contentful Paint
   </Card>
   
   <Card title="FID" icon="hand-pointer">
-    **Target:** < 100ms
-    
-    First Input Delay
+ **Target:** < 100ms
+ 
+ First Input Delay
   </Card>
   
   <Card title="CLS" icon="arrows-up-down">
-    **Target:** < 0.1
-    
-    Cumulative Layout Shift
+ **Target:** < 0.1
+ 
+ Cumulative Layout Shift
   </Card>
 </CardGroup>
 
@@ -481,26 +478,26 @@ Monitor Core Web Vitals:
 
 <AccordionGroup>
   <Accordion title="Build Failures" icon="circle-xmark">
-    Check Vercel build logs for errors:
-    
-    ```bash
-    vercel logs [deployment-url]
-    ```
-    
-    Common issues:
-    - Missing environment variables
-    - TypeScript errors
-    - Dependency issues
-    - Memory limit exceeded
+ Check Vercel build logs for errors:
+ 
+ ```bash
+ vercel logs [deployment-url]
+ ```
+ 
+ Common issues:
+ - Missing environment variables
+ - TypeScript errors
+ - Dependency issues
+ - Memory limit exceeded
   </Accordion>
 
   <Accordion title="Environment Variables Not Working" icon="key">
-    Ensure variables are:
-    
-    1. Added in Vercel dashboard
-    2. Assigned to correct environment (Production/Preview/Development)
-    3. Prefixed with `NEXT_PUBLIC_` if needed in browser
-    4. Redeployed after adding
+ Ensure variables are:
+ 
+ 1. Added in Vercel dashboard
+ 2. Assigned to correct environment (Production/Preview/Development)
+ 3. Prefixed with `NEXT_PUBLIC_` if needed in browser
+ 4. Redeployed after adding
   </Accordion>
 
 <Accordion title="404 Errors on Refresh" icon="magnifying-glass">
@@ -510,13 +507,13 @@ Monitor Core Web Vitals:
 </Accordion>
 
   <Accordion title="Slow Performance" icon="turtle">
-    Optimize your deployment:
-    
-    1. Enable image optimization
-    2. Implement code splitting
-    3. Use Edge Functions for API routes
-    4. Enable ISR (Incremental Static Regeneration)
-    5. Add proper caching headers
+ Optimize your deployment:
+ 
+ 1. Enable image optimization
+ 2. Implement code splitting
+ 3. Use Edge Functions for API routes
+ 4. Enable ISR (Incremental Static Regeneration)
+ 5. Add proper caching headers
   </Accordion>
 </AccordionGroup>
 
@@ -524,7 +521,7 @@ Monitor Core Web Vitals:
 
 <Steps>
   <Step title="View Deployments">
-    Go to your project dashboard and click **Deployments** tab
+ Go to your project dashboard and click **Deployments** tab
   </Step>
 
 <Step title="Select Previous Version">
@@ -532,11 +529,11 @@ Monitor Core Web Vitals:
 </Step>
 
 <Step title="Promote to Production">
-  Click the **⋯** menu → **Promote to Production**
+  Click the **...** menu, then select **Promote to Production**
 </Step>
 
   <Step title="Verify">
-    Check that your production domain now serves the rolled-back version
+ Check that your production domain now serves the rolled-back version
   </Step>
 </Steps>
 
@@ -549,15 +546,15 @@ Monitor Core Web Vitals:
 
 <CardGroup cols={2}>
   <Card title="Backend Deployment" icon="server" href="/backend/deployment">
-    Deploy Go API to AWS
+ Deploy Python backend
   </Card>
   <Card title="API Documentation" icon="book" href="/api/introduction">
-    Explore API endpoints
+ Explore API endpoints
   </Card>
   <Card title="Monitoring" icon="chart-line" href="/backend/architecture">
-    Set up monitoring and alerts
+ Set up monitoring and alerts
   </Card>
   <Card title="Security" icon="shield" href="/concepts/security">
-    Review security best practices
+ Review security best practices
   </Card>
 </CardGroup>

@@ -1,4 +1,4 @@
----
+﻿---
 title: "Frontend Overview"
 description: "Next.js 16 + React 19 + Tailwind CSS 4.1"
 icon: "window"
@@ -8,22 +8,22 @@ icon: "window"
 
 <CardGroup cols={3}>
   <Card title="Next.js 16" icon="react">
-    App Router + Server Components
+ App Router + Server Components
   </Card>
   <Card title="React 19" icon="atom">
-    Latest React features
+ Latest React features
   </Card>
   <Card title="Tailwind CSS 4.1" icon="paintbrush">
-    Utility-first styling
+ Utility-first styling
   </Card>
   <Card title="Framer Motion" icon="sparkles">
-    Smooth animations
+ Smooth animations
   </Card>
   <Card title="TypeScript 5" icon="code">
-    Type safety
+ Type safety
   </Card>
   <Card title="Lucide React" icon="icons">
-    Icon library
+ Icon library
   </Card>
 </CardGroup>
 
@@ -31,24 +31,24 @@ icon: "window"
 
 ```
 src/
-├── app/                    # Next.js pages
-│   ├── layout.tsx         # Root layout
-│   ├── page.tsx           # Landing page
-│   ├── explore/           # Browse servers
-│   ├── server/[id]/       # Server details
-│   ├── my-servers/        # User's servers
-│   ├── playground/        # Test servers
-│   ├── profile/           # User profile
-│   └── settings/          # User settings
-├── components/            # Reusable components
-│   ├── auth-modal.tsx    # Authentication
-│   ├── header.tsx        # Navigation
-│   ├── server-card.tsx   # Server display
-│   ├── server-detail.tsx # Server info
-│   ├── paywall-modal.tsx # Payments
-│   └── ...
-└── lib/
-    └── types.ts          # TypeScript types
+  app/  # Next.js pages
+ layout.tsx# Root layout
+ page.tsx  # Landing page
+ explore/  # Browse servers
+ server/[id]/ # Server details
+ my-servers/  # User's servers
+ playground/  # Test servers
+ profile/  # User profile
+ settings/ # User settings
+  components/ # Reusable components
+ auth-modal.tsx  # Authentication
+ header.tsx# Navigation
+ server-card.tsx # Server display
+ server-detail.tsx  # Server info
+ paywall-modal.tsx  # Payments
+ ...
+  lib/
+ types.ts  # TypeScript types
 ```
 
 ## Key Pages
@@ -120,11 +120,11 @@ Connects to Go backend:
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 // List servers
-const res = await fetch(`${API_URL}/servers`);
+const res = await fetch(`${API_URL}/api/v1/servers`);
 const data = await res.json();
 
 // Get server details
-const res = await fetch(`${API_URL}/servers/${name}`);
+const res = await fetch(`${API_URL}/api/v1/servers/${name}`);
 const server = await res.json();
 ```
 
@@ -154,15 +154,15 @@ Hosted on Vercel:
 
 <CardGroup cols={2}>
   <Card title="Setup" icon="gear" href="/frontend/setup">
-    Local development setup
+ Local development setup
   </Card>
   <Card title="Components" icon="layer-group" href="/frontend/components">
-    Component library
+ Component library
   </Card>
   <Card title="Deploy" icon="rocket" href="/frontend/deployment">
-    Deploy to Vercel
+ Deploy to Vercel
   </Card>
   <Card title="Backend" icon="server" href="/backend/overview">
-    API integration
+ API integration
   </Card>
 </CardGroup>

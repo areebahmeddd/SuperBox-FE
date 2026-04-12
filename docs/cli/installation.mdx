@@ -1,4 +1,4 @@
----
+﻿---
 title: "CLI Installation"
 description: "Install SuperBox CLI on your system"
 icon: "download"
@@ -14,38 +14,38 @@ icon: "download"
 
 <Steps>
   <Step title="Clone Repository">
-    Clone the SuperBox backend repository:
-    
-    ```bash
-    git clone https://github.com/areebahmeddd/superbox.ai.git
-    cd superbox.ai
-    ```
+ Clone the SuperBox backend repository:
+ 
+ ```bash
+ git clone https://github.com/areebahmeddd/superbox.ai.git
+ cd superbox.ai
+ ```
   </Step>
 
   <Step title="Create Virtual Environment">
-    Create and activate a virtual environment:
-    
-    **Windows (PowerShell):**
-    ```powershell
-    python -m venv .venv
-    .\.venv\Scripts\Activate.ps1
-    ```
-    
-    **macOS/Linux:**
-    ```bash
-    python3 -m venv .venv
-    source .venv/bin/activate
-    ```
+ Create and activate a virtual environment:
+ 
+ **Windows (PowerShell):**
+ ```powershell
+ python -m venv .venv
+ .\.venv\Scripts\Activate.ps1
+ ```
+ 
+ **macOS/Linux:**
+ ```bash
+ python3 -m venv .venv
+ source .venv/bin/activate
+ ```
   </Step>
 
   <Step title="Install SuperBox CLI">
-    Install with CLI support:
-    
-    ```bash
-    python -m pip install -e .[cli]
-    ```
-    
-    <Info>For development, install with dev tools: `python -m pip install -e .[dev]`</Info>
+ Install with CLI support:
+ 
+ ```bash
+ python -m pip install -e .[cli]
+ ```
+ 
+ <Info>For development, install with dev tools: `python -m pip install -e .[dev]`</Info>
   </Step>
 </Steps>
 
@@ -60,9 +60,9 @@ superbox --help
 
 <CardGroup cols={2}>
   <Card title="Authenticate" icon="key" href="/cli/auth">
-    Connect to SuperBox
+ Connect to SuperBox
   </Card>
   <Card title="Initialize Project" icon="plus" href="/cli/init">
-    Create MCP server
+ Create MCP server
   </Card>
 </CardGroup>

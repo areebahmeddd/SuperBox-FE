@@ -1,88 +1,99 @@
----
+﻿---
 title: "Welcome to SuperBox"
-description: "Discover, deploy, and test MCPs in isolated sandboxes with enterprise-grade security"
+description: "Discover, deploy, and test MCP servers with automated security and sandboxed execution"
 icon: "house"
 ---
 
 ## What is SuperBox?
 
-SuperBox is an **open marketplace** for Model Context Protocol (MCP) servers with enterprise-grade security. Discover vetted MCP servers, deploy them in sandboxed AWS Lambda environments, and integrate them seamlessly into your AI applications.
+SuperBox is an **open marketplace** for Model Context Protocol (MCP) servers. Discover vetted MCP servers, run them in isolated Cloudflare Workers sandboxes, and connect them to your AI client in one command.
 
-**Key Benefits:**
+**Key features:**
 
-- **Centralized Registry** - Discover all MCP servers in one place
-- **5-Step Security** - SonarCloud, Bandit, GitGuardian validation
-- **Sandboxed Execution** - AWS Lambda isolation for safe testing
-- **One-Click Deploy** - No infrastructure setup required
+- **Centralized registry** - one place to find and publish MCP servers
+- **5-step security pipeline** - SonarCloud, tool discovery, Snyk, GitGuardian, and Bandit validation before any server enters the registry
+- **Sandboxed execution** - Cloudflare Durable Objects isolate every session
+- **One-command integration** - `superbox pull` writes the right config for your AI client
 
-## Platform Components
+## Platform components
 
 <CardGroup cols={3}>
   <Card title="Frontend" icon="browser" href="/frontend/overview">
-    Next.js 16 + React 19 with Tailwind CSS 4.1
+ Next.js 16 + React 19
   </Card>
   <Card title="Backend" icon="server" href="/backend/overview">
-    Go API + Python CLI with AWS infrastructure
+ Go REST API + Python CLI
   </Card>
-  <Card title="CLI Tool" icon="terminal" href="/cli/introduction">
-    Publish, test, and deploy from terminal
+  <Card title="CLI" icon="terminal" href="/cli/introduction">
+ Publish, test, and configure from the terminal
   </Card>
 </CardGroup>
 
-## Quick Start
+## Quick start
 
 ```bash
 # Install CLI
 pip install superbox
 
-# Initialize project
-superbox init my-mcp-server
-
 # Authenticate
 superbox auth login
+
+# Initialize server metadata
+superbox init
 
 # Publish with security scan
 superbox push
 
 # Configure AI client
-superbox pull my-mcp-server --client cursor
+superbox pull --name my-mcp-server --client cursor
 ```
 
-[Complete Quickstart Guide](/quickstart)
+[Complete quickstart guide](/quickstart)
 
-## Technology Stack
+## Technology stack
 
 <Tabs>
   <Tab title="Frontend">
-    - Next.js 16 + React 19 - TypeScript 5 - Tailwind CSS 4.1 - Framer Motion
+ - Next.js 16 + React 19
+ - TypeScript 5
+ - Tailwind CSS 4
+ - Framer Motion
   </Tab>
   <Tab title="Backend">
-    - Go 1.21+ (Gin) - Python 3.11+ (Click) - AWS Lambda - AWS S3
+ - Go 1.26 (Gin)
+ - Python 3.11 (CLI tool)
+ - Cloudflare Workers + Durable Objects
+ - Cloudflare R2
   </Tab>
   <Tab title="Security">
-    - SonarCloud - Bandit - GitGuardian - Firebase Auth
+ - SonarCloud
+ - Tool Discovery
+ - Snyk
+ - GitGuardian
+ - Bandit
+ - Firebase Auth
   </Tab>
 </Tabs>
 
-## Next Steps
+## Next steps
 
 <CardGroup cols={3}>
   <Card title="Quickstart" icon="rocket" href="/quickstart">
-    5-minute setup guide
+ Get running in 5 minutes
   </Card>
   <Card title="Architecture" icon="sitemap" href="/architecture">
-    System design deep dive
+ How the system is built
   </Card>
-  <Card title="API Docs" icon="code" href="/api/introduction">
-    REST API reference
+  <Card title="API docs" icon="code" href="/api/introduction">
+ REST API reference
   </Card>
-  <Card title="CLI Docs" icon="terminal" href="/cli/introduction">
-    Command-line tools
+  <Card title="CLI docs" icon="terminal" href="/cli/introduction">
+ All CLI commands
   </Card>
   <Card title="MCP Servers" icon="server" href="/concepts/mcp-servers">
-    Learn about MCPs
+ Learn about MCPs
   </Card>
   <Card title="Security" icon="shield" href="/concepts/security">
-    Security pipeline
+ Security pipeline
   </Card>
 </CardGroup>

@@ -1,4 +1,4 @@
----
+﻿---
 title: "superbox search"
 description: "List all MCP servers in the SuperBox registry"
 icon: "magnifying-glass"
@@ -12,19 +12,19 @@ superbox search
 
 ## Description
 
-List all available MCP servers from the S3-backed registry. Shows repository URL, tool count, description, and security status for each server.
+List all available MCP servers from the R2-backed registry. Shows repository URL, tool count, description, and security status for each server.
 
 <Info>No arguments or filters - displays all servers in registry</Info>
 
 ## What It Does
 
 <Steps>
-  <Step title="Fetch from S3">
-    Retrieves all server metadata from S3 registry
+  <Step title="Fetch from R2">
+ Retrieves all server metadata from R2 registry
   </Step>
 
   <Step title="Display List">
-    Shows formatted list of servers with details
+ Shows formatted list of servers with details
   </Step>
 </Steps>
 
@@ -37,49 +37,31 @@ Available MCP Servers (5 found)
 ======================================================================
 
 [my-mcp]
-   Repository: https://github.com/user/my-mcp
-   Tools: 3
-   Description: My awesome MCP server
-   Security: All scans passed
+Repository: https://github.com/user/my-mcp
+Tools: 3
+Description: My awesome MCP server
+Security: All scans passed
 
 [weather-mcp]
-   Repository: https://github.com/user/weather-mcp
-   Tools: 5
-   Description: Real-time weather data and forecasts
-   Security: All scans passed
+Repository: https://github.com/user/weather-mcp
+Tools: 5
+Description: Real-time weather data and forecasts
+Security: All scans passed
 
 [database-mcp]
-   Repository: https://github.com/user/database-mcp
-   Tools: 7
-   Description: Database management tools
-   Security: All scans passed
-```
-
-## Output
-
-```
-╭──────────────────── Search Results ──────────────────────╮
-│                                                           │
-│  Weather MCP                  ★ 4.8   ↓ 1.2k              │
-│  Real-time weather data and forecasts                     │
-│  Tags: weather, api, data                                 │
-│  ID:   weather-mcp-123                                    │
-│                                                           │
-│  Climate Data MCP             ★ 4.6   ↓ 850                │
-│  Historical climate data access                           │
-│  Tags: weather, data, historical                          │
-│  ID:   climate-mcp-456                                    │
-│                                                           │
-╰───────────────────────────────────────────────────────────╯
+Repository: https://github.com/user/database-mcp
+Tools: 7
+Description: Database management tools
+Security: All scans passed
 ```
 
 ## Next Steps
 
 <CardGroup cols={2}>
   <Card title="Inspect Server" icon="eye" href="/cli/inspect">
-    View server details
+ View server details
   </Card>
   <Card title="Pull Configuration" icon="download" href="/cli/pull">
-    Download server config
+ Download server config
   </Card>
 </CardGroup>

@@ -1,65 +1,67 @@
----
+﻿---
 title: "Architecture"
 description: "Deep dive into SuperBox system architecture and design"
 icon: "diagram-project"
 ---
 
-SuperBox is a cloud-native platform combining Next.js, Go, AWS Lambda, and S3 for scalable MCP server management.
+SuperBox is a cloud-native platform combining Next.js, Go, Cloudflare Workers, and Cloudflare R2 for scalable MCP server management.
 
 ```mermaid
 graph TB
-    subgraph "Frontend Layer"
-        A[Next.js 16 App]
-        B[React 19 UI]
-        C[Framer Motion]
-    end
+ subgraph "Frontend Layer"
+  A[Next.js 16 App]
+  B[React 19 UI]
+  C[Framer Motion]
+ end
 
-    subgraph "Authentication"
-        D[Firebase Auth]
-    end
+ subgraph "Authentication"
+  D[Firebase Auth]
+ end
 
-    subgraph "API Layer"
-        E[Go/Gin API Server]
-        F[REST Endpoints]
-    end
+ subgraph "API Layer"
+  E[Go/Gin API Server]
+  F[REST Endpoints]
+ end
 
-    subgraph "Storage Layer"
-        G[S3 Registry]
-        H[Metadata Store]
-    end
+ subgraph "Storage Layer"
+  G[R2 Registry]
+  H[Metadata Store]
+ end
 
-    subgraph "Execution Layer"
-        I[WebSocket API Gateway]
-        J[AWS Lambda]
-    end
+ subgraph "Execution Layer"
+  I[Cloudflare Worker]
+  J[McpSession Durable Object]
+ end
 
-    subgraph "Security Layer"
-        K[SonarCloud]
-        L[GitGuardian]
-        M[Bandit Scanner]
-    end
+ subgraph "Security Layer"
+  K[SonarCloud]
+  L[GitGuardian]
+  M[Bandit Scanner]
+  N[Snyk]
+ end
 
-    subgraph "Payment Layer"
-        N[Razorpay]
-    end
+ subgraph "Payment Layer"
+  O[Razorpay]
+ end
 
-    A --> D
-    A --> E
-    E --> F
-    F --> G
-    F --> H
-    I --> J
-    J --> G
-    E --> K
-    E --> L
-    E --> M
-    A --> N
+ A --> D
+ A --> E
+ E --> F
+ F --> G
+ F --> H
+ I --> J
+ J --> G
+ E --> K
+ E --> L
+ E --> M
+ E --> N
+ A --> O
 
-    style A fill:#ef4444
-    style E fill:#00ADD8
-    style I fill:#FF9900
-    style J fill:#FF9900
-    style G fill:#569A31
+ style A fill:#ef4444
+ style E fill:#00ADD8
+ style I fill:#F38020
+ style J fill:#F38020
+ style G fill:#F38020
 ```
 
 ## Component Architecture
@@ -70,20 +72,20 @@ The frontend is built with Next.js 16 and React 19, providing a modern, performa
 
 <AccordionGroup>
   <Accordion icon="react" title="Core Technologies">
-    - **Next.js 16**: App Router with Server Components
-    - **React 19**: Latest features including Actions and improved Suspense
-    - **TypeScript**: Type-safe development
-    - **Tailwind CSS 4**: Utility-first styling with JIT compilation
-    - **Framer Motion**: Smooth animations and transitions
+ - **Next.js 16**: App Router with Server Components
+ - **React 19**: Latest features including Actions and improved Suspense
+ - **TypeScript**: Type-safe development
+ - **Tailwind CSS 4**: Utility-first styling with JIT compilation
+ - **Framer Motion**: Smooth animations and transitions
   </Accordion>
 
   <Accordion icon="puzzle-piece" title="Key Components">
-    - **ServerCard**: Displays server information in grid/list views
-    - **ServerDetail**: Full server information with tabs
-    - **AuthModal**: Firebase authentication integration
-    - **PublishModal**: Server publishing workflow
-    - **PaywallModal**: Razorpay payment integration
-    - **SecurityReport**: Visualizes security scan results
+ - **ServerCard**: Displays server information in grid/list views
+ - **ServerDetail**: Full server information with tabs
+ - **AuthModal**: Firebase authentication integration
+ - **PublishModal**: Server publishing workflow
+ - **PaywallModal**: Razorpay payment integration
+ - **SecurityReport**: Visualizes security scan results
   </Accordion>
 </AccordionGroup>
 
@@ -93,166 +95,162 @@ The backend API is built with Go and the Gin web framework, providing high-perfo
 
 <AccordionGroup>
   <Accordion icon="golang" title="API Server">
-    ```go
-    // Simplified architecture
-    package main
-    
-    import (
-        "github.com/gin-gonic/gin"
-        "github.com/gin-contrib/cors"
-    )
-    
-    func main() {
-        router := gin.Default()
-        router.Use(cors.Default())
-        
-        // API v1 routes
-        v1 := router.Group("/api/v1")
-        {
-            v1.GET("/servers", listServers)
-            v1.GET("/servers/:name", getServer)
-            v1.POST("/servers", authMiddleware, createServer)
-            v1.PUT("/servers/:name", authMiddleware, updateServer)
-            v1.DELETE("/servers/:name", authMiddleware, deleteServer)
-        }
-        
-        router.Run(":8080")
-    }
-    ```
+ ```go
+ // Simplified architecture
+ package main
+ 
+ import (
+  "github.com/gin-gonic/gin"
+  "github.com/gin-contrib/cors"
+ )
+ 
+ func main() {
+  router := gin.Default()
+  router.Use(cors.Default())
+  
+  // API v1 routes
+  v1 := router.Group("/api/v1")
+  {
+v1.GET("/servers", listServers)
+v1.GET("/servers/:name", getServer)
+v1.POST("/servers", authMiddleware, createServer)
+v1.PUT("/servers/:name", authMiddleware, updateServer)
+v1.DELETE("/servers/:name", authMiddleware, deleteServer)
+  }
+  
+  router.Run(":8080")
+ }
+ ```
   </Accordion>
 
 <Accordion icon="layer-group" title="Middleware Stack">
-  1. **CORS**: Cross-origin resource sharing 2. **Logger**: Request/response
-  logging 3. **Recovery**: Panic recovery 4. **Auth**: Firebase token validation
-  5. **Rate Limiter**: API rate limiting 6. **Compression**: Response
-  compression
+  1. **CORS**: Cross-origin resource sharing
+  2. **Logger**: Request/response logging
+  3. **Recovery**: Panic recovery
+  4. **Auth**: Firebase token validation
+  5. **Rate Limiter**: API rate limiting
+  6. **Compression**: Response compression
 </Accordion>
 
   <Accordion icon="database" title="Data Flow">
-    ```mermaid
-    sequenceDiagram
-        participant C as Client
-        participant A as API Server
-        participant F as Firebase
-        participant S as S3
-        participant L as Lambda
-        
-        C->>A: Request with JWT
-        A->>F: Validate Token
-        F-->>A: Token Valid
-        A->>S: Fetch/Store Data
-        S-->>A: Data Response
-        A->>L: Trigger Execution
-        L-->>A: Execution Result
-        A-->>C: JSON Response
-    ```
+ ```mermaid
+ sequenceDiagram
+  participant C as Client
+  participant A as API Server
+  participant F as Firebase
+  participant R as R2 Registry
+  participant W as Cloudflare Worker
+  
+  C->>A: Request with JWT
+  A->>F: Validate Token
+  F-->>A: Token Valid
+  A->>R: Fetch/Store Data
+  R-->>A: Data Response
+  A->>W: Trigger Execution
+  W-->>A: Execution Result
+  A-->>C: JSON Response
+ ```
   </Accordion>
 </AccordionGroup>
 
-### Storage Layer (S3)
+### Storage Layer (Cloudflare R2)
 
-Amazon S3 serves as the registry backend, storing server metadata, code bundles, and security reports.
+Cloudflare R2 serves as the registry backend, storing server metadata and security reports via an S3-compatible API.
 
 <CardGroup cols={2}>
   <Card title="Registry Structure" icon="folder">
-    ```
-    superbox-mcp-registry/
-    ├── metadata/
-    │   ├── {server-name}/
-    │   │   ├── metadata.json
-    │   │   ├── security-report.json
-    │   │   └── tools.json
-    │   └── ...
-    ├── source/
-    │   ├── {server-name}/
-    │   │   ├── {version}/
-    │   │   │   └── source.tar.gz
-    │   │   └── ...
-    │   └── ...
-    └── bundles/
-        ├── {server-name}-{version}.zip
-        └── ...
-    ```
+ ```
+ superbox-mcp-registry/
+ +-- {server-name}.json
+ \-- ...
+ ```
+ Flat-file layout - one JSON object per server.
   </Card>
   
   <Card title="Metadata Schema" icon="file-code">
-    ```json
-    {
-      "name": "server-name",
-      "version": "1.0.0",
-      "description": "...",
-      "author": "...",
-      "language": "python",
-      "entrypoint": "main.py",
-      "repository": {
-        "url": "...",
-        "branch": "main"
-      },
-      "pricing": {
-        "type": "free"
-      },
-      "security_report": {
-        "status": "passed"
-      }
-    }
-    ```
+ ```json
+ {
+"name": "server-name",
+"version": "1.0.0",
+"description": "...",
+"author": "...",
+"lang": "python",
+"entrypoint": "main.py",
+"repository": {
+  "type": "git",
+  "url": "..."
+},
+"pricing": {
+  "currency": "INR",
+  "amount": 0.0
+},
+"security_report": {
+  "status": "passed"
+}
+ }
+ ```
   </Card>
 </CardGroup>
 
-### Execution Layer (AWS Lambda + WebSocket API)
+### Execution Layer (Cloudflare Workers + Durable Objects)
 
-MCP servers run in isolated AWS Lambda functions via WebSocket connections, providing secure sandboxed execution with automatic scaling.
+MCP servers run inside `McpSession` Durable Objects - one per session, keyed on the `Mcp-Session-Id` header. Sessions auto-evict after 30 minutes of inactivity. No local proxy process is needed; AI clients connect directly via HTTP.
 
-<Accordion title="Lambda Architecture">
-  **On-Demand Execution Approach:**
+<Accordion title="Execution Architecture">
+  **Streamable HTTP Approach (MCP rev 2025-11-25):**
   
-  1. AI client connects to local proxy (stdio interface)
-  2. Proxy bridges to WebSocket API Gateway
-  3. Lambda fetches server metadata from S3
-  4. Lambda clones GitHub repository on-demand
-  5. Lambda installs dependencies and executes MCP server
-  6. Results stream back through WebSocket to client
-  
-  **Key Features:**
-  - 15-minute execution timeout
-  - Up to 10GB memory allocation
-  - Automatic scaling and load balancing
-  - CloudWatch logging and monitoring
-  - Real-time bidirectional communication
+  1. AI client sends `POST /mcp?name=<server>` to the Cloudflare Worker
+  2. Worker routes the request to (or creates) the session's Durable Object
+  3. DO fetches server metadata from R2 to locate the entrypoint
+  4. The embedded TypeScript interpreter executes the Python entrypoint in-process
+  5. JSON-RPC response streams back over HTTP
+  6. `DELETE /mcp?name=<server>` tears down the session
+
+  **What the TypeScript interpreter supports:**
+  - `requests`-based HTTP calls
+  - JSON parsing and serialisation
+  - Common control flow and string manipulation
+
+  **Not supported** (use separate services if needed):
+  - `httpx`, `aiohttp`, `async def`
+  - C extensions, binary wheels
+  - Class definitions, file I/O
   
   **Execution Flow:**
   ```mermaid
   graph LR
-      A[AI Client] --> B[Local Proxy]
-      B --> C[WebSocket API]
-      C --> D[Lambda Function]
-      D --> E[Clone GitHub Repo]
-      E --> F[Install Dependencies]
-      F --> G[Run MCP Server]
-      G --> H[Stream Response]
-      H --> C --> B --> A
+A[AI Client] --> B[Cloudflare Worker]
+B --> C[McpSession DO]
+C --> D[Fetch Metadata from R2]
+D --> E[TS Interpreter runs Python]
+E --> F[Stream JSON-RPC Response]
+F --> A
   ```
 </Accordion>
 
 ### Security Layer
 
-SuperBox implements a comprehensive security pipeline with multiple scanning tools.
+SuperBox implements a five-stage security pipeline before any server enters the registry.
 
 <Steps>
   <Step title="SonarCloud Analysis">
-    - Code quality metrics - Bug detection - Vulnerability scanning - Code smell
-    identification - Maintainability rating
+ Code quality metrics, bug detection, vulnerability scanning, maintainability rating
   </Step>
 
-<Step title="GitGuardian Secrets Detection">
-  - API key detection - Password scanning - Token identification - Certificate
-  detection
-</Step>
+  <Step title="Tool Discovery">
+ Clones the repository and validates reported MCP tools exist via regex scan for `@*.tool()` decorators
+  </Step>
 
-  <Step title="Bandit Security Audit (Python)">
-    - Python-specific vulnerability detection - CWE (Common Weakness
-    Enumeration) mapping - Severity and confidence ratings - Detailed issue
-    reports
+  <Step title="Snyk Dependency Scan">
+ Known CVE detection in Python dependencies
+  </Step>
+
+  <Step title="GitGuardian Secrets Detection">
+ API key, password, token, and certificate detection
+  </Step>
+
+  <Step title="Bandit Security Audit">
+ Python-specific vulnerability detection with CWE mapping
   </Step>
 </Steps>
 
@@ -262,48 +260,43 @@ SuperBox implements a comprehensive security pipeline with multiple scanning too
 
 ```mermaid
 sequenceDiagram
-    participant U as User
-    participant F as Frontend
-    participant A as API
-    participant G as GitHub
-    participant SC as Security Scanners
-    participant S as S3
+ participant U as User
+ participant F as Frontend
+ participant A as API
+ participant G as GitHub
+ participant SC as Security Scanners
+ participant R as R2 Registry
 
-    U->>F: Create Server Request
-    F->>A: POST /api/v1/servers
-    A->>G: Clone Repository
-    G-->>A: Source Code
-    A->>SC: Run Security Scans
-    SC-->>A: Security Reports
-    A->>S: Store Metadata
-    S-->>A: Storage Confirmed
-    A-->>F: Server Created
-    F-->>U: Success Message
+ U->>F: Create Server Request
+ F->>A: POST /api/v1/servers
+ A->>G: Fetch Repository
+ G-->>A: Source Code
+ A->>SC: Run Security Scans
+ SC-->>A: Security Reports
+ A->>R: Store Metadata
+ R-->>A: Storage Confirmed
+ A-->>F: Server Created
+ F-->>U: Success Message
 ```
 
 ### Server Execution Flow
 
 ```mermaid
 sequenceDiagram
-    participant U as User (AI Client)
-    participant P as Local Proxy
-    participant W as WebSocket API
-    participant L as Lambda
-    participant S as S3
-    participant G as GitHub
+ participant U as User (AI Client)
+ participant W as Cloudflare Worker
+ participant DO as McpSession DO
+ participant R as R2 Registry
 
-    U->>P: MCP Request (stdio)
-    P->>W: WebSocket Connection
-    W->>L: Invoke Lambda
-    L->>S: Fetch Server Metadata
-    S-->>L: metadata.json
-    L->>G: Clone Repository
-    G-->>L: Source Code
-    L->>L: Install Dependencies
-    L->>L: Execute MCP Server
-    L-->>W: Stream Response
-    W-->>P: WebSocket Message
-    P-->>U: JSON-RPC Response (stdio)
+ U->>W: POST /mcp?name=server-name
+ W->>DO: Route to session DO
+ DO->>R: Fetch server metadata
+ R-->>DO: metadata.json
+ DO->>DO: Execute Python via TS interpreter
+ DO-->>W: JSON-RPC response
+ W-->>U: HTTP response
+ U->>W: DELETE /mcp?name=server-name
+ W->>DO: Teardown session
 ```
 
 ## Authentication Flow
@@ -312,23 +305,23 @@ SuperBox uses Firebase Authentication with JWT token validation.
 
 ```mermaid
 sequenceDiagram
-    participant U as User
-    participant F as Frontend
-    participant FB as Firebase Auth
-    participant A as API
-    participant S as Service
+ participant U as User
+ participant F as Frontend
+ participant FB as Firebase Auth
+ participant A as API
+ participant S as Service
 
-    U->>F: Login Request
-    F->>FB: Authenticate
-    FB-->>F: JWT Token
-    F->>F: Store Token
-    F->>A: API Request + JWT
-    A->>FB: Validate Token
-    FB-->>A: Token Valid
-    A->>S: Process Request
-    S-->>A: Response
-    A-->>F: JSON Response
-    F-->>U: Display Data
+ U->>F: Login Request
+ F->>FB: Authenticate
+ FB-->>F: JWT Token
+ F->>F: Store Token
+ F->>A: API Request + JWT
+ A->>FB: Validate Token
+ FB-->>A: Token Valid
+ A->>S: Process Request
+ S-->>A: Response
+ A-->>F: JSON Response
+ F-->>U: Display Data
 ```
 
 ## Payment Integration
@@ -337,141 +330,14 @@ Razorpay handles all payment processing for paid MCP servers.
 
 <AccordionGroup>
   <Accordion icon="credit-card" title="Payment Flow">
-    1. User selects a paid server 2. Frontend creates Razorpay order 3. User
-    completes payment 4. Webhook validates payment 5. Server access is granted
-    6. Transaction recorded in database
+ 1. User selects a paid server 2. Frontend creates Razorpay order 3. User
+ completes payment 4. Webhook validates payment 5. Server access is granted
+ 6. Transaction recorded in database
   </Accordion>
 
   <Accordion icon="shield" title="Security Measures">
-    - PCI-DSS compliant payment processing - Webhook signature verification -
-    Idempotency keys for duplicate prevention - Encrypted payment data - Secure
-    refund handling
+ - PCI-DSS compliant payment processing - Webhook signature verification -
+ Idempotency keys for duplicate prevention - Encrypted payment data - Secure
+ refund handling
   </Accordion>
 </AccordionGroup>
-
-## Scalability & Performance
-
-<CardGroup cols={2}>
-  <Card title="Frontend Optimization" icon="gauge-high">
-    - Next.js ISR (Incremental Static Regeneration) - Image optimization with
-    next/image - Code splitting and lazy loading - CDN distribution via Vercel -
-    Aggressive caching strategies
-  </Card>
-
-<Card title="Backend Optimization" icon="bolt">
-  - Go's concurrent processing - Connection pooling - Response caching - Gzip
-  compression - Efficient JSON serialization
-</Card>
-
-<Card title="Storage Optimization" icon="database">
-  - S3 intelligent tiering - CloudFront CDN - Transfer acceleration - Multipart
-  uploads - Lifecycle policies
-</Card>
-
-  <Card title="Execution Optimization" icon="server">
-    - Lambda provisioned concurrency - Warm start optimization - Dependency
-    layer caching - Auto-scaling policies - Cost optimization
-  </Card>
-</CardGroup>
-
-## Monitoring & Observability
-
-<Tabs>
-  <Tab title="Logging">
-    - **CloudWatch Logs**: Lambda execution logs - **API Logs**:
-    Request/response logging - **Error Tracking**: Centralized error monitoring
-    - **Audit Logs**: Security and compliance tracking
-  </Tab>
-
-<Tab title="Metrics">
-  - **CloudWatch Metrics**: System health metrics - **Custom Metrics**: Business
-  KPIs - **Performance Metrics**: Response times, throughput - **Cost Metrics**:
-  Resource usage tracking
-</Tab>
-
-  <Tab title="Alerting">
-    - **SNS Notifications**: Critical alerts - **Email Alerts**: Warning
-    notifications - **Slack Integration**: Team notifications - **PagerDuty**:
-    Incident management
-  </Tab>
-</Tabs>
-
-## Infrastructure as Code
-
-SuperBox infrastructure is managed with Terraform using a modular architecture.
-
-```hcl
-# Terraform configuration for SuperBox infrastructure
-terraform {
-  required_version = ">= 1.0"
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.0"
-    }
-  }
-}
-
-# S3 bucket for MCP server registry
-module "s3" {
-  source = "./modules/s3"
-
-  project_name = var.project_name
-  aws_region   = var.aws_region
-}
-
-# IAM roles and policies for Lambda
-module "iam" {
-  source = "./modules/iam"
-
-  project_name  = var.project_name
-  s3_bucket_arn = module.s3.bucket_arn
-}
-
-# Lambda function for MCP execution
-module "lambda" {
-  source = "./modules/lambda"
-
-  project_name       = var.project_name
-  aws_region         = var.aws_region
-  s3_bucket_name     = module.s3.bucket_name
-  execution_role_arn = module.iam.lambda_role_arn
-}
-```
-
-**Key Infrastructure Components:**
-
-- **S3 Module**: Creates and configures the MCP registry bucket with versioning
-- **IAM Module**: Manages roles and policies for Lambda execution
-- **Lambda Module**: Provisions containerized Lambda functions for MCP server execution
-- **Region**: Deployed in ap-south-1 (Mumbai) by default
-
-## Deployment Pipeline
-
-<Steps>
-  <Step title="Development">
-    Local development with hot reload - Frontend: `npm run dev` - Backend: `go
-    run main.go`
-  </Step>
-
-<Step title="Testing">
-  Automated testing and validation - Unit tests - Integration tests - E2E tests
-  with Playwright
-</Step>
-
-<Step title="Staging">
-  Deploy to staging environment - Preview deployments on Vercel - Backend
-  staging on AWS - Smoke tests
-</Step>
-
-  <Step title="Production">
-    Production deployment - Blue-green deployment - Canary releases - Rollback
-    capability - Health checks
-  </Step>
-</Steps>
-
-<Info>
-  This architecture is designed for high availability, security, and
-  scalability, ensuring SuperBox can handle thousands of concurrent users and
-  server executions.
-</Info>

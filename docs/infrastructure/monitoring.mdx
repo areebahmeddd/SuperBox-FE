@@ -1,475 +1,88 @@
----
-title: "Monitoring & Observability"
-description: "Monitor SuperBox infrastructure with CloudWatch dashboards and alerts"
+﻿---
+title: "Monitoring"
+description: "Monitor the SuperBox Cloudflare Worker with wrangler tail and the Workers dashboard"
 icon: "chart-line"
 ---
 
-Monitor SuperBox infrastructure health, performance, and costs with AWS CloudWatch. Set up dashboards, alarms, and log insights for proactive issue detection.
+## Live log streaming
 
-## CloudWatch Dashboard
-
-Create a comprehensive dashboard to visualize all metrics:
-
-<Steps>
-  <Step title="Access CloudWatch Console">
-    AWS Console → **CloudWatch** → **Dashboards** → **Create dashboard**
-  </Step>
-
-  <Step title="Add Widgets">
-    Create widgets for Lambda, S3, and application metrics
-  </Step>
-
-  <Step title="Configure Refresh">
-    Set auto-refresh to 1 minute for real-time monitoring
-  </Step>
-</Steps>
-
-### Recommended Widgets
-
-<Tabs>
-  <Tab title="Lambda Metrics">
-    **Invocations**
-    - Metric: `AWS/Lambda` → `Invocations`
-    - Statistic: Sum
-    - Period: 1 minute
-    - Chart type: Line
-    
-    **Errors**
-    - Metric: `AWS/Lambda` → `Errors`
-    - Statistic: Sum
-    - Period: 1 minute
-    - Chart type: Stacked area (with Invocations)
-    
-    **Duration**
-    - Metric: `AWS/Lambda` → `Duration`
-    - Statistics: Average, Maximum, p99
-    - Period: 1 minute
-    - Chart type: Line
-    
-    **Throttles**
-    - Metric: `AWS/Lambda` → `Throttles`
-    - Statistic: Sum
-    - Period: 1 minute
-    - Chart type: Number
-  </Tab>
-
-  <Tab title="S3 Metrics">
-    **Bucket Size**
-    - Metric: `AWS/S3` → `BucketSizeBytes`
-    - Statistic: Average
-    - Period: 1 day
-    - Chart type: Number
-    
-    **GET Requests**
-    - Metric: `AWS/S3` → `GetRequests`
-    - Statistic: Sum
-    - Period: 5 minutes
-    - Chart type: Line
-    
-    **PUT Requests**
-    - Metric: `AWS/S3` → `PutRequests`
-    - Statistic: Sum
-    - Period: 5 minutes
-    - Chart type: Line
-  </Tab>
-
-  <Tab title="Application Metrics">
-    **MCP Server Executions**
-    - Custom metric from Lambda logs
-    - Filter: "Request received"
-    - Period: 1 minute
-    - Chart type: Line
-    
-    **Execution Success Rate**
-    - Calculated from (Invocations - Errors) / Invocations * 100
-    - Period: 5 minutes
-    - Chart type: Number with gauge
-    
-    **Average Response Time**
-    - Extracted from Lambda duration
-    - Statistic: Average
-    - Period: 1 minute
-    - Chart type: Line
-  </Tab>
-</Tabs>
-
-## CloudWatch Alarms
-
-Set up proactive alerting for critical issues:
-
-### Lambda Alarms
-
-<AccordionGroup>
-  <Accordion title="High Error Rate" icon="triangle-exclamation">
-    ```hcl
-    resource "aws_cloudwatch_metric_alarm" "lambda_errors" {
-      alarm_name          = "superbox-lambda-high-errors"
-      comparison_operator = "GreaterThanThreshold"
-      evaluation_periods  = 2
-      metric_name         = "Errors"
-      namespace           = "AWS/Lambda"
-      period              = 300  # 5 minutes
-      statistic           = "Sum"
-      threshold           = 10
-      alarm_description   = "Lambda error rate exceeds threshold"
-      
-      dimensions = {
-        FunctionName = "superbox-mcp-executor"
-      }
-    }
-    ```
-    
-    **Triggers when:** More than 10 errors in 5 minutes
-  </Accordion>
-  
-  <Accordion title="High Duration" icon="clock">
-    ```hcl
-    resource "aws_cloudwatch_metric_alarm" "lambda_duration" {
-      alarm_name          = "superbox-lambda-slow-execution"
-      comparison_operator = "GreaterThanThreshold"
-      evaluation_periods  = 2
-      metric_name         = "Duration"
-      namespace           = "AWS/Lambda"
-      period              = 300
-      statistic           = "Average"
-      threshold           = 30000  # 30 seconds
-      alarm_description   = "Lambda execution time is high"
-      
-      dimensions = {
-        FunctionName = "superbox-mcp-executor"
-      }
-    }
-    ```
-    
-    **Triggers when:** Average execution > 30 seconds
-  </Accordion>
-  
-  <Accordion title="Throttling" icon="ban">
-    ```hcl
-    resource "aws_cloudwatch_metric_alarm" "lambda_throttles" {
-      alarm_name          = "superbox-lambda-throttled"
-      comparison_operator = "GreaterThanThreshold"
-      evaluation_periods  = 1
-      metric_name         = "Throttles"
-      namespace           = "AWS/Lambda"
-      period              = 300
-      statistic           = "Sum"
-      threshold           = 5
-      alarm_description   = "Lambda function is being throttled"
-      
-      dimensions = {
-        FunctionName = "superbox-mcp-executor"
-      }
-    }
-    ```
-    
-    **Triggers when:** More than 5 throttles in 5 minutes
-  </Accordion>
-</AccordionGroup>
-
-### SNS Notification Setup
-
-Configure email/SMS alerts:
+The fastest way to see what the Worker is doing is `wrangler tail`:
 
 ```bash
-# Create SNS topic
-aws sns create-topic --name superbox-alerts
-
-# Subscribe email
-aws sns subscribe \
-  --topic-arn arn:aws:sns:ap-south-1:123456789:superbox-alerts \
-  --protocol email \
-  --notification-endpoint your-email@example.com
-
-# Confirm subscription via email
+wrangler tail superbox-executor --format pretty
 ```
 
-Link alarms to SNS topic:
+This streams real-time logs from all Worker invocations - requests, errors, console output from the Durable Object, and uncaught exceptions.
 
-```hcl
-alarm_actions = [aws_sns_topic.alerts.arn]
-ok_actions    = [aws_sns_topic.alerts.arn]
+<Tip>
+  Stop streaming with `Ctrl+C`. Logs are also retained for 24 hours in the Cloudflare dashboard under **Workers & Pages > superbox-executor > Logs**.
+</Tip>
+
+## Filtering logs
+
+```bash
+# Show only errors
+wrangler tail superbox-executor --status error
+
+# Filter by IP address
+wrangler tail superbox-executor --ip 1.2.3.4
+
+# Compact JSON output (pipe to jq)
+wrangler tail superbox-executor --format json | jq .
 ```
 
-## CloudWatch Logs Insights
+## Workers Analytics dashboard
 
-Query and analyze Lambda execution logs:
+1. Open [dash.cloudflare.com](https://dash.cloudflare.com)
+2. Navigate to **Workers & Pages > superbox-executor**
+3. Open the **Metrics** tab
 
-### Query Examples
+Key metrics available:
 
-<Tabs>
-  <Tab title="Error Analysis">
-    ```sql
-    fields @timestamp, @message
-    | filter @message like /Error:/
-    | sort @timestamp desc
-    | limit 100
-    ```
-    
-    Shows recent errors with timestamps
-  </Tab>
-  
-  <Tab title="Slow Executions">
-    ```sql
-    fields @timestamp, @duration, @message
-    | filter @type = "REPORT"
-    | filter @duration > 10000
-    | sort @duration desc
-    | limit 50
-    ```
-    
-    Lists executions taking more than 10 seconds
-  </Tab>
-  
-  <Tab title="Popular MCP Servers">
-    ```sql
-    fields @timestamp
-    | parse @message "Request received: *" as server_name
-    | filter server_name != ""
-    | stats count() as executions by server_name
-    | sort executions desc
-    | limit 20
-    ```
-    
-    Top 20 most executed MCP servers
-  </Tab>
-  
-  <Tab title="Error Patterns">
-    ```sql
-    fields @timestamp
-    | filter @message like /Error/
-    | parse @message "*Error: *" as prefix, error_msg
-    | stats count() as occurrences by error_msg
-    | sort occurrences desc
-    | limit 10
-    ```
-    
-    Most common error messages
-  </Tab>
-</Tabs>
+| Metric | Description |
+|--------|-------------|
+| Requests | Total invocations per time period |
+| Errors | 4xx/5xx responses |
+| CPU time | Aggregate compute time (p50/p99) |
+| Duration | Wall-clock time per invocation |
+| Subrequests | Outbound fetch calls (e.g. R2 reads) |
 
-### Saved Queries
+## Durable Object metrics
 
-Save frequently used queries for quick access:
+Durable Object metrics are under **Workers & Pages > superbox-executor > Durable Objects**:
 
-1. **Daily Execution Summary**
-2. **Failed Server Executions**
-3. **Memory Usage Patterns**
-4. **Cold Start Analysis**
+| Metric | Description |
+|--------|-------------|
+| Active objects | Current live DO instances (sessions) |
+| Requests | DO request rate |
+| Errors | DO-level errors |
+| Storage reads/writes | (Not used - in-memory only) |
 
-## Performance Metrics
+## R2 request metrics
 
-### Lambda Performance
+Under **R2 > superbox-mcp-registry > Metrics**:
 
-<CardGroup cols={2}>
-  <Card title="Cold Start Detection" icon="snowflake">
-    ```sql
-    fields @timestamp, @initDuration
-    | filter @type = "REPORT"
-    | filter @initDuration > 0
-    | stats avg(@initDuration) as avg_cold_start,
-            max(@initDuration) as max_cold_start,
-            count() as cold_starts
-    ```
-    
-    Analyze cold start frequency and duration
-  </Card>
-  
-  <Card title="Memory Utilization" icon="microchip">
-    ```sql
-    fields @timestamp, @maxMemoryUsed, @memorySize
-    | filter @type = "REPORT"
-    | stats avg(@maxMemoryUsed / @memorySize * 100) as avg_memory_pct,
-            max(@maxMemoryUsed) as peak_memory
-    ```
-    
-    Monitor memory efficiency
-  </Card>
-  
-  <Card title="Concurrent Executions" icon="layer-group">
-    ```sql
-    fields @timestamp
-    | filter @message like /START/
-    | stats count() as concurrent by bin(5m)
-    ```
-    
-    Track concurrent execution patterns
-  </Card>
-  
-  <Card title="Error Rate Trend" icon="chart-line">
-    ```sql
-    fields @timestamp
-    | filter @message like /Error/
-    | stats count() as errors by bin(1h)
-    | sort @timestamp desc
-    ```
-    
-    Hourly error distribution
-  </Card>
-</CardGroup>
+| Metric | Description |
+|--------|-------------|
+| Class A operations | `PUT`, `DELETE` (writes) |
+| Class B operations | `GET`, `LIST` (reads) |
+| Stored bytes | Total registry size |
 
-## Cost Monitoring
+## Alerting
 
-Track infrastructure costs:
+Configure alerts in **Notifications** (Cloudflare dashboard > Notifications):
 
-### Cost Explorer Filters
+- **Worker error rate spike** - triggers when error rate exceeds a threshold
+- **Worker CPU time exceeded** - triggers on high compute cost per invocation
 
-<Steps>
-  <Step title="Access Cost Explorer">
-    AWS Console → **Cost Management** → **Cost Explorer**
-  </Step>
+For critical alerts, use [Cloudflare's webhook notifications](https://developers.cloudflare.com/notifications/get-started/) to send to Slack or PagerDuty.
 
-<Step title="Filter by Service">
-  - Service: AWS Lambda - Service: Amazon S3 - Service: CloudWatch - Tag:
-  `project:superbox`
-</Step>
+## Debugging a failed request
 
-  <Step title="Create Budget Alert">
-    Set budget alert at $50/month with email notification
-  </Step>
-</Steps>
-
-### Cost Optimization Queries
-
-```sql
--- Lambda cost breakdown by function
-SELECT
-  line_item_resource_id,
-  SUM(line_item_unblended_cost) as cost
-FROM cost_usage
-WHERE
-  product_product_name = 'AWS Lambda'
-  AND line_item_usage_start_date >= DATE_SUB(CURRENT_DATE, 30)
-GROUP BY line_item_resource_id
-ORDER BY cost DESC
-```
-
-## X-Ray Tracing (Optional)
-
-Enable AWS X-Ray for detailed request tracing:
-
-### Enable X-Ray
-
-```hcl
-resource "aws_lambda_function" "mcp_executor" {
-  # ... other config
-
-  tracing_config {
-    mode = "Active"
-  }
-}
-```
-
-### Benefits
-
-- End-to-end request visualization
-- Identify bottlenecks in execution flow
-- Trace external API calls
-- Analyze Lambda initialization time
-
-## Grafana Integration (Optional)
-
-For advanced visualization, integrate CloudWatch with Grafana:
-
-<Steps>
-  <Step title="Install Grafana">
-    ```bash
-# Docker docker run -d -p 3000:3000 grafana/grafana
-```
-  </Step>
-
-<Step title="Add CloudWatch Data Source">
-  - Go to Configuration → Data Sources - Add AWS CloudWatch - Configure IAM
-  credentials
-</Step>
-
-  <Step title="Import Dashboard">
-    Use pre-built Lambda monitoring dashboard from Grafana marketplace
-  </Step>
-</Steps>
-
-## Anomaly Detection
-
-Enable CloudWatch Anomaly Detection:
-
-```hcl
-resource "aws_cloudwatch_metric_alarm" "lambda_anomaly" {
-  alarm_name                = "superbox-lambda-anomaly"
-  comparison_operator       = "LessThanLowerOrGreaterThanUpperThreshold"
-  evaluation_periods        = 2
-  threshold_metric_id       = "e1"
-  alarm_description         = "Anomaly detected in Lambda invocations"
-
-  metric_query {
-    id          = "e1"
-    expression  = "ANOMALY_DETECTION_BAND(m1)"
-    label       = "Invocations (Expected)"
-    return_data = "true"
-  }
-
-  metric_query {
-    id = "m1"
-
-    metric {
-      metric_name = "Invocations"
-      namespace   = "AWS/Lambda"
-      period      = 300
-      stat        = "Sum"
-
-      dimensions = {
-        FunctionName = "superbox-mcp-executor"
-      }
-    }
-  }
-}
-```
-
-## Monitoring Checklist
-
-<Steps>
-  <Step title="Daily Checks">
-    - [ ] Review error rate (< 1%)
-    - [ ] Check average duration (< 30s)
-    - [ ] Verify no throttling events
-    - [ ] Monitor S3 bucket size growth
-  </Step>
-  
-  <Step title="Weekly Reviews">
-    - [ ] Analyze cost trends
-    - [ ] Review top error patterns
-    - [ ] Check cold start frequency
-    - [ ] Optimize memory allocation
-  </Step>
-  
-  <Step title="Monthly Audits">
-    - [ ] Review CloudWatch log retention
-    - [ ] Analyze popular MCP servers
-    - [ ] Update alarm thresholds
-    - [ ] Clean up old S3 objects
-  </Step>
-</Steps>
-
-## Next Steps
-
-<CardGroup cols={2}>
-  <Card
-    title="Troubleshooting"
-    icon="screwdriver-wrench"
-    href="/infrastructure/troubleshooting"
-  >
-    Debug common infrastructure issues
-  </Card>
-  <Card
-    title="Scaling Guide"
-    icon="up-right-and-down-left-from-center"
-    href="/infrastructure/scaling"
-  >
-    Scale infrastructure for growth
-  </Card>
-  <Card title="Security Best Practices" icon="shield" href="/concepts/security">
-    Harden infrastructure security
-  </Card>
-  <Card title="Backup & Recovery" icon="database" href="/infrastructure/backup">
-    Set up backup strategies
-  </Card>
-</CardGroup>
+1. Get the `cf-ray` header from the failed response
+2. Search for it in `wrangler tail` output or the Logs tab in the dashboard
+3. Identify the error type:
+- `R2Error` - R2 bucket access issue (check credentials)
+- `DO error` - Durable Object exception (check server code)
+- `401` - Invalid or missing Firebase JWT
+- `504` - Worker CPU time limit exceeded (30 ms burst limit on free tier)

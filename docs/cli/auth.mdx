@@ -1,4 +1,4 @@
----
+﻿---
 title: "superbox auth"
 description: "Authenticate with SuperBox using Firebase authentication"
 icon: "fingerprint"
@@ -31,7 +31,7 @@ superbox auth register
 $ superbox auth register
 Email: user@example.com
 Password: ********
-✓ Successfully registered and logged in
+Successfully registered and logged in
 ```
 
 ### `superbox auth login`
@@ -62,35 +62,35 @@ superbox auth login [--provider PROVIDER] [--email EMAIL] [--password PASSWORD]
 $ superbox auth login --provider email
 Email: user@example.com
 Password: ********
-✓ Successfully logged in
+Successfully logged in
 ```
 
 #### OAuth Device Flow (Google/GitHub)
 
 <Steps>
   <Step title="Initiate OAuth Flow">
-    ```bash
-    superbox auth login --provider google
-    # or
-    superbox auth login --provider github
-    ```
+ ```bash
+ superbox auth login --provider google
+ # or
+ superbox auth login --provider github
+ ```
   </Step>
 
   <Step title="Browser Opens">
-    Browser opens to device verification page
-    
-    ```text
-    Visit: http://localhost:8000/api/v1/auth/device?code=XXXX-XXXX
-    Or enter code: XXXX-XXXX
-    ```
+ Browser opens to device verification page
+ 
+ ```text
+ Visit: http://localhost:8000/api/v1/auth/device?code=XXXX-XXXX
+ Or enter code: XXXX-XXXX
+ ```
   </Step>
 
   <Step title="Complete Authorization">
-    Authorize in browser, CLI detects completion automatically
+ Authorize in browser, CLI detects completion automatically
   </Step>
 
   <Step title="Token Stored">
-    Authentication tokens saved to `~/.superbox/auth.json`
+ Authentication tokens saved to `~/.superbox/auth.json`
   </Step>
 </Steps>
 
@@ -100,7 +100,7 @@ $ superbox auth login --provider google
 Opening browser for Google authentication...
 Visit this URL: http://localhost:8000/api/v1/auth/device?code=XXXX-XXXX
 Waiting for authentication...
-✓ Successfully authenticated with Google
+Successfully authenticated with Google
 ```
 
 ### `superbox auth status`
@@ -129,7 +129,7 @@ superbox auth refresh
 **Example:**
 ```bash
 $ superbox auth refresh
-✓ Token refreshed successfully
+Token refreshed successfully
 ```
 
 ### `superbox auth logout`
@@ -143,7 +143,7 @@ superbox auth logout
 **Example:**
 ```bash
 $ superbox auth logout
-✓ Logged out successfully
+Logged out successfully
 ```
 
 ## Troubleshooting
@@ -152,7 +152,7 @@ $ superbox auth logout
   Manually visit the URL and enter the code:
   
   ```text
-  https://superbox.ai/device?code=ABCD-1234
+  https://superbox.1mindlabs.org/device?code=ABCD-1234
   ```
 </Accordion>
 
@@ -160,9 +160,9 @@ $ superbox auth logout
 
 <CardGroup cols={2}>
   <Card title="Initialize Project" icon="plus" href="/cli/init">
-    Create MCP server
+ Create MCP server
   </Card>
   <Card title="Push Server" icon="upload" href="/cli/push">
-    Publish to marketplace
+ Publish to marketplace
   </Card>
 </CardGroup>

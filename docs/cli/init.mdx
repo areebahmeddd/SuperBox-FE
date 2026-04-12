@@ -1,4 +1,4 @@
----
+﻿---
 title: "superbox init"
 description: "Initialize superbox.json configuration for your MCP server"
 icon: "wand-magic-sparkles"
@@ -20,27 +20,27 @@ Initialize a new `superbox.json` configuration file for your MCP server through 
 
 <Steps>
   <Step title="Creates superbox.json">
-    Creates `superbox.json` in the current directory
+ Creates `superbox.json` in the current directory
   </Step>
 
   <Step title="Prompts for Metadata">
-    Asks for server information:
-    - Repository URL (GitHub)
-    - Server name
-    - Version
-    - Description
-    - Author
-    - Language
-    - License
-    - Entrypoint file
+ Asks for server information:
+ - Repository URL (GitHub)
+ - Server name
+ - Version
+ - Description
+ - Author
+ - Language
+ - License
+ - Entrypoint file
   </Step>
 
   <Step title="Optional Pricing">
-    Optionally add pricing information
+ Optionally add pricing information
   </Step>
 
   <Step title="Extracts Git Info">
-    Automatically extracts repository information from GitHub URLs
+ Automatically extracts repository information from GitHub URLs
   </Step>
 </Steps>
 
@@ -60,7 +60,7 @@ License (MIT/Apache-2.0/GPL-3.0): MIT
 Entrypoint (main.py): main.py
 Add pricing? (y/n): n
 
-✓ Configuration saved to superbox.json
+Configuration saved to superbox.json
 ```
 
 ## Generated superbox.json
@@ -72,21 +72,19 @@ Add pricing? (y/n): n
   "description": "My awesome MCP server",
   "author": "user",
   "repository": {
-    "type": "git",
-    "url": "https://github.com/user/my-mcp"
+ "type": "git",
+ "url": "https://github.com/user/my-mcp"
   },
-  "language": "python",
+  "lang": "python",
   "license": "MIT",
   "entrypoint": "main.py"
 }
+```
 
 ## Next Steps
 
 <CardGroup cols={2}>
-  <Card title="Run Locally" icon="play" href="/cli/run">
-    Test your server
-  </Card>
   <Card title="Push to SuperBox" icon="upload" href="/cli/push">
-    Publish your server
+ Publish your server
   </Card>
 </CardGroup>
