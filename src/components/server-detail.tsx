@@ -52,8 +52,8 @@ const supportedClients = [
     icon: "/icons/brands/cursor.svg",
   },
   {
-    name: "Windsurf",
-    icon: "/icons/brands/windsurf.svg",
+    name: "Antigravity",
+    icon: "/icons/brands/antigravity.svg",
   },
   {
     name: "Claude Desktop",

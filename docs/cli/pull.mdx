@@ -24,7 +24,7 @@ Pull an MCP server from the R2 registry and configure it for your AI client. The
 </ParamField>
 
 <ParamField path="--client" type="string" required>
-  Target AI client: `vscode`, `cursor`, `windsurf`, `claude`, or `chatgpt`
+  Target AI client: `vscode`, `cursor`, `antigravity`, `claude`, or `chatgpt`
 </ParamField>
 
 ## Supported Clients
@@ -36,8 +36,8 @@ Pull an MCP server from the R2 registry and configure it for your AI client. The
   <Card title="Cursor" icon="mouse-pointer">
  Configures Cursor MCP settings
   </Card>
-  <Card title="Windsurf" icon="wind">
- Configures Windsurf MCP settings
+  <Card title="Antigravity" icon="rocket">
+ Configures Antigravity MCP settings
   </Card>
   <Card title="Claude" icon="message">
  Configures Claude Desktop MCP
@@ -126,7 +126,7 @@ The generated configuration depends on your client.
  ```
  VS Code supports the HTTP transport natively - no proxy process required.
   </Tab>
-  <Tab title="Cursor / Windsurf / Claude / ChatGPT">
+  <Tab title="Cursor / Antigravity / Claude / ChatGPT">
  Written to the client's config file under the `"mcpServers"` key:
  ```json
  {
@@ -149,7 +149,7 @@ The generated configuration depends on your client.
 |--------|----------------|
 | VS Code | `~/Library/Application Support/Code/User/mcp.json` (macOS)<br/>`%APPDATA%/Code/User/mcp.json` (Windows)<br/>`~/.config/Code/User/mcp.json` (Linux) |
 | Cursor | `~/.cursor/mcp.json` (macOS/Linux)<br/>`%USERPROFILE%/.cursor/mcp.json` (Windows) |
-| Windsurf | `~/Library/Application Support/Windsurf/User/mcp.json` (macOS)<br/>`%APPDATA%/Windsurf/User/mcp.json` (Windows)<br/>`~/.config/Windsurf/User/mcp.json` (Linux) |
+| Antigravity | `~/.gemini/antigravity/mcp_config.json` (all platforms) |
 | Claude Desktop | `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS)<br/>`%APPDATA%/Claude/claude_desktop_config.json` (Windows)<br/>`~/.config/Claude/claude_desktop_config.json` (Linux) |
 
 ## Next Steps
